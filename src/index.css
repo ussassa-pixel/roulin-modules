@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #F7F4EE;
+  -webkit-font-smoothing: antialiased;
+}
+
+textarea::placeholder {
+  color: #ccc;
+}
+
+.bg-app {
+  background: linear-gradient(
+    180deg,
+    #EDE8DC 0%,
+    #C5D3BD 30%,
+    #8BA898 55%,
+    #A8906A 78%,
+    #C8A060 100%
+  );
+  min-height: 100vh;
+}
+
+.bg-session-present {
+  background: radial-gradient(ellipse at 50% 45%, #1a3040 0%, #0a1520 100%);
+}
+
+.bg-session-drink {
+  background: radial-gradient(ellipse at 50% 45%, #162814 0%, #0a1a0a 100%);
+}
+
+.bg-session-butterfly {
+  background: radial-gradient(ellipse at 50% 45%, #2a1830 0%, #150c1a 100%);
+}
+
+.bg-session-stop {
+  background: radial-gradient(ellipse at 50% 45%, #161830 0%, #0a0c1e 100%);
+}

@@ -37,18 +37,18 @@ export default function DrinkingMeditation({ onExit }) {
   if (phase === 'intro') {
     return (
       <ModuleFrame onExit={onExit}>
-        <div className="min-h-screen bg-[#F7F4EE] flex flex-col items-center justify-center p-8">
+        <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-8">
           <div className="w-full max-w-sm text-center animate-fade-up">
-            <p className="font-serif text-[28px] text-[#111] mb-3 leading-snug">
+            <p className="font-serif text-[28px] text-navy mb-3 leading-snug" style={{ fontWeight: 600 }}>
               한 잔,<br />천천히 마셔볼게요
             </p>
-            <div className="w-8 h-px bg-[#ccc] mx-auto mb-4" />
-            <p className="text-[14px] text-[#999] font-light mb-14">
-              물, 차, 커피, 무엇이든 좋아요
+            <div className="w-8 h-px bg-amber/60 mx-auto mb-4" />
+            <p className="text-[14px] text-r-gray font-light mb-14">
+              물, 차, 커피, 무엇이든 괜찮습니다
             </p>
             <button
               onClick={() => setPhase('running')}
-              className="w-full py-4 bg-[#1C1C1E] text-white rounded-2xl text-[14px] font-light tracking-wide active:scale-[0.98] transition"
+              className="w-full py-4 bg-navy text-white rounded-full text-[14px] tracking-wide active:scale-[0.98] transition"
             >
               준비됐어요
             </button>

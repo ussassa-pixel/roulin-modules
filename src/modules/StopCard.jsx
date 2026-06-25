@@ -53,12 +53,12 @@ export default function StopCard({ onExit }) {
   if (phase === 'stop') {
     return (
       <ModuleFrame onExit={onExit}>
-        <div className="min-h-screen bg-[#F7F4EE] flex flex-col items-center justify-center p-8">
+        <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-8">
           <div className="text-center animate-fade-in">
-            <p className="font-serif text-[80px] text-[#1C1C1E] tracking-[0.1em] leading-none mb-5">
+            <p className="font-serif text-[80px] text-navy tracking-[0.1em] leading-none mb-5" style={{ fontWeight: 600 }}>
               STOP
             </p>
-            <p className="text-[15px] font-light text-[#999] tracking-wide">
+            <p className="text-[15px] font-light text-r-gray tracking-wide">
               지금, 하던 것을 멈춰요
             </p>
           </div>
@@ -90,21 +90,22 @@ export default function StopCard({ onExit }) {
 
     return (
       <ModuleFrame onExit={onExit}>
-        <div className="min-h-screen bg-[#F7F4EE] flex flex-col items-center justify-center p-8">
+        <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-8">
           <div className="w-full max-w-sm text-center">
-            <p className="text-[11px] tracking-[0.2em] text-[#bbb] uppercase mb-12 animate-fade-in">
+            <p className="text-[11px] tracking-[0.2em] text-amber uppercase mb-12 animate-fade-in" style={{ fontWeight: 600 }}>
               관찰
             </p>
             <p
               key={observeIndex}
-              className="font-serif text-[26px] text-[#111] mb-16 animate-fade-in leading-snug"
+              className="font-serif text-[26px] text-navy mb-16 animate-fade-in leading-snug"
+              style={{ fontWeight: 600 }}
             >
               {OBSERVE_TEXTS[observeIndex]}
             </p>
             {isLast && (
               <button
                 onClick={() => setPhase('proceed')}
-                className="w-full py-4 bg-[#1C1C1E] text-white rounded-2xl text-[14px] font-light tracking-wide animate-fade-in active:scale-[0.98] transition-transform"
+                className="w-full py-4 bg-navy text-white rounded-full text-[14px] tracking-wide animate-fade-in active:scale-[0.98] transition-transform"
               >
                 다음
               </button>
@@ -118,19 +119,19 @@ export default function StopCard({ onExit }) {
   if (phase === 'proceed') {
     return (
       <ModuleFrame onExit={onExit}>
-        <div className="min-h-screen bg-[#F7F4EE] flex flex-col items-center justify-center p-8">
+        <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-8">
           <div className="w-full max-w-sm text-center animate-fade-in">
-            <p className="font-serif text-[28px] text-[#111] mb-3 leading-snug">이제 정하세요</p>
-            <div className="w-8 h-px bg-[#ccc] mx-auto mb-8" />
-            <p className="text-[14px] text-[#999] font-light mb-2 leading-relaxed">
-              같은 행동을 해도 괜찮아요
+            <p className="font-serif text-[28px] text-navy mb-3 leading-snug" style={{ fontWeight: 600 }}>이제 정하세요</p>
+            <div className="w-8 h-px bg-amber/60 mx-auto mb-8" />
+            <p className="text-[14px] text-r-gray font-light mb-2 leading-relaxed">
+              같은 행동을 해도 괜찮습니다
             </p>
-            <p className="text-[14px] text-[#999] font-light mb-16 leading-relaxed">
-              다른 행동을 선택해도 괜찮아요
+            <p className="text-[14px] text-r-gray font-light mb-16 leading-relaxed">
+              다른 행동을 선택해도 괜찮습니다
             </p>
             <button
               onClick={onExit}
-              className="w-full py-4 bg-[#1C1C1E] text-white rounded-2xl text-[14px] font-light tracking-wide active:scale-[0.98] transition-transform"
+              className="w-full py-4 bg-navy text-white rounded-full text-[14px] tracking-wide active:scale-[0.98] transition-transform"
             >
               돌아가기
             </button>

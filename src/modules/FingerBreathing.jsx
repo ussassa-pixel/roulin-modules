@@ -18,13 +18,13 @@ export default function FingerBreathing({ onExit }) {
   if (phase === 'intro') {
     return (
       <ModuleFrame onExit={onExit}>
-        <div className="min-h-screen bg-gradient-to-br from-amber-50 to-stone-50 flex flex-col items-center justify-center p-6">
+        <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-6">
           <div className="max-w-sm w-full text-center animate-fade-up">
-            <p className="font-serif text-[28px] text-[#111] mb-3">손가락 호흡</p>
-            <div className="w-8 h-px bg-[#ccc] mx-auto mb-4" />
-            <p className="text-[14px] text-[#999] font-light mb-10 leading-relaxed">
+            <p className="font-serif text-[28px] text-navy mb-3" style={{ fontWeight: 600 }}>손가락 호흡</p>
+            <div className="w-8 h-px bg-amber/60 mx-auto mb-4" />
+            <p className="text-[14px] text-r-gray font-light mb-10 leading-relaxed">
               점이 손가락을 따라 올라갈 때 들이마시고<br />
-              내려올 때 천천히 내쉬어요
+              내려올 때 천천히 내쉽니다
             </p>
 
             <div className="flex justify-center mb-10">
@@ -33,7 +33,7 @@ export default function FingerBreathing({ onExit }) {
 
             <button
               onClick={() => setPhase('running')}
-              className="w-full py-4 bg-[#1C1C1E] text-white rounded-2xl text-[14px] font-light tracking-wide active:scale-[0.98] transition"
+              className="w-full py-4 bg-navy text-white rounded-full text-[14px] tracking-wide active:scale-[0.98] transition"
             >
               시작하기
             </button>
@@ -111,10 +111,10 @@ function FingerBreathingRunner({ onComplete, onExit }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-stone-50 to-orange-50 flex flex-col items-center justify-center p-6 relative">
+    <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-6 relative">
       <button
         onClick={onExit}
-        className="absolute top-6 right-6 text-[11px] tracking-wider font-light text-[#bbb] hover:text-[#666] transition"
+        className="absolute top-6 right-6 text-[11px] tracking-wider font-light text-r-gray-soft hover:text-navy transition"
       >
         나가기
       </button>
@@ -122,7 +122,7 @@ function FingerBreathingRunner({ onComplete, onExit }) {
       <div className="max-w-sm w-full text-center">
         <p
           key={`${currentFinger}-${direction}`}
-          className="text-[22px] text-[#333] font-light mb-8 animate-fade-in"
+          className="text-[22px] text-ink font-light mb-8 animate-fade-in"
           style={{ minHeight: '36px' }}
         >
           {direction === 'up' ? '들이마셔요' : '천천히 내쉬어요'}
@@ -137,9 +137,9 @@ function FingerBreathingRunner({ onComplete, onExit }) {
             <div
               key={i}
               className={`h-1 rounded-full transition-all duration-500 ${
-                i < currentFinger  ? 'w-8 bg-amber-400'
-                : i === currentFinger ? 'w-8 bg-stone-500'
-                : 'w-8 bg-stone-200'
+                i < currentFinger  ? 'w-8 bg-amber'
+                : i === currentFinger ? 'w-8 bg-navy/50'
+                : 'w-8 bg-line'
               }`}
             />
           ))}

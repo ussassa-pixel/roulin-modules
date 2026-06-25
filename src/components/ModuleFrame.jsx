@@ -5,7 +5,7 @@ export default function ModuleFrame({ children, onExit, dark = false }) {
 
   const btnClass = dark
     ? 'text-white/40 hover:text-white/70'
-    : 'text-[#c0bbb4] hover:text-[#666]'
+    : 'text-[#A8A294] hover:text-navy'
 
   return (
     <div className="min-h-screen relative">

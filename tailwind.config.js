@@ -7,8 +7,21 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        serif: ['"Nanum Myeongjo"', 'Georgia', 'serif'],
-        sans: ['"Noto Sans KR"', 'system-ui', 'sans-serif'],
+        // roulin.ai 와 동일한 세리프 스택 (Lora + 마루부리)
+        serif: ['Lora', 'MaruBuri', '"Noto Serif KR"', 'Georgia', 'serif'],
+        sans: ['Lora', 'MaruBuri', '"Noto Serif KR"', 'Georgia', 'serif'],
+      },
+      colors: {
+        // roulin.ai MVP 팔레트
+        cream:     '#F5F3EB',
+        'cream-soft': '#FBFAF4',
+        navy:      '#112338',
+        ink:       '#3A3733',
+        'r-gray':  '#6E6A60',
+        'r-gray-soft': '#A8A294',
+        amber:     '#E0A33E',
+        'amber-soft': '#F3E7CC',
+        line:      '#E7E2D5',
       },
       animation: {
         'crumple': 'crumple 0.85s cubic-bezier(0.4, 0, 1, 1) forwards',
@@ -20,6 +33,7 @@ export default {
         'drift': 'drift 20s ease-in-out infinite',
         'ripple': 'ripple 3s ease-out infinite',
         'fill-up': 'fillUp 2.5s ease-out forwards',
+        'float-right': 'floatRight 12s linear forwards',
       },
       keyframes: {
         breath: {
@@ -58,6 +72,12 @@ export default {
           '68%':  { transform: 'scale(0.38) rotate(-9deg) skewX(8deg) skewY(-5deg)', opacity: '0.35' },
           '85%':  { transform: 'scale(0.15) rotate(12deg) skewX(-7deg) skewY(6deg)', opacity: '0.12', filter: 'blur(1.5px)' },
           '100%': { transform: 'scale(0.02) rotate(16deg)', opacity: '0', filter: 'blur(3px)' },
+        },
+        floatRight: {
+          '0%':   { left: '-120px', opacity: '0' },
+          '10%':  { opacity: '1' },
+          '90%':  { opacity: '1' },
+          '100%': { left: '100%', opacity: '0' },
         },
       },
     },

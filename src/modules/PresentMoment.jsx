@@ -58,25 +58,25 @@ export default function PresentMoment({ onExit }) {
   if (phase === 'intro') {
     return (
       <ModuleFrame onExit={onExit}>
-        <div className="min-h-screen bg-[#F7F4EE] flex flex-col items-center justify-center p-8">
+        <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-8">
           <div className="w-full max-w-sm text-center animate-fade-up">
-            <p className="font-serif text-[30px] text-[#111] mb-3 leading-snug">
+            <p className="font-serif text-[30px] text-navy mb-3 leading-snug" style={{ fontWeight: 600 }}>
               지금, 잠깐<br />멈춰볼게요
             </p>
-            <div className="w-8 h-px bg-[#ccc] mx-auto mb-4" />
-            <p className="text-[14px] text-[#999] font-light mb-14 leading-relaxed">
-              자세 그대로, 눈은 떠도 좋아요
+            <div className="w-8 h-px bg-amber/60 mx-auto mb-4" />
+            <p className="text-[14px] text-r-gray font-light mb-14 leading-relaxed">
+              자세 그대로, 눈은 떠도 괜찮습니다
             </p>
             <div className="space-y-3">
               <button
                 onClick={() => { setDuration(60); prevStepRef.current = -1; setStepIndex(0); setSubIndex(0); setPhase('running') }}
-                className="w-full py-4 bg-[#1C1C1E] text-white rounded-2xl text-[14px] font-light tracking-wide active:scale-[0.98] transition"
+                className="w-full py-4 bg-navy text-white rounded-full text-[14px] tracking-wide active:scale-[0.98] transition"
               >
                 1분
               </button>
               <button
                 onClick={() => { setDuration(120); prevStepRef.current = -1; setStepIndex(0); setSubIndex(0); setPhase('running') }}
-                className="w-full py-4 bg-white text-[#333] rounded-2xl text-[14px] font-light tracking-wide active:scale-[0.98] transition hover:bg-[#EDEDE9]"
+                className="w-full py-4 bg-white text-ink rounded-full text-[14px] tracking-wide border border-line active:scale-[0.98] transition hover:border-[#DCD5C4]"
               >
                 2분
               </button>

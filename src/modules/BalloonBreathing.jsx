@@ -40,19 +40,14 @@ export default function BalloonBreathing({ onExit }) {
   const handlePressEnd = () => {
     setIsPressed(false)
     if (intervalRef.current) clearInterval(intervalRef.current)
-
     if (balloonSize >= MAX_SIZE - 20) {
       setBreathState('holding')
       speak('잠깐')
-      setTimeout(() => {
-        setBreathState('exhaling')
-        speak('천천히 내쉬어요')
-      }, 800)
+      setTimeout(() => { setBreathState('exhaling'); speak('천천히 내쉬어요') }, 800)
     } else {
       setBreathState('exhaling')
       speak('천천히 내쉬어요')
     }
-
     intervalRef.current = setInterval(() => {
       setBalloonSize((prev) => {
         if (prev <= MIN_SIZE) {
@@ -78,33 +73,29 @@ export default function BalloonBreathing({ onExit }) {
     return (
       <ModuleFrame onExit={onExit}>
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full bg-pink-200/30 blur-3xl animate-drift" />
-          <div className="absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full bg-sky-200/30 blur-3xl animate-drift" style={{ animationDelay: '5s' }} />
+          <div className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full bg-amber-200/20 blur-3xl animate-drift" />
+          <div className="absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full bg-sky-200/20 blur-3xl animate-drift" style={{ animationDelay: '5s' }} />
         </div>
-
-        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-stone-50 to-sky-50 flex flex-col items-center justify-center p-6 relative z-10">
+        <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-6 relative z-10">
           <div className="max-w-md w-full text-center animate-fade-up">
-            <p className="text-2xl text-stone-700 mb-3 font-light">풍선 호흡</p>
-            <p className="text-sm text-stone-500 mb-8 leading-relaxed">
+            <p className="font-serif text-[28px] text-navy mb-3" style={{ fontWeight: 600 }}>풍선 호흡</p>
+            <p className="text-sm text-r-gray mb-8 leading-relaxed font-light">
               화면을 누르면 풍선이 부풀어요<br />
-              누르는 동안 들이마시고, 떼는 동안 내쉬어요
+              누르는 동안 들이마시고, 떼는 동안 내쉽니다
             </p>
-
             <div className="flex justify-center mb-12">
-              <BalloonIcon size={160} color="pink" />
+              <BalloonSVG size={160} fillRatio={0.5} state="idle" />
             </div>
-
             <button
               onClick={() => setVoiceOn(!voiceOn)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur rounded-full text-sm text-stone-600 hover:bg-white transition mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-line rounded-full text-sm text-r-gray hover:border-[#DCD5C4] transition mb-6"
             >
-              <span className="text-base">{voiceOn ? '🔊' : '🔇'}</span>
+              <span>{voiceOn ? '🔊' : '🔇'}</span>
               음성 안내 {voiceOn ? '켜짐' : '꺼짐'}
             </button>
-
             <button
               onClick={() => setPhase('running')}
-              className="w-full p-5 bg-white/80 backdrop-blur rounded-2xl hover:bg-white transition text-stone-700"
+              className="w-full py-4 bg-navy text-white rounded-full hover:bg-[#0c1a2b] transition"
             >
               시작하기
             </button>
@@ -121,27 +112,19 @@ export default function BalloonBreathing({ onExit }) {
       holding: '잠깐 그대로',
       exhaling: '천천히 내쉬어요',
     }
-
-    const balloonColor = breathState === 'inhaling' ? 'pink-deeper'
-                       : breathState === 'holding'  ? 'pink-full'
-                       : breathState === 'exhaling' ? 'sky-soft'
-                       : 'pink'
+    const fillRatio = (balloonSize - MIN_SIZE) / (MAX_SIZE - MIN_SIZE)
 
     return (
-      <div className="min-h-screen relative bg-gradient-to-br from-pink-50 via-stone-50 to-sky-50">
+      <div className="min-h-screen relative bg-cream">
         <button
           onClick={onExit}
-          className="absolute top-6 right-6 text-stone-400 hover:text-stone-600 z-20 text-sm"
+          className="absolute top-6 right-6 text-r-gray-soft hover:text-navy z-20 text-[11px] tracking-wider font-light"
         >
           나가기
         </button>
-
         <button
-          onClick={() => {
-            setVoiceOn(!voiceOn)
-            window.speechSynthesis.cancel()
-          }}
-          className="absolute top-6 left-6 inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/60 backdrop-blur rounded-full text-xs text-stone-600 hover:bg-white transition z-20"
+          onClick={() => { setVoiceOn(!voiceOn); window.speechSynthesis.cancel() }}
+          className="absolute top-6 left-6 inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-line rounded-full text-xs text-r-gray hover:border-[#DCD5C4] transition z-20"
         >
           <span>{voiceOn ? '🔊' : '🔇'}</span>
           {voiceOn ? '음성 켜짐' : '음성 꺼짐'}
@@ -162,29 +145,21 @@ export default function BalloonBreathing({ onExit }) {
         >
           <div className="max-w-md w-full text-center">
             <div className="flex justify-center mb-12" style={{ minHeight: '320px', alignItems: 'center' }}>
-              <BalloonIcon size={balloonSize} color={balloonColor} animated />
+              <BalloonSVG size={balloonSize} fillRatio={fillRatio} state={breathState} />
             </div>
 
-            <p
-              key={breathState}
-              className="text-2xl text-stone-700 font-light mb-4 animate-fade-in"
-              style={{ minHeight: '36px' }}
-            >
+            <p key={breathState} className="text-2xl text-navy font-light mb-4 animate-fade-in" style={{ minHeight: '36px' }}>
               {stateText[breathState]}
             </p>
 
-            <p className="text-stone-400 text-sm">호흡 {completedCycles}회</p>
+            <p className="text-r-gray-soft text-sm">호흡 {completedCycles}회</p>
 
             {completedCycles >= 3 && (
               <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setPhase('rating')
-                  window.speechSynthesis.cancel()
-                }}
+                onClick={(e) => { e.stopPropagation(); setPhase('rating'); window.speechSynthesis.cancel() }}
                 onMouseDown={(e) => e.stopPropagation()}
                 onTouchStart={(e) => e.stopPropagation()}
-                className="mt-8 px-6 py-3 bg-white/80 backdrop-blur rounded-full text-stone-600 hover:bg-white transition text-sm animate-fade-in"
+                className="mt-8 px-6 py-3 bg-white border border-line rounded-full text-ink hover:border-[#DCD5C4] transition text-sm animate-fade-in"
               >
                 마무리
               </button>
@@ -206,43 +181,86 @@ export default function BalloonBreathing({ onExit }) {
   return null
 }
 
-function BalloonIcon({ size = 160, color = 'pink', animated = false }) {
-  const colorMap = {
-    'pink':        { body: '#fbcfe8', shine: '#fce7f3', stroke: '#f9a8d4' },
-    'pink-deeper': { body: '#f9a8d4', shine: '#fbcfe8', stroke: '#ec4899' },
-    'pink-full':   { body: '#f472b6', shine: '#fbcfe8', stroke: '#db2777' },
-    'sky-soft':    { body: '#bae6fd', shine: '#e0f2fe', stroke: '#7dd3fc' },
+function BalloonSVG({ size, fillRatio = 0, state = 'idle' }) {
+  const w = size
+  const h = size * 1.35
+  const cx = w / 2
+  const rx = w * 0.42
+  const ry = h * 0.38
+
+  // 상태별 색
+  const colors = {
+    idle:     { top: '#fbcfe8', mid: '#f9a8d4', bot: '#ec4899', shine: '#fff0f8' },
+    inhaling: { top: '#f9a8d4', mid: '#ec4899', bot: '#db2777', shine: '#fff0f8' },
+    holding:  { top: '#f472b6', mid: '#db2777', bot: '#be185d', shine: '#ffe4f0' },
+    exhaling: { top: '#bae6fd', mid: '#7dd3fc', bot: '#38bdf8', shine: '#f0fbff' },
   }
-  const { body, shine, stroke } = colorMap[color] || colorMap.pink
+  const c = colors[state] || colors.idle
+
+  const bodyY = h * 0.36
+  const knotY = h * 0.73
+  const stringY = h * 0.95
 
   return (
-    <svg
-      width={size}
-      height={size * 1.3}
-      viewBox="0 0 200 260"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ transition: animated ? 'all 100ms ease-out' : 'none' }}
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} fill="none" xmlns="http://www.w3.org/2000/svg"
+      style={{ transition: 'width 100ms ease-out, height 100ms ease-out', filter: `drop-shadow(0 8px 24px ${c.mid}88)` }}
     >
-      <ellipse
-        cx="100"
-        cy="100"
-        rx="75"
-        ry="90"
-        fill={body}
-        stroke={stroke}
-        strokeWidth="1.5"
-        opacity="0.9"
-        style={{ transition: animated ? 'fill 800ms ease, stroke 800ms ease' : 'none' }}
+      <defs>
+        {/* 풍선 메인 그라데이션 (radial — 왼쪽 위가 밝음) */}
+        <radialGradient id={`bg-${state}`} cx="35%" cy="30%" r="70%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor={c.shine} />
+          <stop offset="25%"  stopColor={c.top} />
+          <stop offset="65%"  stopColor={c.mid} />
+          <stop offset="100%" stopColor={c.bot} />
+        </radialGradient>
+        {/* 하이라이트 그라데이션 */}
+        <radialGradient id={`hl-${state}`} cx="38%" cy="30%" r="45%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="white" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </radialGradient>
+        {/* 아래 반사 */}
+        <radialGradient id={`ref-${state}`} cx="65%" cy="75%" r="35%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="white" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      {/* 풍선 본체 */}
+      <ellipse cx={cx} cy={bodyY} rx={rx} ry={ry}
+        fill={`url(#bg-${state})`}
+        style={{ transition: 'fill 600ms ease' }}
       />
-      <ellipse cx="80" cy="75" rx="15" ry="25" fill={shine} opacity="0.7" />
-      <path d="M 92 188 L 100 195 L 108 188 Z" fill={stroke} />
+      {/* 주 하이라이트 */}
+      <ellipse cx={cx} cy={bodyY} rx={rx} ry={ry} fill={`url(#hl-${state})`} />
+      {/* 아래 반사 */}
+      <ellipse cx={cx} cy={bodyY} rx={rx} ry={ry} fill={`url(#ref-${state})`} />
+
+      {/* 작은 반짝이 (왼쪽 위) */}
+      <ellipse
+        cx={cx - rx * 0.28}
+        cy={bodyY - ry * 0.38}
+        rx={rx * 0.14}
+        ry={ry * 0.18}
+        fill="white"
+        opacity="0.7"
+        style={{ transform: 'rotate(-20deg)', transformOrigin: `${cx - rx * 0.28}px ${bodyY - ry * 0.38}px` }}
+      />
+
+      {/* 꼭지 */}
       <path
-        d="M 100 195 Q 95 220, 100 245"
-        stroke={stroke}
-        strokeWidth="1"
+        d={`M ${cx - rx * 0.08} ${bodyY + ry - 2} L ${cx} ${knotY} L ${cx + rx * 0.08} ${bodyY + ry - 2} Z`}
+        fill={c.bot}
+        opacity="0.9"
+      />
+
+      {/* 끈 (살짝 곡선) */}
+      <path
+        d={`M ${cx} ${knotY} Q ${cx - 8} ${(knotY + stringY) / 2}, ${cx + 4} ${stringY}`}
+        stroke={c.mid}
+        strokeWidth="1.2"
         fill="none"
         opacity="0.6"
+        strokeLinecap="round"
       />
     </svg>
   )

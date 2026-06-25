@@ -1,18 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Serif+KR:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── 마루부리 (roulin.ai 본문 한글 세리프) ── */
+@font-face {
+  font-family: 'MaruBuri';
+  src: url('https://fastly.jsdelivr.net/gh/fonts-archive/MaruBuri/MaruBuri-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MaruBuri';
+  src: url('https://fastly.jsdelivr.net/gh/fonts-archive/MaruBuri/MaruBuri-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MaruBuri';
+  src: url('https://fastly.jsdelivr.net/gh/fonts-archive/MaruBuri/MaruBuri-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MaruBuri';
+  src: url('https://fastly.jsdelivr.net/gh/fonts-archive/MaruBuri/MaruBuri-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* ════════════════════════════════════════════════════════════
+   roulin.ai MVP 디자인 토큰
+   (홈/모드카드와 같은 팔레트 — 모든 치료 모듈이 공유)
+   ════════════════════════════════════════════════════════════ */
+:root {
+  --cream:      #F5F3EB;  /* 페이지 배경 */
+  --cream-soft: #FBFAF4;  /* 카드/표면 밝은 톤 */
+  --navy:       #112338;  /* 제목·주 텍스트·다크 버튼 */
+  --ink:        #3A3733;  /* 본문(진한) */
+  --gray:       #6E6A60;  /* 본문(보조) */
+  --gray-soft:  #A8A294;  /* 힌트·캡션 */
+  --amber:      #E0A33E;  /* 포인트: 번호·로고·도트 */
+  --amber-soft: #F3E7CC;  /* 태그 pill 배경 */
+  --line:       #E7E2D5;  /* 보더·디바이더 */
+}
+
 body {
   margin: 0;
-  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #F7F4EE;
+  font-family: 'Lora', 'MaruBuri', 'Noto Serif KR', Georgia, serif;
+  color: var(--navy);
+  background: var(--cream);
   -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
 }
 
 textarea::placeholder {
-  color: #ccc;
+  color: var(--gray-soft);
 }
 
+/* ── roulin 홈과 같은 따뜻한 표면 ── */
 .bg-app {
   background: linear-gradient(
     180deg,
@@ -39,4 +86,66 @@ textarea::placeholder {
 
 .bg-session-stop {
   background: radial-gradient(ellipse at 50% 45%, #161830 0%, #0a0c1e 100%);
+}
+
+/* ════════════════════════════════════════════════════════════
+   공통 컴포넌트 유틸 (roulin 홈 톤)
+   ════════════════════════════════════════════════════════════ */
+
+/* 섹션 윗단의 작은 라벨 — roulin "대화 시작" 류 */
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--gray-soft);
+  font-weight: 500;
+}
+
+/* roulin 모드카드의 작은 태그 pill — "경청", "마음 살피기" */
+.tag-pill {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: var(--amber-soft);
+  color: #9A6B1E;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* roulin 히어로의 둥근 베이지 CTA */
+.pill-cta {
+  border-radius: 999px;
+  background: #E2DDD1;
+  color: var(--navy);
+  font-weight: 600;
+  transition: background 0.25s, transform 0.1s;
+}
+.pill-cta:hover { background: #D8D2C4; }
+.pill-cta:active { transform: scale(0.98); }
+
+/* 흰 카드 (roulin 모드카드) */
+.roulin-card {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.roulin-card:hover {
+  border-color: #DCD5C4;
+  box-shadow: 0 6px 24px rgba(17, 35, 56, 0.05);
+}
+
+/* 번호 (01~16) — roulin 모드카드 */
+.card-num {
+  color: var(--amber);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+
+@keyframes floatRight {
+  0%   { left: -120px; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
 }

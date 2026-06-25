@@ -41,16 +41,16 @@ export default function ThreeGoodThings({ onExit }) {
   if (phase === 'intro') {
     return (
       <ModuleFrame onExit={onExit}>
-        <div className="min-h-screen bg-[#F7F4EE] flex flex-col items-center justify-center p-8">
+        <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-8">
           <div className="w-full max-w-sm text-center animate-fade-up">
-            <p className="font-serif text-[28px] text-[#111] mb-3 leading-snug">오늘의 세 가지</p>
-            <div className="w-8 h-px bg-[#ccc] mx-auto mb-4" />
-            <p className="text-[14px] text-[#999] font-light mb-14 leading-relaxed">
-              하루를 돌아보며<br />좋았던 순간 세 가지를 적어볼게요
+            <p className="font-serif text-[28px] text-navy mb-3 leading-snug" style={{ fontWeight: 600 }}>오늘의 세 가지</p>
+            <div className="w-8 h-px bg-amber/60 mx-auto mb-4" />
+            <p className="text-[14px] text-r-gray font-light mb-14 leading-relaxed">
+              하루를 돌아보며<br />좋았던 순간 세 가지를 적어 봅니다
             </p>
             <button
               onClick={() => setPhase('writing')}
-              className="w-full py-4 bg-[#1C1C1E] text-white rounded-2xl text-[14px] font-light tracking-wide active:scale-[0.98] transition"
+              className="w-full py-4 bg-navy text-white rounded-full text-[14px] tracking-wide active:scale-[0.98] transition"
             >
               시작하기
             </button>
@@ -63,22 +63,22 @@ export default function ThreeGoodThings({ onExit }) {
   if (phase === 'writing') {
     return (
       <ModuleFrame onExit={onExit}>
-        <div className="min-h-screen bg-[#F7F4EE] flex flex-col items-center justify-center px-6 py-16">
+        <div className="min-h-screen bg-cream flex flex-col items-center justify-center px-6 py-16">
           <div style={{ width: '100%', maxWidth: '320px' }}>
             <div className="flex justify-center gap-2 mb-12">
               {[0, 1, 2].map((i) => (
                 <div key={i} className={`h-px rounded-full transition-all duration-700 ${
-                  i < currentIndex ? 'w-10 bg-stone-400'
-                  : i === currentIndex ? 'w-10 bg-stone-600'
-                  : 'w-10 bg-stone-300'
+                  i < currentIndex ? 'w-10 bg-amber/50'
+                  : i === currentIndex ? 'w-10 bg-amber'
+                  : 'w-10 bg-line'
                 }`} />
               ))}
             </div>
 
-            <p key={`label-${currentIndex}`} className="text-[11px] tracking-[0.18em] text-[#bbb] text-center mb-2 animate-fade-up">
+            <p key={`label-${currentIndex}`} className="text-[11px] tracking-[0.18em] text-amber text-center mb-2 animate-fade-up">
               {PROMPTS[currentIndex].label}
             </p>
-            <p key={`title-${currentIndex}`} className="font-serif text-[22px] text-[#111] text-center mb-8 animate-fade-up">
+            <p key={`title-${currentIndex}`} className="font-serif text-[22px] text-navy text-center mb-8 animate-fade-up" style={{ fontWeight: 600 }}>
               오늘 좋았던 일은?
             </p>
 
@@ -99,14 +99,15 @@ export default function ThreeGoodThings({ onExit }) {
                 border: 'none',
                 outline: 'none',
                 resize: 'none',
-                color: '#111111',
+                color: '#3A3733',
                 fontSize: '15px',
-                fontWeight: '300',
+                fontWeight: '400',
                 lineHeight: '1.75',
                 minHeight: '180px',
                 marginBottom: '16px',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-                fontFamily: '"Noto Sans KR", system-ui, sans-serif',
+                border: '1px solid #E7E2D5',
+                boxShadow: '0 1px 4px rgba(17,35,56,0.04)',
+                fontFamily: 'inherit',
                 display: 'block',
               }}
             />
@@ -114,10 +115,10 @@ export default function ThreeGoodThings({ onExit }) {
             <button
               onClick={goNext}
               disabled={!canGoNext}
-              className={`w-full py-4 rounded-2xl text-[14px] font-light tracking-wide transition ${
+              className={`w-full py-4 rounded-full text-[14px] tracking-wide transition ${
                 canGoNext
-                  ? 'bg-[#1C1C1E] text-white active:scale-[0.98]'
-                  : 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                  ? 'bg-navy text-white active:scale-[0.98]'
+                  : 'bg-line text-r-gray-soft cursor-not-allowed'
               }`}
             >
               {currentIndex < 2 ? '다음' : '마무리'}
@@ -131,22 +132,22 @@ export default function ThreeGoodThings({ onExit }) {
   if (phase === 'done') {
     return (
       <ModuleFrame onExit={onExit}>
-        <div className="min-h-screen bg-[#F7F4EE] flex flex-col items-center justify-center p-8">
+        <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-8">
           <div className="w-full max-w-sm text-center animate-fade-up">
-            <p className="font-serif text-[28px] text-[#111] mb-3">세 가지를 모았어요</p>
-            <div className="w-8 h-px bg-[#ccc] mx-auto mb-4" />
-            <p className="text-[14px] text-[#999] font-light mb-10 leading-relaxed">
-              오늘 하루도 이런 순간들이 있었네요.<br />내일도 또 와요.
+            <p className="font-serif text-[28px] text-navy mb-3" style={{ fontWeight: 600 }}>세 가지를 모았어요</p>
+            <div className="w-8 h-px bg-amber/60 mx-auto mb-4" />
+            <p className="text-[14px] text-r-gray font-light mb-10 leading-relaxed">
+              오늘 하루도 이런 순간들이 있었습니다.<br />내일도 또 만나요.
             </p>
 
             <div className="space-y-3 text-left mb-10">
               {things.map((thing, i) => (
                 <div
                   key={i}
-                  className="bg-white rounded-2xl text-[#111] text-[14px] font-light leading-relaxed"
+                  className="bg-white border border-line rounded-2xl text-ink text-[14px] font-light leading-relaxed"
                   style={{ padding: '16px 20px' }}
                 >
-                  <p className="text-[10px] tracking-[0.15em] text-[#bbb] mb-1">{PROMPTS[i].label}</p>
+                  <p className="text-[10px] tracking-[0.15em] text-amber mb-1">{PROMPTS[i].label}</p>
                   <p>{thing}</p>
                 </div>
               ))}
@@ -154,7 +155,7 @@ export default function ThreeGoodThings({ onExit }) {
 
             <button
               onClick={onExit}
-              className="w-full py-4 bg-[#1C1C1E] text-white rounded-2xl text-[14px] font-light tracking-wide active:scale-[0.98] transition-transform"
+              className="w-full py-4 bg-navy text-white rounded-full text-[14px] tracking-wide active:scale-[0.98] transition-transform"
             >
               닫기
             </button>

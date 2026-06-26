@@ -16,6 +16,12 @@ import BubbleWrap from './modules/BubbleWrap'
 import SoundGarden from './modules/SoundGarden'
 import SandGarden from './modules/SandGarden'
 import SelfCompassion from './modules/SelfCompassion'
+import ImplementationIntention from './modules/ImplementationIntention'
+import Woop from './modules/Woop'
+import SmallestStep from './modules/SmallestStep'
+import WorryTree from './modules/WorryTree'
+import BrainDump from './modules/BrainDump'
+import DecisionalBalance from './modules/DecisionalBalance'
 
 // roulin.ai 모드카드와 같은 결: [번호] · 제목 · 설명("…할 때. …합니다.") · 작은 태그 pill
 const MODULES = [
@@ -35,6 +41,14 @@ const MODULES = [
   { id: 'worry',      title: '걱정 비우기',      tag: '내려놓기', desc: '머릿속이 가득 차 잠들기 어려울 때. 적어서 잠시 내려놓습니다.' },
   { id: 'goodthings', title: '오늘의 세 가지',   tag: '돌아보기', desc: '하루가 버겁게만 느껴질 때. 좋았던 순간 세 가지를 떠올립니다.' },
   { id: 'stop',       title: 'STOP',             tag: '멈춤',     desc: '충동이 올라올 때. 행동하기 전 30초, 잠깐 멈춰 섭니다.' },
+
+  // ── 생각 정리 · 행동 영역 (신규) ──
+  { id: 'braindump',  title: '머릿속 비우기',    tag: '비우기',   desc: '생각이 가득 차 무거울 때. 다 꺼내서 다섯 갈래로 정리합니다.' },
+  { id: 'worrytree',  title: '걱정 나무',        tag: '정리',     desc: '걱정이 뒤엉킬 때. 바꿀 수 있는 것과 아닌 것으로 나눕니다.' },
+  { id: 'balance',    title: '결정 저울',        tag: '결정',     desc: '할지 말지 마음이 양쪽일 때. 네 칸에 적어 저울에 올립니다.' },
+  { id: 'woop',       title: 'WOOP',             tag: '계획',     desc: '소망과 걸림돌을 함께 볼 때. 네 걸음으로 마음을 정리합니다.' },
+  { id: 'intention',  title: '실행 의도',        tag: '실행',     desc: '결심은 섰는데 자꾸 미뤄질 때. 언제·어디서 할지 정해 둡니다.' },
+  { id: 'smalleststep', title: '가장 작은 한 걸음', tag: '한 걸음', desc: '막막해서 시작이 안 될 때. 2분짜리 첫 동작 하나만 정합니다.' },
 ]
 
 export default function App() {
@@ -59,6 +73,12 @@ export default function App() {
       {activeModule === 'sound'      && <SoundGarden onExit={exit} />}
       {activeModule === 'sand'       && <SandGarden onExit={exit} />}
       {activeModule === 'compassion' && <SelfCompassion onExit={exit} />}
+      {activeModule === 'braindump'  && <BrainDump onExit={exit} />}
+      {activeModule === 'worrytree'  && <WorryTree onExit={exit} />}
+      {activeModule === 'balance'    && <DecisionalBalance onExit={exit} />}
+      {activeModule === 'woop'       && <Woop onExit={exit} />}
+      {activeModule === 'intention'  && <ImplementationIntention onExit={exit} />}
+      {activeModule === 'smalleststep' && <SmallestStep onExit={exit} />}
 
       {activeModule === null && <Launcher onPick={setActiveModule} />}
     </SpeechProvider>

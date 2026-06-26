@@ -198,24 +198,44 @@ export default function SelfCompassion({ onExit }) {
   return null
 }
 
+// 프리미엄 글래스 젬 하트 — 따뜻한 후광 위로 감싸는 두 손
 function HeartHandIcon() {
+  const heart = 'M 50 40 C 42 26, 24 28, 24 44 C 24 58, 44 70, 50 78 C 56 70, 76 58, 76 44 C 76 28, 58 26, 50 40 Z'
   return (
-    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M 40 30 Q 32 20, 24 26 Q 16 32, 24 44 L 40 58 L 56 44 Q 64 32, 56 26 Q 48 20, 40 30 Z"
-        fill="#fda4af"
-        opacity="0.6"
-        stroke="#fb7185"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M 18 50 Q 40 70, 62 50"
-        stroke="#d6a08a"
-        strokeWidth="2"
-        fill="none"
-        opacity="0.5"
-        strokeLinecap="round"
-      />
+    <svg width="104" height="100" viewBox="0 0 104 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="heart-halo" cx="50%" cy="44%" r="50%">
+          <stop offset="0%"  stopColor="#fda4af" stopOpacity="0.5" />
+          <stop offset="55%" stopColor="#fb7185" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="#fb7185" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="heart-body" cx="40%" cy="32%" r="78%">
+          <stop offset="0%"   stopColor="#ffe4e6" />
+          <stop offset="32%"  stopColor="#fda4af" />
+          <stop offset="70%"  stopColor="#fb7185" />
+          <stop offset="100%" stopColor="#e11d63" />
+        </radialGradient>
+        <linearGradient id="hand-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#f6c9a8" />
+          <stop offset="100%" stopColor="#e0a07a" />
+        </linearGradient>
+      </defs>
+
+      <ellipse cx="52" cy="46" rx="50" ry="46" fill="url(#heart-halo)" />
+
+      {/* 감싸는 두 손 (부드러운 컵 모양) */}
+      <path d="M 16 60 Q 28 92, 52 92 Q 76 92, 88 60 Q 82 74, 52 80 Q 22 74, 16 60 Z"
+        fill="url(#hand-grad)" opacity="0.55" />
+      <path d="M 16 60 Q 28 92, 52 92 Q 76 92, 88 60" stroke="#cf8f68" strokeWidth="1.2" fill="none" opacity="0.4" strokeLinecap="round" />
+
+      {/* 젬 하트 */}
+      <path d={heart} fill="url(#heart-body)" opacity="0.95" />
+      {/* 좌상단 글래스 광택 */}
+      <path d="M 50 44 C 44 34, 32 35, 30 45 C 29 52, 38 60, 46 64 C 40 56, 40 48, 50 44 Z" fill="white" opacity="0.32" />
+      {/* 외곽 림 */}
+      <path d={heart} fill="none" stroke="#e11d63" strokeWidth="1" opacity="0.3" strokeLinejoin="round" />
+      {/* 스페큘러 하이라이트 */}
+      <ellipse cx="38" cy="42" rx="4.5" ry="6" fill="white" opacity="0.6" transform="rotate(-25 38 42)" />
     </svg>
   )
 }

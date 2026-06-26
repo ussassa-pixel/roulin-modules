@@ -178,51 +178,62 @@ export default function WorryDump({ onExit }) {
   return null
 }
 
+// 프리미엄 글로우 크레센트 달 — 글래스 질감 + 부드러운 후광
 function MoonIcon({ glow = false }) {
+  const stars = [
+    { x: 86, y: 26, r: 1.6 }, { x: 96, y: 46, r: 1.0 }, { x: 88, y: 66, r: 1.3 },
+    { x: 100, y: 64, r: 0.8 }, { x: 80, y: 84, r: 1.0 },
+    { x: 22, y: 22, r: 1.2 }, { x: 14, y: 60, r: 0.9 }, { x: 30, y: 92, r: 1.3 },
+  ]
   return (
-    <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="118" height="118" viewBox="0 0 118 118" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="moon-glow-bg" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"  stopColor="#a5b4fc" stopOpacity="0.35" />
+        <radialGradient id="moon-halo" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"  stopColor="#c7d2fe" stopOpacity="0.55" />
+          <stop offset="45%" stopColor="#a5b4fc" stopOpacity="0.22" />
           <stop offset="100%" stopColor="#a5b4fc" stopOpacity="0" />
         </radialGradient>
-        <radialGradient id="moon-body-grad" cx="38%" cy="32%" r="68%">
-          <stop offset="0%"   stopColor="#e0e7ff" />
-          <stop offset="40%"  stopColor="#c7d2fe" />
-          <stop offset="100%" stopColor="#818cf8" />
+        <radialGradient id="moon-body" cx="36%" cy="30%" r="80%">
+          <stop offset="0%"   stopColor="#ffffff" />
+          <stop offset="30%"  stopColor="#eef1ff" />
+          <stop offset="62%"  stopColor="#c7d2fe" />
+          <stop offset="100%" stopColor="#7c89e8" />
+        </radialGradient>
+        {/* 크레센트: 보름달에서 살짝 어긋난 원을 빼서 만든다 */}
+        <mask id="moon-crescent">
+          <rect width="118" height="118" fill="black" />
+          <circle cx="56" cy="56" r="34" fill="white" />
+          <circle cx="74" cy="48" r="32" fill="black" />
+        </mask>
+        <radialGradient id="moon-rim" cx="50%" cy="50%" r="50%">
+          <stop offset="78%" stopColor="rgba(124,137,232,0)" />
+          <stop offset="100%" stopColor="rgba(124,137,232,0.45)" />
         </radialGradient>
       </defs>
 
-      {glow && <circle cx="50" cy="50" r="46" fill="url(#moon-glow-bg)" />}
-      {glow && <circle cx="50" cy="50" r="34" fill="#a5b4fc" opacity="0.1" />}
+      {/* 후광 */}
+      <circle cx="59" cy="56" r="56" fill="url(#moon-halo)" />
 
-      {/* 달 본체 */}
-      <path
-        d="M 60 18 Q 36 18, 30 40 Q 30 62, 48 74 Q 34 68, 29 50 Q 28 28, 60 18 Z"
-        fill="url(#moon-body-grad)"
-        opacity="0.92"
-      />
-      {/* 내부 하이라이트 */}
-      <path
-        d="M 54 22 Q 40 24, 36 40 Q 34 55, 44 66 Q 36 58, 35 44 Q 36 26, 54 22 Z"
-        fill="white" opacity="0.18"
-      />
-      {/* 크레이터 */}
-      <circle cx="42" cy="36" r="3"   fill="#818cf8" opacity="0.22" />
-      <circle cx="36" cy="52" r="2"   fill="#818cf8" opacity="0.18" />
-      <circle cx="46" cy="58" r="1.5" fill="#818cf8" opacity="0.18" />
+      {/* 달 본체 (크레센트 마스크) */}
+      <g mask="url(#moon-crescent)">
+        <circle cx="56" cy="56" r="34" fill="url(#moon-body)" />
+        <circle cx="56" cy="56" r="34" fill="url(#moon-rim)" />
+        {/* 크레이터 */}
+        <circle cx="48" cy="44" r="3.4" fill="#9aa6f0" opacity="0.30" />
+        <circle cx="42" cy="60" r="2.3" fill="#9aa6f0" opacity="0.25" />
+        <circle cx="52" cy="70" r="1.8" fill="#9aa6f0" opacity="0.22" />
+        <circle cx="40" cy="50" r="1.4" fill="#9aa6f0" opacity="0.20" />
+      </g>
+      {/* 가장자리 광택 */}
+      <path d="M 40 30 A 34 34 0 0 0 34 72" stroke="white" strokeWidth="2.4" strokeLinecap="round" fill="none" opacity="0.5" />
 
-      {/* 별 */}
-      <circle cx="74" cy="24" r="1.8" fill="#c7d2fe" opacity="0.7" />
-      <circle cx="80" cy="42" r="1.2" fill="#c7d2fe" opacity="0.55" />
-      <circle cx="72" cy="60" r="1.5" fill="#c7d2fe" opacity="0.65" />
-      <circle cx="84" cy="60" r="0.9" fill="#e0e7ff" opacity="0.5" />
-      <circle cx="68" cy="76" r="1.1" fill="#c7d2fe" opacity="0.6" />
-      {glow && <>
-        <circle cx="20" cy="28" r="1.2" fill="#c7d2fe" opacity="0.5" />
-        <circle cx="16" cy="62" r="0.9" fill="#c7d2fe" opacity="0.4" />
-        <circle cx="28" cy="82" r="1.4" fill="#c7d2fe" opacity="0.55" />
-      </>}
+      {/* 반짝이는 별 (십자 스파클) */}
+      {stars.map((s, i) => (
+        <g key={i} opacity={glow ? 0.85 : 0.6}>
+          <circle cx={s.x} cy={s.y} r={s.r} fill="#e0e7ff" />
+          <circle cx={s.x} cy={s.y} r={s.r * 3.2} fill="#c7d2fe" opacity="0.12" />
+        </g>
+      ))}
     </svg>
   )
 }

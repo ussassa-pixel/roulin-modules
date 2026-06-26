@@ -171,21 +171,48 @@ export default function LeafFloating({ onExit }) {
   return null
 }
 
+// 프리미엄 글래스 잎 — 반투명 젤 질감 + 부드러운 후광, 잔잔한 잎맥
 function LeafIcon() {
+  const leaf = 'M 50 8 C 74 22, 76 54, 52 84 C 50 86, 50 86, 50 86 C 28 56, 26 24, 50 8 Z'
   return (
-    <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M 35 10 Q 55 25, 50 50 Q 45 60, 35 60 Q 25 60, 20 50 Q 15 25, 35 10 Z"
-        fill="#6ee7b7"
-        opacity="0.7"
-        stroke="#10b981"
-        strokeWidth="1.5"
-      />
-      <path d="M 35 14 L 35 58" stroke="#10b981" strokeWidth="1" opacity="0.6" />
-      <path d="M 35 28 L 26 24" stroke="#10b981" strokeWidth="0.8" opacity="0.5" />
-      <path d="M 35 28 L 44 24" stroke="#10b981" strokeWidth="0.8" opacity="0.5" />
-      <path d="M 35 40 L 27 37" stroke="#10b981" strokeWidth="0.8" opacity="0.5" />
-      <path d="M 35 40 L 43 37" stroke="#10b981" strokeWidth="0.8" opacity="0.5" />
+    <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="leaf-halo" cx="50%" cy="48%" r="52%">
+          <stop offset="0%"  stopColor="#6ee7b7" stopOpacity="0.42" />
+          <stop offset="55%" stopColor="#34d399" stopOpacity="0.16" />
+          <stop offset="100%" stopColor="#34d399" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="leaf-body" x1="30" y1="12" x2="66" y2="86" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#d1fae5" />
+          <stop offset="38%"  stopColor="#6ee7b7" />
+          <stop offset="78%"  stopColor="#34d399" />
+          <stop offset="100%" stopColor="#0f9d77" />
+        </linearGradient>
+        <linearGradient id="leaf-sheen" x1="38" y1="14" x2="50" y2="60" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="white" stopOpacity="0.75" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      <ellipse cx="50" cy="50" rx="48" ry="48" fill="url(#leaf-halo)" />
+
+      {/* 잎 본체 (반투명 글래스) */}
+      <path d={leaf} fill="url(#leaf-body)" opacity="0.92" />
+      {/* 좌측 면 광택 */}
+      <path d="M 50 12 C 36 26, 34 52, 50 80 C 44 54, 44 30, 50 12 Z" fill="url(#leaf-sheen)" />
+      {/* 외곽 림 */}
+      <path d={leaf} fill="none" stroke="#0f9d77" strokeWidth="1" opacity="0.35" strokeLinejoin="round" />
+
+      {/* 중앙맥 + 잔맥 */}
+      <path d="M 50 14 C 49 40, 49 62, 50 82" stroke="#0b7d5e" strokeWidth="1.2" opacity="0.5" fill="none" strokeLinecap="round" />
+      {[[30, -10], [44, -12], [58, -11], [40, 11], [54, 12], [66, 10]].map(([y, dx], i) => (
+        <path key={i} d={`M 50 ${y} Q ${50 + dx * 0.6} ${y - 2}, ${50 + dx} ${y - 6}`}
+          stroke="#0b7d5e" strokeWidth="0.8" opacity="0.4" fill="none" strokeLinecap="round" />
+      ))}
+
+      {/* 이슬 한 방울 */}
+      <circle cx="44" cy="40" r="3.2" fill="white" opacity="0.55" />
+      <circle cx="43" cy="39" r="1.1" fill="white" opacity="0.9" />
     </svg>
   )
 }

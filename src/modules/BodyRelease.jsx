@@ -108,8 +108,11 @@ function BodyGuide({ onDone, onExit }) {
   const speak = (text) => {
     if (!window.speechSynthesis) return
     window.speechSynthesis.cancel()
-    const u = new SpeechSynthesisUtterance(text.replace(/\n/g, ' '))
-    u.lang = 'ko-KR'; u.rate = 0.82
+    const u = new SpeechSynthesisUtterance(text.replace(/[\n—]/g, ', '))
+    u.lang = 'ko-KR'; u.rate = 0.88; u.pitch = 1.02; u.volume = 0.95
+    const ko = (window.speechSynthesis.getVoices() || []).filter((v) => /ko(-|_)?KR|한국/i.test(v.lang + v.name))
+    const best = ko.find((v) => /Google/i.test(v.name)) || ko.find((v) => !v.localService) || ko[0]
+    if (best) u.voice = best
     window.speechSynthesis.speak(u)
   }
 

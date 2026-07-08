@@ -34,6 +34,9 @@ export default {
         'ripple': 'ripple 3s ease-out infinite',
         'fill-up': 'fillUp 2.5s ease-out forwards',
         'float-right': 'floatRight 12s linear forwards',
+        'stop-pulse': 'stopPulse 1.8s ease-out infinite',
+        'sink-away': 'sinkAway 1.4s cubic-bezier(0.5,0,0.75,0) forwards',
+        'release-rise': 'releaseRise 2.6s cubic-bezier(0.33,0,0.5,1) forwards',
       },
       keyframes: {
         breath: {
@@ -78,6 +81,20 @@ export default {
           '10%':  { opacity: '1' },
           '90%':  { opacity: '1' },
           '100%': { left: '100%', opacity: '0' },
+        },
+        stopPulse: {
+          '0%':   { transform: 'scale(0.92)', opacity: '0.35' },
+          '100%': { transform: 'scale(1.25)', opacity: '0' },
+        },
+        sinkAway: {
+          '0%':   { transform: 'translateY(0) scale(1)', opacity: '1', filter: 'blur(0px)' },
+          '30%':  { opacity: '0.9' },
+          '100%': { transform: 'translateY(60px) scale(0.92)', opacity: '0', filter: 'blur(3px)' },
+        },
+        releaseRise: {
+          '0%':   { transform: 'translate(-50%, 0) scale(1) rotate(0deg)', opacity: '1', filter: 'blur(0px)' },
+          '25%':  { opacity: '1' },
+          '100%': { transform: 'translate(calc(-50% + 34px), -230px) scale(0.8) rotate(7deg)', opacity: '0', filter: 'blur(2.5px)' },
         },
       },
     },

@@ -54,11 +54,23 @@ export default function StopCard({ onExit }) {
     return (
       <ModuleFrame onExit={onExit}>
         <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-8">
-          <div className="text-center animate-fade-in">
-            <p className="font-serif text-[80px] text-navy tracking-[0.1em] leading-none mb-5" style={{ fontWeight: 600 }}>
-              STOP
-            </p>
-            <p className="text-[15px] font-light text-r-gray tracking-wide">
+          <div className="text-center animate-fade-in flex flex-col items-center">
+            {/* 강렬한 빨간 원 안의 STOP */}
+            <div className="relative mb-10" style={{ width: 260, height: 260 }}>
+              <div className="absolute inset-0 rounded-full animate-stop-pulse" style={{ background: '#DC2626', opacity: 0.18 }} />
+              <div
+                className="absolute inset-0 m-auto rounded-full flex items-center justify-center"
+                style={{
+                  width: 220, height: 220,
+                  background: 'radial-gradient(circle at 38% 32%, #ef4444 0%, #dc2626 55%, #b91c1c 100%)',
+                  border: '7px solid #fff',
+                  boxShadow: '0 0 0 3px #dc2626, 0 12px 40px rgba(220,38,38,0.4)',
+                }}
+              >
+                <span className="font-serif text-white tracking-[0.06em]" style={{ fontWeight: 700, fontSize: 62 }}>STOP</span>
+              </div>
+            </div>
+            <p className="text-[16px] font-light text-[#b91c1c] tracking-wide">
               지금, 하던 것을 멈춰요
             </p>
           </div>

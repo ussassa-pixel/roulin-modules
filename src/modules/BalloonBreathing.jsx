@@ -22,9 +22,12 @@ export default function BalloonBreathing({ onExit }) {
     window.speechSynthesis.cancel()
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = 'ko-KR'
-    utterance.rate = 0.85
-    utterance.pitch = 1.0
-    utterance.volume = 0.7
+    utterance.rate = 0.9
+    utterance.pitch = 1.02
+    utterance.volume = 0.9
+    const ko = (window.speechSynthesis.getVoices() || []).filter((v) => /ko(-|_)?KR|한국/i.test(v.lang + v.name))
+    const best = ko.find((v) => /Google/i.test(v.name)) || ko.find((v) => !v.localService) || ko[0]
+    if (best) utterance.voice = best
     window.speechSynthesis.speak(utterance)
   }
 

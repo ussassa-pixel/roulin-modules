@@ -5,23 +5,26 @@ export default function LeafFloating({ onExit }) {
   const [phase, setPhase] = useState('intro')
   const [currentThought, setCurrentThought] = useState('')
   const [leaves, setLeaves] = useState([])
+  const [releasing, setReleasing] = useState(null) // 방금 놓아 떠오르며 사라지는 생각
+  const [count, setCount] = useState(0)
 
   const releaseLeaf = () => {
-    if (!currentThought.trim()) return
+    if (!currentThought.trim() || releasing) return
+    const text = currentThought.trim()
+    const id = Date.now()
 
-    const newLeaf = {
-      id: Date.now(),
-      text: currentThought,
-      top: 30 + Math.random() * 40,
-      hue: Math.random() > 0.5 ? 'emerald' : 'teal',
-      rotate: -15 + Math.random() * 30,
-    }
-    setLeaves((prev) => [...prev, newLeaf])
+    // ① 내가 쓴 생각이 위로 떠올라 흐릿해지며 사라지는 순간
+    setReleasing({ id, text })
     setCurrentThought('')
+    setCount((c) => c + 1)
+    setTimeout(() => setReleasing(null), 2600)
 
+    // ② 이어서 강물 위 잎으로 흘러가게
     setTimeout(() => {
-      setLeaves((prev) => prev.filter((l) => l.id !== newLeaf.id))
-    }, 12000)
+      const leaf = { id, text, top: 30 + ((id / 7) % 40), hue: id % 2 ? 'emerald' : 'teal', rotate: -12 + ((id / 5) % 24) }
+      setLeaves((prev) => [...prev, leaf])
+      setTimeout(() => setLeaves((prev) => prev.filter((l) => l.id !== id)), 12000)
+    }, 900)
   }
 
   if (phase === 'intro') {
@@ -100,11 +103,24 @@ export default function LeafFloating({ onExit }) {
           ))}
         </div>
 
+        {/* 놓는 순간: 내가 쓴 생각이 위로 떠올라 흐릿해지며 사라짐 */}
+        {releasing && (
+          <div
+            key={releasing.id}
+            className="absolute left-1/2 z-30 pointer-events-none animate-release-rise"
+            style={{ bottom: 150 }}
+          >
+            <div className="px-5 py-2.5 rounded-2xl bg-white/90 backdrop-blur border border-line shadow-sm text-ink text-[14px] max-w-[220px] truncate">
+              {releasing.text}
+            </div>
+          </div>
+        )}
+
         {/* 입력 영역 */}
         <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
           <div className="max-w-md mx-auto">
             <p className="text-center text-r-gray text-sm mb-4">
-              떠오른 생각을 적고, 강물에 띄워 봅니다
+              {count > 0 ? `${count}개를 흘려보냈어요 · 또 있으면 적어봐요` : '떠오른 생각을 적고, 강물에 띄워 봅니다'}
             </p>
             <div className="flex gap-2">
               <input

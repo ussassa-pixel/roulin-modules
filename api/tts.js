@@ -2,9 +2,12 @@
 // API 키는 서버 환경변수에만 두고(클라이언트 미노출), 오디오(mp3)만 반환한다.
 //
 // 필요한 환경변수 (Vercel → Project → Settings → Environment Variables):
-//   ELEVENLABS_API_KEY   (필수)  — 없으면 501 → 클라이언트가 브라우저 음성으로 폴백
-//   ELEVENLABS_VOICE_ID  (선택)  — 룰랭 목소리 voice id (기본: 스톡 보이스)
-//   ELEVENLABS_MODEL_ID  (선택)  — 기본 eleven_multilingual_v2 (한국어 지원)
+//   ELEVENLABS_API_KEY        (필수)  — 없으면 501 → 클라이언트가 브라우저 음성으로 폴백
+//   ELEVENLABS_VOICE_ID       (선택)  — 여성(기본) voice id (기본: 스톡 보이스)
+//   ELEVENLABS_MALE_VOICE_ID  (선택)  — 남성 voice id (없으면 여성으로 폴백)
+//   ELEVENLABS_MODEL_ID       (선택)  — 기본 eleven_multilingual_v2 (한국어 지원)
+//
+// 쿼리: ?text=...&voice=male|female  (voice 생략 시 여성)
 export default async function handler(req, res) {
   const apiKey = process.env.ELEVENLABS_API_KEY
   if (!apiKey) {
@@ -16,7 +19,10 @@ export default async function handler(req, res) {
     res.status(400).json({ error: 'no_text' })
     return
   }
-  const voiceId = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM'
+  const femaleId = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM'
+  const maleId = process.env.ELEVENLABS_MALE_VOICE_ID || femaleId
+  const wantMale = String((req.query && req.query.voice) || '') === 'male'
+  const voiceId = wantMale ? maleId : femaleId
   const modelId = process.env.ELEVENLABS_MODEL_ID || 'eleven_multilingual_v2'
   try {
     const r = await fetch(

@@ -177,41 +177,47 @@ function BodyGuide({ onDone, onExit }) {
   )
 }
 
-// ── 부위별 따라하기 그림 (조임 ↔ 풀림) ──
+// ── 부위별 따라하기 그림 (조임 ↔ 탁! 풀림) ──
 const STROKE = '#33415a'
+// 조일 때: 빠르게 당김 / 놓을 때: 탁, 살짝 튕기며 풀림(overshoot)
+const contract = 'cubic-bezier(.5,0,.9,.35)'
+const release = 'cubic-bezier(.34,1.7,.5,1)'
+const org = { transformBox: 'fill-box', transformOrigin: 'center' }
+
 function PartFigure({ part, tensed }) {
-  const common = { width: 116, height: 116, viewBox: '0 0 120 120', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' }
-  const ease = 'cubic-bezier(.4,0,.2,1)'
+  const common = { width: 116, height: 116, viewBox: '0 0 120 120', fill: 'none', xmlns: 'http://www.w3.org/2000/svg', className: 'relative z-10' }
+  const T = (prop = 'transform') => `${prop} ${tensed ? '.24s' : '.72s'} ${tensed ? contract : release}`
+  // 조이는 동안엔 근육 떨림, 놓으면 멈춤
+  const wrap = (svg) => <div className={tensed ? 'animate-tremor' : ''}>{svg}</div>
 
   if (part === '어깨')
-    return (
-      <svg {...common} className="relative z-10">
+    return wrap(
+      <svg {...common}>
         <circle cx="60" cy="28" r="15" fill="#fff" stroke={STROKE} strokeWidth="3" />
         <circle cx="55" cy="26" r="2" fill={STROKE} /><circle cx="65" cy="26" r="2" fill={STROKE} />
-        <g style={{ transform: tensed ? 'translateY(-14px)' : 'translateY(0)', transition: `transform .6s ${ease}` }}>
+        <g style={{ transform: tensed ? 'translateY(-22px) scaleY(1.06)' : 'translateY(0) scaleY(1)', transition: T(), ...org }}>
           <path d="M 20 96 Q 20 66, 60 63 Q 100 66, 100 96" fill="none" stroke={STROKE} strokeWidth="11" strokeLinecap="round" />
           <path d="M 30 92 L 30 112 M 90 92 L 90 112" stroke={STROKE} strokeWidth="7" strokeLinecap="round" opacity="0.5" />
         </g>
-        {/* 올라감 표시 */}
-        <g style={{ opacity: tensed ? 0.6 : 0, transition: 'opacity .5s' }} stroke="#E0A33E" strokeWidth="2.5" strokeLinecap="round">
-          <path d="M 30 58 l 5 -6 l 5 6" fill="none" /><path d="M 80 58 l 5 -6 l 5 6" fill="none" />
+        <g style={{ opacity: tensed ? 0.7 : 0, transform: tensed ? 'translateY(0)' : 'translateY(6px)', transition: 'opacity .35s, transform .35s' }} stroke="#E0A33E" strokeWidth="2.6" strokeLinecap="round">
+          <path d="M 28 56 l 6 -7 l 6 7" fill="none" /><path d="M 80 56 l 6 -7 l 6 7" fill="none" />
         </g>
       </svg>
     )
 
   if (part === '손')
-    return (
-      <svg {...common} className="relative z-10">
-        {/* 편 손 */}
-        <g style={{ opacity: tensed ? 0 : 1, transition: 'opacity .35s' }}>
+    return wrap(
+      <svg {...common}>
+        {/* 편 손 (놓으면 탁 펴짐) */}
+        <g style={{ opacity: tensed ? 0 : 1, transform: tensed ? 'scale(0.8)' : 'scale(1)', transition: `opacity .22s, transform ${tensed ? '.24s ' + contract : '.7s ' + release}`, ...org }}>
           <rect x="40" y="62" width="40" height="42" rx="15" fill="#fff" stroke={STROKE} strokeWidth="3" />
           {[44, 53.5, 63, 72.5].map((x, i) => (
             <rect key={i} x={x - 3.5} y={22 + (i === 0 || i === 3 ? 8 : 0)} width="7" height={44 - (i === 0 || i === 3 ? 8 : 0)} rx="3.5" fill="#fff" stroke={STROKE} strokeWidth="3" />
           ))}
           <rect x="30" y="66" width="7" height="22" rx="3.5" fill="#fff" stroke={STROKE} strokeWidth="3" transform="rotate(-40 33 78)" />
         </g>
-        {/* 주먹 */}
-        <g style={{ opacity: tensed ? 1 : 0, transition: 'opacity .35s' }}>
+        {/* 주먹 (조이면 꽉) */}
+        <g style={{ opacity: tensed ? 1 : 0, transform: tensed ? 'scale(1)' : 'scale(0.86)', transition: `opacity .22s, transform .24s ${contract}`, ...org }}>
           <rect x="36" y="52" width="48" height="46" rx="18" fill="#fff" stroke={STROKE} strokeWidth="3" />
           {[46, 56, 66, 76].map((x, i) => <path key={i} d={`M ${x} 54 q 4 -6 8 0`} fill="none" stroke={STROKE} strokeWidth="2.5" strokeLinecap="round" />)}
           <path d="M 36 72 q -8 4 -2 16" fill="#fff" stroke={STROKE} strokeWidth="3" />
@@ -220,17 +226,17 @@ function PartFigure({ part, tensed }) {
     )
 
   if (part === '얼굴')
-    return (
-      <svg {...common} className="relative z-10">
+    return wrap(
+      <svg {...common}>
         <circle cx="60" cy="60" r="36" fill="#fff" stroke={STROKE} strokeWidth="3" />
-        {/* 편안한 얼굴 */}
-        <g style={{ opacity: tensed ? 0 : 1, transition: 'opacity .3s' }} stroke={STROKE} strokeWidth="3" strokeLinecap="round" fill="none">
+        {/* 편안한 얼굴 (놓으면 탁 펴짐) */}
+        <g style={{ opacity: tensed ? 0 : 1, transform: tensed ? 'scale(0.9)' : 'scale(1)', transition: `opacity .22s, transform ${tensed ? '.24s ' + contract : '.7s ' + release}`, ...org }} stroke={STROKE} strokeWidth="3" strokeLinecap="round" fill="none">
           <path d="M 40 48 q 6 -3 12 0" /><path d="M 68 48 q 6 -3 12 0" />
           <ellipse cx="46" cy="58" rx="3.5" ry="4.5" fill={STROKE} stroke="none" /><ellipse cx="74" cy="58" rx="3.5" ry="4.5" fill={STROKE} stroke="none" />
           <path d="M 48 76 q 12 8 24 0" />
         </g>
-        {/* 찡그린 얼굴 */}
-        <g style={{ opacity: tensed ? 1 : 0, transition: 'opacity .3s' }} stroke={STROKE} strokeWidth="3" strokeLinecap="round" fill="none">
+        {/* 찡그린 얼굴 (조이면 안으로) */}
+        <g style={{ opacity: tensed ? 1 : 0, transform: tensed ? 'scale(1)' : 'scale(1.06)', transition: `opacity .22s, transform .24s ${contract}`, ...org }} stroke={STROKE} strokeWidth="3" strokeLinecap="round" fill="none">
           <path d="M 40 52 q 7 -6 13 -2" /><path d="M 80 52 q -7 -6 -13 -2" />
           <path d="M 42 60 h 9" /><path d="M 69 60 h 9" />
           <path d="M 50 78 h 20" />
@@ -239,15 +245,15 @@ function PartFigure({ part, tensed }) {
     )
 
   if (part === '몸 전체')
-    return (
-      <svg {...common} className="relative z-10">
-        <g style={{ transform: tensed ? 'scale(0.9) translateY(4px)' : 'scale(1)', transformOrigin: '60px 60px', transition: `transform .6s ${ease}` }}>
+    return wrap(
+      <svg {...common}>
+        <g style={{ transform: tensed ? 'scale(0.82) translateY(7px)' : 'scale(1)', transition: T(), ...org }}>
           <circle cx="60" cy="26" r="13" fill="#fff" stroke={STROKE} strokeWidth="3" />
           <path d="M 44 46 Q 60 40, 76 46 L 72 92 Q 60 98, 48 92 Z" fill="#fff" stroke={STROKE} strokeWidth="3" strokeLinejoin="round" />
           <path d="M 45 50 Q 30 66, 34 88" fill="none" stroke={STROKE} strokeWidth="6" strokeLinecap="round"
-            style={{ transform: tensed ? 'translateX(6px)' : 'translateX(0)', transformOrigin: '40px 60px', transition: `transform .6s ${ease}` }} />
+            style={{ transform: tensed ? 'translateX(9px)' : 'translateX(0)', transition: T(), ...org }} />
           <path d="M 75 50 Q 90 66, 86 88" fill="none" stroke={STROKE} strokeWidth="6" strokeLinecap="round"
-            style={{ transform: tensed ? 'translateX(-6px)' : 'translateX(0)', transformOrigin: '80px 60px', transition: `transform .6s ${ease}` }} />
+            style={{ transform: tensed ? 'translateX(-9px)' : 'translateX(0)', transition: T(), ...org }} />
         </g>
       </svg>
     )

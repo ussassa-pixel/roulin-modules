@@ -39,6 +39,7 @@ export default {
         'release-rise': 'releaseRise 2.6s cubic-bezier(0.33,0,0.5,1) forwards',
         'compass-settle': 'compassSettle 2.6s cubic-bezier(0.3,0.7,0.35,1) both',
         'compass-sway': 'compassSway 5.5s ease-in-out infinite',
+        'tremor': 'tremor 0.12s linear infinite',
       },
       keyframes: {
         breath: {
@@ -109,6 +110,13 @@ export default {
         compassSway: {
           '0%, 100%': { transform: 'rotate(-5.5deg)' },
           '50%':      { transform: 'rotate(5.5deg)' },
+        },
+        tremor: {
+          '0%':   { transform: 'translate(0,0) rotate(0deg)' },
+          '25%':  { transform: 'translate(0.7px,-0.5px) rotate(0.5deg)' },
+          '50%':  { transform: 'translate(-0.6px,0.6px) rotate(-0.4deg)' },
+          '75%':  { transform: 'translate(0.5px,0.4px) rotate(0.3deg)' },
+          '100%': { transform: 'translate(0,0) rotate(0deg)' },
         },
       },
     },

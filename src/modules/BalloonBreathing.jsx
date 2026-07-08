@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { speakSmart, stopSpeaking } from '../lib/tts'
 import ModuleFrame from '../components/ModuleFrame'
 import EndRating from '../components/EndRating'
 
@@ -19,16 +20,7 @@ export default function BalloonBreathing({ onExit }) {
     if (!voiceOn) return
     if (lastSpokenRef.current === text) return
     lastSpokenRef.current = text
-    window.speechSynthesis.cancel()
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = 'ko-KR'
-    utterance.rate = 0.9
-    utterance.pitch = 1.02
-    utterance.volume = 0.9
-    const ko = (window.speechSynthesis.getVoices() || []).filter((v) => /ko(-|_)?KR|한국/i.test(v.lang + v.name))
-    const best = ko.find((v) => /Google/i.test(v.name)) || ko.find((v) => !v.localService) || ko[0]
-    if (best) utterance.voice = best
-    window.speechSynthesis.speak(utterance)
+    speakSmart(text) // ElevenLabs 우선, 미설정/실패 시 브라우저 폴백
   }
 
   const handlePressStart = () => {
@@ -68,7 +60,7 @@ export default function BalloonBreathing({ onExit }) {
   useEffect(() => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
-      window.speechSynthesis.cancel()
+      stopSpeaking()
     }
   }, [])
 
@@ -126,7 +118,7 @@ export default function BalloonBreathing({ onExit }) {
           나가기
         </button>
         <button
-          onClick={() => { setVoiceOn(!voiceOn); window.speechSynthesis.cancel() }}
+          onClick={() => { setVoiceOn(!voiceOn); stopSpeaking() }}
           className="absolute top-6 left-6 inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-line rounded-full text-xs text-r-gray hover:border-[#DCD5C4] transition z-20"
         >
           <span>{voiceOn ? '🔊' : '🔇'}</span>
@@ -159,7 +151,7 @@ export default function BalloonBreathing({ onExit }) {
 
             {completedCycles >= 3 && (
               <button
-                onClick={(e) => { e.stopPropagation(); setPhase('rating'); window.speechSynthesis.cancel() }}
+                onClick={(e) => { e.stopPropagation(); setPhase('rating'); stopSpeaking() }}
                 onMouseDown={(e) => e.stopPropagation()}
                 onTouchStart={(e) => e.stopPropagation()}
                 className="mt-8 px-6 py-3 bg-white border border-line rounded-full text-ink hover:border-[#DCD5C4] transition text-sm animate-fade-in"

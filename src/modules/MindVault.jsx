@@ -329,32 +329,28 @@ function VaultIcon({ type, size = 48, open = false, sealing = false }) {
     return (
       <svg {...common}>
         <defs>
-          <linearGradient id={g('wood')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#c79a68" /><stop offset="100%" stopColor="#8a6239" />
-          </linearGradient>
-          <linearGradient id={g('lid')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#d8ab77" /><stop offset="100%" stopColor="#b07f4d" />
-          </linearGradient>
-          <linearGradient id={g('band')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#9aa1a9" /><stop offset="100%" stopColor="#5c636c" />
-          </linearGradient>
+          <linearGradient id={g('wood')} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#c79a68" /><stop offset="100%" stopColor="#8a6239" /></linearGradient>
+          <linearGradient id={g('lid')} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#d8ab77" /><stop offset="100%" stopColor="#b07f4d" /></linearGradient>
+          <linearGradient id={g('band')} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#9aa1a9" /><stop offset="100%" stopColor="#5c636c" /></linearGradient>
         </defs>
-        <ellipse cx="32" cy="57" rx="23" ry="3" fill="#5c463020" />
+        <ellipse cx="32" cy="57" rx="23" ry="3" fill="#5c4630" opacity="0.12" />
         {/* 몸체 */}
-        <rect x="10" y="26" width="44" height="28" rx="3" fill={`url(#${g('wood')})`} stroke="#6e4e2c" strokeWidth="1.5" />
-        {/* 뚜껑(둥근 목재) */}
-        <path d="M 10 28 Q 10 14, 32 14 Q 54 14, 54 28 Z" fill={`url(#${g('lid')})`} stroke="#6e4e2c" strokeWidth="1.5" />
-        <path d="M 10 28 L 54 28" stroke="#6e4e2c" strokeWidth="1.4" opacity="0.6" />
-        {/* 금속 밴드 2줄 */}
-        <rect x="18" y="14" width="5" height="40" fill={`url(#${g('band')})`} opacity="0.9" />
-        <rect x="41" y="14" width="5" height="40" fill={`url(#${g('band')})`} opacity="0.9" />
-        {/* 자물쇠 */}
-        {!open && <>
-          <rect x="27" y="34" width="10" height="9" rx="2" fill={`url(#${g('band')})`} stroke="#4c525a" strokeWidth="1" />
-          <circle cx="32" cy="37.5" r="1.5" fill="#2f343b" />
-        </>}
-        {/* 나뭇결 */}
-        <path d="M 15 40 h 34 M 15 47 h 34" stroke="#6e4e2c" strokeWidth="1" opacity="0.3" />
+        <rect x="10" y="28" width="44" height="26" rx="3" fill={`url(#${g('wood')})`} stroke="#6e4e2c" strokeWidth="1.5" />
+        <rect x="18" y="28" width="5" height="26" fill={`url(#${g('band')})`} opacity="0.9" />
+        <rect x="41" y="28" width="5" height="26" fill={`url(#${g('band')})`} opacity="0.9" />
+        <path d="M 15 42 h 34 M 15 49 h 34" stroke="#6e4e2c" strokeWidth="1" opacity="0.3" />
+        {/* 뚜껑 — 들렸다 탁 닫힘 */}
+        <g style={{ transform: open ? 'translateY(-9px)' : 'translateY(0)', transition: 'transform .55s cubic-bezier(.34,1.28,.6,1)' }}>
+          <path d="M 10 30 Q 10 15, 32 15 Q 54 15, 54 30 Z" fill={`url(#${g('lid')})`} stroke="#6e4e2c" strokeWidth="1.5" />
+          <path d="M 10 30 L 54 30" stroke="#6e4e2c" strokeWidth="1.3" opacity="0.6" />
+          <rect x="18" y="16" width="5" height="14" fill={`url(#${g('band')})`} opacity="0.9" />
+          <rect x="41" y="16" width="5" height="14" fill={`url(#${g('band')})`} opacity="0.9" />
+        </g>
+        {/* 자물쇠 — 닫히면 톡 채워짐 */}
+        <g style={{ opacity: open ? 0 : 1, transform: open ? 'scale(0.5)' : 'scale(1)', transformBox: 'fill-box', transformOrigin: 'center', transition: 'opacity .25s ease .25s, transform .35s cubic-bezier(.34,1.7,.6,1) .25s' }}>
+          <rect x="27" y="30" width="10" height="9" rx="2" fill={`url(#${g('band')})`} stroke="#4c525a" strokeWidth="1" />
+          <circle cx="32" cy="34.2" r="1.6" fill="#2f343b" />
+        </g>
       </svg>
     )
 
@@ -362,22 +358,17 @@ function VaultIcon({ type, size = 48, open = false, sealing = false }) {
     return (
       <svg {...common}>
         <defs>
-          <linearGradient id={g('cab')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#caa06e" /><stop offset="100%" stopColor="#8e6640" />
-          </linearGradient>
-          <linearGradient id={g('front')} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#dcb684" /><stop offset="100%" stopColor="#b0824f" />
-          </linearGradient>
+          <linearGradient id={g('cab')} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#caa06e" /><stop offset="100%" stopColor="#8e6640" /></linearGradient>
+          <linearGradient id={g('front')} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#dcb684" /><stop offset="100%" stopColor="#b0824f" /></linearGradient>
         </defs>
-        <ellipse cx="32" cy="55" rx="21" ry="2.8" fill="#5c463020" />
-        {/* 캐비닛(측면 두께) */}
+        <ellipse cx="32" cy="55" rx="21" ry="2.8" fill="#5c4630" opacity="0.12" />
         <rect x="10" y="12" width="44" height="40" rx="4" fill={`url(#${g('cab')})`} stroke="#6e4e2c" strokeWidth="1.5" />
         <rect x="10" y="12" width="44" height="40" rx="4" fill="none" stroke="#ffffff" strokeWidth="1" opacity="0.15" />
         {/* 윗칸(닫힘) */}
         <rect x="15" y="16" width="34" height="14" rx="2.5" fill={`url(#${g('front')})`} stroke="#7c5836" strokeWidth="1.2" />
         <rect x="27" y="21" width="10" height="3.2" rx="1.6" fill="#6a717b" />
-        {/* 아랫칸(살짝 빠짐 = 깊이) */}
-        <g style={{ transform: open ? 'translateY(5px)' : 'translateY(0)', transition: 'transform .5s' }}>
+        {/* 아랫칸 — 빠졌다 스르륵 들어감 */}
+        <g style={{ transform: open ? 'translateY(8px)' : 'translateY(0)', transition: 'transform .6s cubic-bezier(.3,1,.5,1)' }}>
           <rect x="15" y="33" width="34" height="15" rx="2.5" fill={`url(#${g('front')})`} stroke="#7c5836" strokeWidth="1.4" />
           <rect x="24" y="38.5" width="16" height="4" rx="2" fill={`url(#${g('cab')})`} stroke="#5c636c" strokeWidth="1.2" />
         </g>
@@ -388,22 +379,19 @@ function VaultIcon({ type, size = 48, open = false, sealing = false }) {
   return (
     <svg {...common}>
       <defs>
-        <linearGradient id={g('glass')} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#eef5f7" stopOpacity="0.95" /><stop offset="55%" stopColor="#cfe0e4" stopOpacity="0.85" /><stop offset="100%" stopColor="#a9c2c8" stopOpacity="0.9" />
-        </linearGradient>
-        <linearGradient id={g('cap')} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#b9c0c8" /><stop offset="100%" stopColor="#727a84" />
-        </linearGradient>
+        <linearGradient id={g('glass')} x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#eef5f7" stopOpacity="0.95" /><stop offset="55%" stopColor="#cfe0e4" stopOpacity="0.85" /><stop offset="100%" stopColor="#a9c2c8" stopOpacity="0.9" /></linearGradient>
+        <linearGradient id={g('cap')} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#b9c0c8" /><stop offset="100%" stopColor="#727a84" /></linearGradient>
       </defs>
       <ellipse cx="32" cy="57" rx="17" ry="2.6" fill="#5c636c" opacity="0.18" />
-      {/* 유리 몸체(두꺼운 림) */}
+      {/* 유리 몸체 */}
       <path d="M 19 24 Q 19 21, 23 21 L 41 21 Q 45 21, 45 24 L 45 49 Q 45 55, 38 55 L 26 55 Q 19 55, 19 49 Z" fill={`url(#${g('glass')})`} stroke="#8fa6ac" strokeWidth="2" />
       <path d="M 19 24 Q 19 21, 23 21 L 41 21 Q 45 21, 45 24" fill="none" stroke="#ffffff" strokeWidth="1.4" opacity="0.7" />
-      {/* 금속 나사 뚜껑(두께) */}
-      <rect x="20" y="11" width="24" height="11" rx="3" fill={`url(#${g('cap')})`} stroke="#565d66" strokeWidth="1.3" />
-      <path d="M 22 14 h 20 M 22 18 h 20" stroke="#565d66" strokeWidth="0.9" opacity="0.5" />
-      {/* 반사 하이라이트 */}
       <path d="M 24 28 Q 22 38, 25 48" stroke="#ffffff" strokeWidth="2.4" opacity="0.55" strokeLinecap="round" fill="none" />
+      {/* 금속 나사 뚜껑 — 들렸다 앉으며 잠김 */}
+      <g style={{ transform: open ? 'translateY(-10px)' : 'translateY(0)', transition: 'transform .5s cubic-bezier(.34,1.2,.64,1)' }}>
+        <rect x="20" y="11" width="24" height="11" rx="3" fill={`url(#${g('cap')})`} stroke="#565d66" strokeWidth="1.3" />
+        <path d="M 22 14 h 20 M 22 18 h 20" stroke="#565d66" strokeWidth="0.9" opacity="0.5" />
+      </g>
     </svg>
   )
 }

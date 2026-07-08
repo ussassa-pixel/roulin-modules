@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 import EndRating from '../components/EndRating'
+import { speakSmart, stopSpeaking } from '../lib/tts'
 
 // 몸 풀어주기 — 연습형. 점진적 근이완(PMR/Jacobson) + 짧은 바디스캔(MBSR).
 // 산출물 없음. 통증 부위 강제 금지(카피). 반복이 정상(습관 형성).
@@ -105,16 +106,7 @@ function BodyGuide({ onDone, onExit }) {
   pausedRef.current = paused
   voiceRef.current = voiceOn
 
-  const speak = (text) => {
-    if (!window.speechSynthesis) return
-    window.speechSynthesis.cancel()
-    const u = new SpeechSynthesisUtterance(text.replace(/[\n—]/g, ', '))
-    u.lang = 'ko-KR'; u.rate = 0.88; u.pitch = 1.02; u.volume = 0.95
-    const ko = (window.speechSynthesis.getVoices() || []).filter((v) => /ko(-|_)?KR|한국/i.test(v.lang + v.name))
-    const best = ko.find((v) => /Google/i.test(v.name)) || ko.find((v) => !v.localService) || ko[0]
-    if (best) u.voice = best
-    window.speechSynthesis.speak(u)
-  }
+  const speak = (text) => speakSmart(text)
 
   useEffect(() => {
     if (i >= BEATS.length) { onDone(); return }
@@ -131,7 +123,7 @@ function BodyGuide({ onDone, onExit }) {
     return () => clearInterval(id)
   }, [i]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => () => window.speechSynthesis && window.speechSynthesis.cancel(), [])
+  useEffect(() => () => stopSpeaking(), [])
 
   const beat = BEATS[Math.min(i, BEATS.length - 1)]
   const R = 80, C = 2 * Math.PI * R
@@ -140,7 +132,7 @@ function BodyGuide({ onDone, onExit }) {
 
   return (
     <div className="min-h-screen relative flex flex-col items-center justify-center p-6" style={{ background: 'radial-gradient(ellipse at 50% 40%, #FBF9F1 0%, #F5F3EB 65%)' }}>
-      <button onClick={() => setVoiceOn((x) => { const n = !x; if (!n && window.speechSynthesis) window.speechSynthesis.cancel(); return n })} className="absolute top-6 left-6 text-[11px] tracking-wider font-light text-r-gray-soft hover:text-navy transition z-10">
+      <button onClick={() => setVoiceOn((x) => { const n = !x; if (!n) stopSpeaking(); return n })} className="absolute top-6 left-6 text-[11px] tracking-wider font-light text-r-gray-soft hover:text-navy transition z-10">
         {voiceOn ? '음성 켜짐' : '음성 꺼짐'}
       </button>
       <button onClick={onExit} className="absolute top-6 right-6 text-[11px] tracking-wider font-light text-r-gray-soft hover:text-navy transition z-10">나가기</button>

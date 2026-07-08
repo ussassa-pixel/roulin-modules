@@ -57,10 +57,11 @@ src/
   `<ModuleFrame onExit={onExit}><EndRating onComplete={() => onExit()} /></ModuleFrame>`
 - App.jsx에 추가: import + `{activeModule === 'id' && <X onExit={exit} />}` + `MODULES` 배열에 카드 1줄
 
-### 모듈 27개
+### 모듈 28개
 호흡/감각/진정 (16): MoodThermometer, BreathingCircle, BalloonBreathing, FingerBreathing, PresentMoment, Grounding54321, SelfCompassion, SoundGarden, SandGarden, BubbleWrap, LeafFloating, DrinkingMeditation, ButterflyHug, WorryDump, ThreeGoodThings, StopCard
 생각정리·행동 (6): BrainDump, WorryTree, DecisionalBalance, Woop, ImplementationIntention, SmallestStep
 범주 공백 채우기 (5): RelationLens(관계·조망수용), SavoringMoment(음미·상향조절), ValueCompass(가치·ACT), DayClose(하루 닫기·야간 의례), BodyRelease(근이완, **연습형**: 산출물 없음, 타이머 가이드)
+보관 (1): MindVault(마음 금고, id `vault`) — **localStorage로 실제 보관**(가역성 실물화). 재방문 시 금고 확인(열어보기/그대로 두기/새로 담기). safetyLevel caution. 카피 가드: 트라우마 어휘·"없애기" 금지, 가역성 문구 필수, [열어보기]와 [그대로 두기] 시각적 동등.
 
 > 명세(v2/v3)는 `reason/priorOutput/onSave/ModuleClose` 라우터 계약을 말하지만 **아직 미구현**. 현재 모든 모듈은 `{onExit}` + `EndRating`만 사용. 추천 레이어 구축 시 그 계약을 얹는다.
 > 타이머 모듈(SavoringMoment.dwell, BodyRelease.guide)은 항상 일시정지/건너뛰기 제공(이탈 허용). 카피 원칙: 라벨·조언·효과주장·죄책감 금지, 야간(DayClose)·통증(BodyRelease) 배려.

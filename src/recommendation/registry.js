@@ -100,6 +100,9 @@ export const MODULES = [
   { id: 'dayclose', displayName: '하루 닫기', type: 'tool', need: ['close'], domainTags: ['self'], themes: ['transition', 'night', 'sleep', 'offload'],
     targetStates: ['하루 미종결·야간 반추'], safetyLevel: 'general', contra: [], durationSec: 150, hasEndRating: true },
 
+  { id: 'vault', displayName: '마음 금고', type: 'tool', need: ['organize'], domainTags: ['self'], themes: ['containment', 'intrusive', 'reversible'],
+    targetStates: ['버리지도 놓지도 못함', '침투적 반추'], safetyLevel: 'caution', contra: ['위기 L1+ 시 라우터 게이트 필수', '급성 해리 경향(SW 확정)'], durationSec: 150, hasEndRating: true },
+
   // ── 위기 브릿지 ──
   { id: 'stop', displayName: 'STOP', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['impulse', 'pause'],
     targetStates: ['충동이 올라옴', '행동 직전 멈춤 필요'], safetyLevel: 'crisis-bridge', contra: [], durationSec: 60, hasEndRating: false },

@@ -27,6 +27,7 @@ import SavoringMoment from './modules/SavoringMoment'
 import ValueCompass from './modules/ValueCompass'
 import DayClose from './modules/DayClose'
 import BodyRelease from './modules/BodyRelease'
+import MindVault from './modules/MindVault'
 
 // roulin.ai 모드카드와 같은 결: [번호] · 제목 · 설명("…할 때. …합니다.") · 작은 태그 pill
 const MODULES = [
@@ -61,6 +62,7 @@ const MODULES = [
   { id: 'compass',      title: '나의 나침반',    tag: '가치',   desc: '뭐가 중요했는지 흐려질 때. 지금 소중한 것 하나를 짚습니다.' },
   { id: 'dayclose',     title: '하루 닫기',      tag: '마무리', desc: '하루가 닫히지 않은 밤에. 매듭짓고 내일로 넘겨 닫습니다.' },
   { id: 'bodyrelease',  title: '몸 풀어주기',    tag: '이완',   desc: '몸이 뻣뻣하게 긴장될 때. 부위별로 2분간 풀어줍니다.' },
+  { id: 'vault',        title: '마음 금고',      tag: '보관',   desc: '버릴 순 없는데 지금 감당이 안 될 때. 잠시 담아두고 나중에 꺼냅니다.' },
 ]
 
 export default function App() {
@@ -96,6 +98,7 @@ export default function App() {
       {activeModule === 'compass'      && <ValueCompass onExit={exit} />}
       {activeModule === 'dayclose'     && <DayClose onExit={exit} />}
       {activeModule === 'bodyrelease'  && <BodyRelease onExit={exit} />}
+      {activeModule === 'vault'        && <MindVault onExit={exit} />}
 
       {activeModule === null && <Launcher onPick={setActiveModule} />}
     </SpeechProvider>

@@ -70,6 +70,13 @@ src/
 - **"무게/비중" 측정은 사용자 점수로:** DecisionalBalance처럼 무언가를 저울질할 때 글자수·개수 같은 **프록시로 중요도를 추정하지 말 것.** 사용자가 중요도 점수를 매기게 하고 그 합을 무게로 쓴다. (앱이 결정을 대신하지 않음)
 - **검증:** 변경 후 `npm run build` + Playwright로 각 모듈 intro→EndRating 도달 & 콘솔 에러 0 확인하는 흐름을 써 왔다.
 
+## 추천 레이어 (`src/recommendation/`, 스캐폴드 — UI 미연결)
+- `registry.js` — 27개 모듈 메타데이터(`MODULES`, `BY_ID`). 런처 id와 1:1. **임상 필드(safetyLevel·contra·targetStates·durationSec)는 DRAFT — SW 확정 필요.**
+- `recommend.js` — 순수·결정적 코어: `safetyGate`(위기 L2+ → safety_connector), `isEligible`, `scoreModule`, `recommend(signal,{n,exclude})`. `extractStateSignal`(③ LLM)은 서비스 몫 스텁.
+- `README.md` — 파이프라인 ①~⑤ + SW 미결.
+- 파이프라인: 세션 종료 → ①safetyGate → ②trigger(서비스) → ③stateSignal(LLM/Flash, 서비스) → ④recommend(결정적) → ⑤1~2개 제시.
+
 ## 다음 단계 (미구현)
-1. **모듈 메타데이터 레지스트리** — 22개 모듈 태깅(targetStates, contraindications, safetyLevel: general|caution|crisis-bridge, durationSec, hasEndRating). 안전등급·금기는 임상 판단(SW) 필요.
-2. **종료 후 추천 레이어** — 세션 종료 → ①안전 게이트(위기 L2+ 차단) → ②추천 트리거 → ③상태 신호 추출 → ④규칙 매핑 → ⑤1~2개 제시. 모듈 코드는 안 건드림.
+1. **SW 확정** — 27개 safetyLevel·contra·targetStates, `compass` 위기 게이트 조건, durationSec 실측.
+2. **③ 상태신호 추출 + ② 트리거** — 룰랭 서비스 런타임(대화·LLM)에서 `extractStateSignal` 구현, `recommend()` 호출로 연결.
+3. **제시 UI** — 종료 후 카드 1~2개(부드럽게). 모듈 코드는 안 건드림.

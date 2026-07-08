@@ -71,7 +71,12 @@ export default function ButterflyHug({ onExit }) {
 
   if (phase === 'running') {
     return (
-      <div className="bg-session-butterfly min-h-screen relative">
+      <div className="bg-session-butterfly min-h-screen relative overflow-hidden">
+        {/* 두 원 뒤로 크고 흐릿한 나비 실루엣 */}
+        <ButterflyGhost
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none"
+          style={{ marginTop: -26 }}
+        />
         <button
           onClick={toggleMute}
           className="absolute top-6 left-6 z-20 text-[11px] tracking-wider font-light text-white/40 hover:text-white/70 transition"
@@ -85,7 +90,7 @@ export default function ButterflyHug({ onExit }) {
           나가기
         </button>
 
-        <div className="min-h-screen flex flex-col items-center justify-center p-8">
+        <div className="min-h-screen flex flex-col items-center justify-center p-8 relative z-10">
           <p className="text-[12px] text-white/30 font-light mb-16 tracking-wide">화면에 맞춰 토닥토닥</p>
 
           <div className="flex justify-center items-center gap-12 mb-16">
@@ -125,4 +130,39 @@ export default function ButterflyHug({ onExit }) {
   }
 
   return null
+}
+
+// 두 원 뒤에 겹쳐 보이는, 크고 아주 흐릿한 나비 실루엣
+function ButterflyGhost({ className = '', style }) {
+  return (
+    <svg
+      className={className}
+      style={{ filter: 'blur(2.5px)', ...style }}
+      width="384" height="352" viewBox="0 0 420 384" fill="none"
+      xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+    >
+      <defs>
+        <radialGradient id="bf-wing" cx="50%" cy="44%" r="62%">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0.3" />
+        </radialGradient>
+      </defs>
+      <g opacity="0.13" fill="url(#bf-wing)">
+        {/* 윗날개 */}
+        <ellipse cx="150" cy="150" rx="95" ry="70" transform="rotate(-20 150 150)" />
+        <ellipse cx="270" cy="150" rx="95" ry="70" transform="rotate(20 270 150)" />
+        {/* 아랫날개 */}
+        <ellipse cx="168" cy="254" rx="70" ry="58" transform="rotate(24 168 254)" opacity="0.85" />
+        <ellipse cx="252" cy="254" rx="70" ry="58" transform="rotate(-24 252 254)" opacity="0.85" />
+        {/* 몸통 · 머리 */}
+        <ellipse cx="210" cy="202" rx="11" ry="112" fill="#fff" fillOpacity="0.55" />
+        <circle cx="210" cy="94" r="13" fill="#fff" fillOpacity="0.55" />
+      </g>
+      {/* 더듬이 */}
+      <g opacity="0.13" stroke="#fff" strokeOpacity="0.55" strokeWidth="3" strokeLinecap="round" fill="none">
+        <path d="M 210 90 Q 189 58, 166 52" />
+        <path d="M 210 90 Q 231 58, 254 52" />
+      </g>
+    </svg>
+  )
 }

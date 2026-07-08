@@ -134,7 +134,7 @@ function BodyGuide({ onDone, onExit }) {
   useEffect(() => () => window.speechSynthesis && window.speechSynthesis.cancel(), [])
 
   const beat = BEATS[Math.min(i, BEATS.length - 1)]
-  const R = 54, C = 2 * Math.PI * R
+  const R = 80, C = 2 * Math.PI * R
   const ringColor = beat.kind === 'tense' ? '#E0A33E' : beat.kind === 'rest' ? '#7c89e8' : '#c9c2b2'
   const countLabel = beat.kind === 'tense' ? Math.max(0, Math.ceil((1 - prog) * beat.dur)) : ''
 
@@ -147,13 +147,17 @@ function BodyGuide({ onDone, onExit }) {
 
       {beat.part && <p className="text-[12px] tracking-[0.14em] text-amber mb-6">{beat.part}</p>}
 
-      <div className="relative mb-8" style={{ width: 140, height: 140 }}>
-        <svg width="140" height="140" viewBox="0 0 140 140" className="-rotate-90">
-          <circle cx="70" cy="70" r={R} fill="none" stroke="#E7E2D5" strokeWidth="6" />
-          <circle cx="70" cy="70" r={R} fill="none" stroke={ringColor} strokeWidth="6" strokeLinecap="round"
+      <div className="relative mb-8 flex items-center justify-center" style={{ width: 176, height: 176 }}>
+        <svg width="176" height="176" viewBox="0 0 176 176" className="absolute inset-0 -rotate-90">
+          <circle cx="88" cy="88" r={R} fill="none" stroke="#E7E2D5" strokeWidth="5" />
+          <circle cx="88" cy="88" r={R} fill="none" stroke={ringColor} strokeWidth="5" strokeLinecap="round"
             strokeDasharray={C} strokeDashoffset={C * (1 - prog)} style={{ transition: 'stroke-dashoffset .1s linear, stroke .4s' }} />
         </svg>
-        {countLabel !== '' && <span className="absolute inset-0 flex items-center justify-center text-[26px] font-light text-navy/70">{countLabel}</span>}
+        {/* 부위별 따라하기 애니메이션 */}
+        <PartFigure part={beat.part} tensed={beat.kind === 'tense'} />
+        {countLabel !== '' && (
+          <span className="absolute left-1/2 -translate-x-1/2 text-[13px] font-light text-amber/80" style={{ bottom: 8 }}>{countLabel}</span>
+        )}
       </div>
 
       <p key={i} className="text-center text-[18px] text-navy/80 font-light animate-fade-in whitespace-pre-line leading-relaxed mb-10" style={{ minHeight: '56px' }}>
@@ -171,4 +175,82 @@ function BodyGuide({ onDone, onExit }) {
       <p className="absolute bottom-8 left-0 right-0 text-center text-[11px] text-r-gray-soft">아픈 부위는 건너뛰어도 돼요.</p>
     </div>
   )
+}
+
+// ── 부위별 따라하기 그림 (조임 ↔ 풀림) ──
+const STROKE = '#33415a'
+function PartFigure({ part, tensed }) {
+  const common = { width: 116, height: 116, viewBox: '0 0 120 120', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' }
+  const ease = 'cubic-bezier(.4,0,.2,1)'
+
+  if (part === '어깨')
+    return (
+      <svg {...common} className="relative z-10">
+        <circle cx="60" cy="28" r="15" fill="#fff" stroke={STROKE} strokeWidth="3" />
+        <circle cx="55" cy="26" r="2" fill={STROKE} /><circle cx="65" cy="26" r="2" fill={STROKE} />
+        <g style={{ transform: tensed ? 'translateY(-14px)' : 'translateY(0)', transition: `transform .6s ${ease}` }}>
+          <path d="M 20 96 Q 20 66, 60 63 Q 100 66, 100 96" fill="none" stroke={STROKE} strokeWidth="11" strokeLinecap="round" />
+          <path d="M 30 92 L 30 112 M 90 92 L 90 112" stroke={STROKE} strokeWidth="7" strokeLinecap="round" opacity="0.5" />
+        </g>
+        {/* 올라감 표시 */}
+        <g style={{ opacity: tensed ? 0.6 : 0, transition: 'opacity .5s' }} stroke="#E0A33E" strokeWidth="2.5" strokeLinecap="round">
+          <path d="M 30 58 l 5 -6 l 5 6" fill="none" /><path d="M 80 58 l 5 -6 l 5 6" fill="none" />
+        </g>
+      </svg>
+    )
+
+  if (part === '손')
+    return (
+      <svg {...common} className="relative z-10">
+        {/* 편 손 */}
+        <g style={{ opacity: tensed ? 0 : 1, transition: 'opacity .35s' }}>
+          <rect x="40" y="62" width="40" height="42" rx="15" fill="#fff" stroke={STROKE} strokeWidth="3" />
+          {[44, 53.5, 63, 72.5].map((x, i) => (
+            <rect key={i} x={x - 3.5} y={22 + (i === 0 || i === 3 ? 8 : 0)} width="7" height={44 - (i === 0 || i === 3 ? 8 : 0)} rx="3.5" fill="#fff" stroke={STROKE} strokeWidth="3" />
+          ))}
+          <rect x="30" y="66" width="7" height="22" rx="3.5" fill="#fff" stroke={STROKE} strokeWidth="3" transform="rotate(-40 33 78)" />
+        </g>
+        {/* 주먹 */}
+        <g style={{ opacity: tensed ? 1 : 0, transition: 'opacity .35s' }}>
+          <rect x="36" y="52" width="48" height="46" rx="18" fill="#fff" stroke={STROKE} strokeWidth="3" />
+          {[46, 56, 66, 76].map((x, i) => <path key={i} d={`M ${x} 54 q 4 -6 8 0`} fill="none" stroke={STROKE} strokeWidth="2.5" strokeLinecap="round" />)}
+          <path d="M 36 72 q -8 4 -2 16" fill="#fff" stroke={STROKE} strokeWidth="3" />
+        </g>
+      </svg>
+    )
+
+  if (part === '얼굴')
+    return (
+      <svg {...common} className="relative z-10">
+        <circle cx="60" cy="60" r="36" fill="#fff" stroke={STROKE} strokeWidth="3" />
+        {/* 편안한 얼굴 */}
+        <g style={{ opacity: tensed ? 0 : 1, transition: 'opacity .3s' }} stroke={STROKE} strokeWidth="3" strokeLinecap="round" fill="none">
+          <path d="M 40 48 q 6 -3 12 0" /><path d="M 68 48 q 6 -3 12 0" />
+          <ellipse cx="46" cy="58" rx="3.5" ry="4.5" fill={STROKE} stroke="none" /><ellipse cx="74" cy="58" rx="3.5" ry="4.5" fill={STROKE} stroke="none" />
+          <path d="M 48 76 q 12 8 24 0" />
+        </g>
+        {/* 찡그린 얼굴 */}
+        <g style={{ opacity: tensed ? 1 : 0, transition: 'opacity .3s' }} stroke={STROKE} strokeWidth="3" strokeLinecap="round" fill="none">
+          <path d="M 40 52 q 7 -6 13 -2" /><path d="M 80 52 q -7 -6 -13 -2" />
+          <path d="M 42 60 h 9" /><path d="M 69 60 h 9" />
+          <path d="M 50 78 h 20" />
+        </g>
+      </svg>
+    )
+
+  if (part === '몸 전체')
+    return (
+      <svg {...common} className="relative z-10">
+        <g style={{ transform: tensed ? 'scale(0.9) translateY(4px)' : 'scale(1)', transformOrigin: '60px 60px', transition: `transform .6s ${ease}` }}>
+          <circle cx="60" cy="26" r="13" fill="#fff" stroke={STROKE} strokeWidth="3" />
+          <path d="M 44 46 Q 60 40, 76 46 L 72 92 Q 60 98, 48 92 Z" fill="#fff" stroke={STROKE} strokeWidth="3" strokeLinejoin="round" />
+          <path d="M 45 50 Q 30 66, 34 88" fill="none" stroke={STROKE} strokeWidth="6" strokeLinecap="round"
+            style={{ transform: tensed ? 'translateX(6px)' : 'translateX(0)', transformOrigin: '40px 60px', transition: `transform .6s ${ease}` }} />
+          <path d="M 75 50 Q 90 66, 86 88" fill="none" stroke={STROKE} strokeWidth="6" strokeLinecap="round"
+            style={{ transform: tensed ? 'translateX(-6px)' : 'translateX(0)', transformOrigin: '80px 60px', transition: `transform .6s ${ease}` }} />
+        </g>
+      </svg>
+    )
+
+  return null
 }

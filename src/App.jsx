@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { SpeechProvider } from './context/SpeechContext'
+import RecommendationSheet from './components/RecommendationSheet'
 import PresentMoment from './modules/PresentMoment'
 import StopCard from './modules/StopCard'
 import DrinkingMeditation from './modules/DrinkingMeditation'
@@ -67,7 +68,12 @@ const MODULES = [
 
 export default function App() {
   const [activeModule, setActiveModule] = useState(null)
-  const exit = () => setActiveModule(null)
+  const [pendingRec, setPendingRec] = useState(null)
+
+  const exit = () => {
+    setPendingRec(activeModule)
+    setActiveModule(null)
+  }
 
   return (
     <SpeechProvider>
@@ -111,7 +117,15 @@ export default function App() {
         </button>
       )}
 
-      {activeModule === null && <Launcher onPick={setActiveModule} />}
+      {activeModule === null && pendingRec !== null && (
+        <RecommendationSheet
+          completedModuleId={pendingRec}
+          allModules={MODULES}
+          onPick={(id) => { setPendingRec(null); setActiveModule(id) }}
+          onShowAll={() => setPendingRec(null)}
+        />
+      )}
+      {activeModule === null && pendingRec === null && <Launcher onPick={setActiveModule} />}
     </SpeechProvider>
   )
 }

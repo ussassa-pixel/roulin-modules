@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useId } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 import EndRating from '../components/EndRating'
 
@@ -14,10 +14,10 @@ const inputCls =
 const taCls = inputCls + ' resize-none leading-relaxed'
 
 const CONTAINERS = [
-  { key: 'safe', label: '금고' },
-  { key: 'box', label: '나무 상자' },
-  { key: 'drawer', label: '서랍' },
-  { key: 'jar', label: '유리병' },
+  { key: 'safe', label: '금고', desc: '두껍고 단단하게 잠가서' },
+  { key: 'box', label: '나무 상자', desc: '묵직하게 눌러 담아' },
+  { key: 'drawer', label: '서랍', desc: '가지런히 넣어두기' },
+  { key: 'jar', label: '유리병', desc: '맑게 담아두기' },
 ]
 
 export default function MindVault({ onExit }) {
@@ -164,10 +164,11 @@ export default function MindVault({ onExit }) {
             <button
               key={c.key}
               onClick={() => setVaultImage(c.key)}
-              className={`flex flex-col items-center gap-2 py-6 rounded-2xl border transition ${vaultImage === c.key ? 'bg-amber-soft/50 border-amber/40' : 'bg-white border-line hover:border-[#DCD5C4]'}`}
+              className={`flex flex-col items-center gap-1.5 py-5 rounded-2xl border transition ${vaultImage === c.key ? 'bg-amber-soft/50 border-amber/40' : 'bg-white border-line hover:border-[#DCD5C4]'}`}
             >
-              <VaultIcon type={c.key} size={44} />
-              <span className="text-[13px] text-ink">{c.label}</span>
+              <VaultIcon type={c.key} size={52} />
+              <span className="text-[14px] text-ink mt-1">{c.label}</span>
+              <span className="text-[11px] text-r-gray-soft leading-tight">{c.desc}</span>
             </button>
           ))}
         </div>
@@ -256,47 +257,151 @@ export default function MindVault({ onExit }) {
   return null
 }
 
-// ── 보관함 아이콘 (금고/상자/서랍/병) ──
-const S = '#33415a'
+// ── 보관함 아이콘 — 금속/목재 질감 + 두께로 실물처럼 ──
 function VaultIcon({ type, size = 48, open = false }) {
+  const uid = useId().replace(/:/g, '')
+  const g = (n) => `${uid}-${n}`
   const common = { width: size, height: size, viewBox: '0 0 64 64', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' }
-  const amber = '#E0A33E'
-  if (type === 'safe')
+
+  if (type === 'safe') {
+    const bolts = Array.from({ length: 8 }, (_, i) => {
+      const a = (i * 45 - 90) * (Math.PI / 180)
+      return [32 + 12.6 * Math.cos(a), 33 + 12.6 * Math.sin(a)]
+    })
+    const spokes = [0, 60, 120]
     return (
       <svg {...common}>
-        <rect x="10" y="12" width="44" height="40" rx="6" fill="#fff" stroke={S} strokeWidth="3" />
-        <rect x="16" y="18" width="26" height="28" rx="4" fill="none" stroke={S} strokeWidth="2" opacity="0.5" />
-        <circle cx="29" cy="32" r="8" fill="none" stroke={S} strokeWidth="2.5" />
-        <circle cx="29" cy="32" r="2" fill={amber} />
-        <path d="M 29 24 v -3 M 29 40 v 3 M 21 32 h -3 M 37 32 h 3" stroke={S} strokeWidth="2" strokeLinecap="round" />
-        <rect x="46" y="28" width="4" height="8" rx="2" fill={S} />
+        <defs>
+          <linearGradient id={g('steel')} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#eef1f4" /><stop offset="45%" stopColor="#b7bec6" /><stop offset="100%" stopColor="#79818b" />
+          </linearGradient>
+          <linearGradient id={g('steel2')} x1="0" y1="0" x2="0.4" y2="1">
+            <stop offset="0%" stopColor="#c9d0d7" /><stop offset="100%" stopColor="#6a717b" />
+          </linearGradient>
+          <radialGradient id={g('door')} cx="40%" cy="34%" r="75%">
+            <stop offset="0%" stopColor="#e3e8ed" /><stop offset="58%" stopColor="#a9b1ba" /><stop offset="100%" stopColor="#727a84" />
+          </radialGradient>
+          <radialGradient id={g('bolt')} cx="36%" cy="30%" r="72%">
+            <stop offset="0%" stopColor="#f4f6f8" /><stop offset="55%" stopColor="#aeb6bf" /><stop offset="100%" stopColor="#656d77" />
+          </radialGradient>
+        </defs>
+        {/* 바닥 그림자(무게감) */}
+        <ellipse cx="32" cy="58" rx="24" ry="3.4" fill="#5c636c" opacity="0.25" />
+        {/* 힌지(좌측, 두꺼움) */}
+        <rect x="3" y="19" width="6" height="9" rx="2" fill={`url(#${g('steel2')})`} stroke="#565d66" strokeWidth="1" />
+        <rect x="3" y="37" width="6" height="9" rx="2" fill={`url(#${g('steel2')})`} stroke="#565d66" strokeWidth="1" />
+        {/* 두꺼운 몸체(1중) */}
+        <rect x="7" y="7" width="50" height="50" rx="7" fill={`url(#${g('steel')})`} stroke="#565d66" strokeWidth="1.5" />
+        {/* 2중 벽 */}
+        <rect x="11" y="11" width="42" height="42" rx="5.5" fill="none" stroke="#5c636c" strokeWidth="1.4" opacity="0.55" />
+        {/* 3중 문틀(깊게 파인 리세스) */}
+        <rect x="13.5" y="13.5" width="37" height="37" rx="4.5" fill={`url(#${g('steel2')})`} stroke="#565d66" strokeWidth="1.2" />
+        <rect x="13.5" y="13.5" width="37" height="37" rx="4.5" fill="none" stroke="#ffffff" strokeWidth="1" opacity="0.28" />
+        {/* 코너 리벳 */}
+        {[[18, 18], [46, 18], [18, 48], [46, 48]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="2.3" fill={`url(#${g('bolt')})`} />)}
+        {/* 원형 문 */}
+        <circle cx="32" cy="33" r="15.5" fill={`url(#${g('door')})`} stroke="#565d66" strokeWidth="1.5" />
+        <circle cx="32" cy="33" r="15.5" fill="none" stroke="#ffffff" strokeWidth="1" opacity="0.3" />
+        {/* 문 둘레 볼트 */}
+        {bolts.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="1.5" fill={`url(#${g('bolt')})`} />)}
+        {/* 다이얼 휠(스포크 핸들) */}
+        {spokes.map((deg) => (
+          <line key={deg} x1={32 - 11 * Math.cos((deg * Math.PI) / 180)} y1={33 - 11 * Math.sin((deg * Math.PI) / 180)}
+            x2={32 + 11 * Math.cos((deg * Math.PI) / 180)} y2={33 + 11 * Math.sin((deg * Math.PI) / 180)}
+            stroke="#6a717b" strokeWidth="3.4" strokeLinecap="round" />
+        ))}
+        {spokes.flatMap((deg) => [1, -1].map((s, j) => (
+          <circle key={deg + '' + j} cx={32 + s * 11 * Math.cos((deg * Math.PI) / 180)} cy={33 + s * 11 * Math.sin((deg * Math.PI) / 180)} r="2.1" fill={`url(#${g('bolt')})`} />
+        )))}
+        <circle cx="32" cy="33" r="5.4" fill={`url(#${g('steel')})`} stroke="#565d66" strokeWidth="1.2" />
+        <circle cx="32" cy="33" r="1.8" fill="#565d66" />
+        {/* 손잡이 레버 */}
+        <rect x="47" y="30.5" width="9" height="5" rx="2.5" fill={`url(#${g('steel2')})`} stroke="#565d66" strokeWidth="1" />
+        {/* 상단 광택 */}
+        <path d="M 12 12 Q 30 8, 50 12" stroke="#ffffff" strokeWidth="2" opacity="0.4" strokeLinecap="round" fill="none" />
       </svg>
     )
+  }
+
   if (type === 'box')
     return (
       <svg {...common}>
-        <path d="M 12 26 L 32 18 L 52 26 L 52 48 L 32 54 L 12 48 Z" fill="#fff" stroke={S} strokeWidth="3" strokeLinejoin="round" />
-        <path d="M 12 26 L 32 34 L 52 26" fill="none" stroke={S} strokeWidth="2.5" strokeLinejoin="round" />
-        <path d="M 32 34 L 32 54" stroke={S} strokeWidth="2" opacity="0.5" />
-        {!open && <rect x="28" y="30" width="8" height="6" rx="2" fill={amber} />}
+        <defs>
+          <linearGradient id={g('wood')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#c79a68" /><stop offset="100%" stopColor="#8a6239" />
+          </linearGradient>
+          <linearGradient id={g('lid')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#d8ab77" /><stop offset="100%" stopColor="#b07f4d" />
+          </linearGradient>
+          <linearGradient id={g('band')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#9aa1a9" /><stop offset="100%" stopColor="#5c636c" />
+          </linearGradient>
+        </defs>
+        <ellipse cx="32" cy="57" rx="23" ry="3" fill="#5c463020" />
+        {/* 몸체 */}
+        <rect x="10" y="26" width="44" height="28" rx="3" fill={`url(#${g('wood')})`} stroke="#6e4e2c" strokeWidth="1.5" />
+        {/* 뚜껑(둥근 목재) */}
+        <path d="M 10 28 Q 10 14, 32 14 Q 54 14, 54 28 Z" fill={`url(#${g('lid')})`} stroke="#6e4e2c" strokeWidth="1.5" />
+        <path d="M 10 28 L 54 28" stroke="#6e4e2c" strokeWidth="1.4" opacity="0.6" />
+        {/* 금속 밴드 2줄 */}
+        <rect x="18" y="14" width="5" height="40" fill={`url(#${g('band')})`} opacity="0.9" />
+        <rect x="41" y="14" width="5" height="40" fill={`url(#${g('band')})`} opacity="0.9" />
+        {/* 자물쇠 */}
+        {!open && <>
+          <rect x="27" y="34" width="10" height="9" rx="2" fill={`url(#${g('band')})`} stroke="#4c525a" strokeWidth="1" />
+          <circle cx="32" cy="37.5" r="1.5" fill="#2f343b" />
+        </>}
+        {/* 나뭇결 */}
+        <path d="M 15 40 h 34 M 15 47 h 34" stroke="#6e4e2c" strokeWidth="1" opacity="0.3" />
       </svg>
     )
+
   if (type === 'drawer')
     return (
       <svg {...common}>
-        <rect x="12" y="14" width="40" height="36" rx="5" fill="#fff" stroke={S} strokeWidth="3" />
-        <rect x="17" y="19" width="30" height="12" rx="3" fill="none" stroke={S} strokeWidth="2" opacity="0.45" />
-        <rect x="17" y="34" width="30" height="12" rx="3" fill="#fff" stroke={S} strokeWidth="2.5"
-          style={{ transform: open ? 'translateY(4px)' : 'translateY(0)', transition: 'transform .5s' }} />
-        <circle cx="32" cy="40" r="2.2" fill={amber} />
+        <defs>
+          <linearGradient id={g('cab')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#caa06e" /><stop offset="100%" stopColor="#8e6640" />
+          </linearGradient>
+          <linearGradient id={g('front')} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#dcb684" /><stop offset="100%" stopColor="#b0824f" />
+          </linearGradient>
+        </defs>
+        <ellipse cx="32" cy="55" rx="21" ry="2.8" fill="#5c463020" />
+        {/* 캐비닛(측면 두께) */}
+        <rect x="10" y="12" width="44" height="40" rx="4" fill={`url(#${g('cab')})`} stroke="#6e4e2c" strokeWidth="1.5" />
+        <rect x="10" y="12" width="44" height="40" rx="4" fill="none" stroke="#ffffff" strokeWidth="1" opacity="0.15" />
+        {/* 윗칸(닫힘) */}
+        <rect x="15" y="16" width="34" height="14" rx="2.5" fill={`url(#${g('front')})`} stroke="#7c5836" strokeWidth="1.2" />
+        <rect x="27" y="21" width="10" height="3.2" rx="1.6" fill="#6a717b" />
+        {/* 아랫칸(살짝 빠짐 = 깊이) */}
+        <g style={{ transform: open ? 'translateY(5px)' : 'translateY(0)', transition: 'transform .5s' }}>
+          <rect x="15" y="33" width="34" height="15" rx="2.5" fill={`url(#${g('front')})`} stroke="#7c5836" strokeWidth="1.4" />
+          <rect x="24" y="38.5" width="16" height="4" rx="2" fill={`url(#${g('cab')})`} stroke="#5c636c" strokeWidth="1.2" />
+        </g>
       </svg>
     )
-  // jar
+
+  // jar — 두꺼운 유리 + 금속 뚜껑
   return (
     <svg {...common}>
-      <rect x="22" y="12" width="20" height="7" rx="2.5" fill="#fff" stroke={S} strokeWidth="3" />
-      <path d="M 20 22 Q 20 20, 24 20 L 40 20 Q 44 20, 44 22 L 44 48 Q 44 54, 38 54 L 26 54 Q 20 54, 20 48 Z" fill="#fff" stroke={S} strokeWidth="3" strokeLinejoin="round" />
-      <path d="M 24 34 q 8 -3 16 0" fill="none" stroke={amber} strokeWidth="2.5" strokeLinecap="round" opacity="0.7" />
+      <defs>
+        <linearGradient id={g('glass')} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#eef5f7" stopOpacity="0.95" /><stop offset="55%" stopColor="#cfe0e4" stopOpacity="0.85" /><stop offset="100%" stopColor="#a9c2c8" stopOpacity="0.9" />
+        </linearGradient>
+        <linearGradient id={g('cap')} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#b9c0c8" /><stop offset="100%" stopColor="#727a84" />
+        </linearGradient>
+      </defs>
+      <ellipse cx="32" cy="57" rx="17" ry="2.6" fill="#5c636c" opacity="0.18" />
+      {/* 유리 몸체(두꺼운 림) */}
+      <path d="M 19 24 Q 19 21, 23 21 L 41 21 Q 45 21, 45 24 L 45 49 Q 45 55, 38 55 L 26 55 Q 19 55, 19 49 Z" fill={`url(#${g('glass')})`} stroke="#8fa6ac" strokeWidth="2" />
+      <path d="M 19 24 Q 19 21, 23 21 L 41 21 Q 45 21, 45 24" fill="none" stroke="#ffffff" strokeWidth="1.4" opacity="0.7" />
+      {/* 금속 나사 뚜껑(두께) */}
+      <rect x="20" y="11" width="24" height="11" rx="3" fill={`url(#${g('cap')})`} stroke="#565d66" strokeWidth="1.3" />
+      <path d="M 22 14 h 20 M 22 18 h 20" stroke="#565d66" strokeWidth="0.9" opacity="0.5" />
+      {/* 반사 하이라이트 */}
+      <path d="M 24 28 Q 22 38, 25 48" stroke="#ffffff" strokeWidth="2.4" opacity="0.55" strokeLinecap="round" fill="none" />
     </svg>
   )
 }

@@ -179,7 +179,7 @@ export default function MindVault({ onExit }) {
   if (phase === 'store') {
     const putAway = () => {
       setClosing(true)
-      setTimeout(() => setStored(true), 850)
+      setTimeout(() => setStored(true), 1450) // 다이얼이 돌아가 잠긴 뒤 전환
     }
     const finish = () => {
       const item = {
@@ -212,7 +212,7 @@ export default function MindVault({ onExit }) {
             </div>
             <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: 0 }}>
               <div style={{ transform: closing ? 'scale(1.06)' : 'scale(1)', transition: 'transform .3s ease .6s' }}>
-                <VaultIcon type={vaultImage} size={110} open={!closing} />
+                <VaultIcon type={vaultImage} size={110} open={!closing} sealing={closing} />
               </div>
             </div>
           </div>
@@ -258,7 +258,7 @@ export default function MindVault({ onExit }) {
 }
 
 // ── 보관함 아이콘 — 금속/목재 질감 + 두께로 실물처럼 ──
-function VaultIcon({ type, size = 48, open = false }) {
+function VaultIcon({ type, size = 48, open = false, sealing = false }) {
   const uid = useId().replace(/:/g, '')
   const g = (n) => `${uid}-${n}`
   const common = { width: size, height: size, viewBox: '0 0 64 64', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' }
@@ -304,17 +304,19 @@ function VaultIcon({ type, size = 48, open = false }) {
         <circle cx="32" cy="33" r="15.5" fill="none" stroke="#ffffff" strokeWidth="1" opacity="0.3" />
         {/* 문 둘레 볼트 */}
         {bolts.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="1.5" fill={`url(#${g('bolt')})`} />)}
-        {/* 다이얼 휠(스포크 핸들) */}
-        {spokes.map((deg) => (
-          <line key={deg} x1={32 - 11 * Math.cos((deg * Math.PI) / 180)} y1={33 - 11 * Math.sin((deg * Math.PI) / 180)}
-            x2={32 + 11 * Math.cos((deg * Math.PI) / 180)} y2={33 + 11 * Math.sin((deg * Math.PI) / 180)}
-            stroke="#6a717b" strokeWidth="3.4" strokeLinecap="round" />
-        ))}
-        {spokes.flatMap((deg) => [1, -1].map((s, j) => (
-          <circle key={deg + '' + j} cx={32 + s * 11 * Math.cos((deg * Math.PI) / 180)} cy={33 + s * 11 * Math.sin((deg * Math.PI) / 180)} r="2.1" fill={`url(#${g('bolt')})`} />
-        )))}
-        <circle cx="32" cy="33" r="5.4" fill={`url(#${g('steel')})`} stroke="#565d66" strokeWidth="1.2" />
-        <circle cx="32" cy="33" r="1.8" fill="#565d66" />
+        {/* 다이얼 휠(스포크 핸들) — 담을 때 돌아가며 잠김 */}
+        <g className={sealing ? 'animate-dial-spin' : ''} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
+          {spokes.map((deg) => (
+            <line key={deg} x1={32 - 11 * Math.cos((deg * Math.PI) / 180)} y1={33 - 11 * Math.sin((deg * Math.PI) / 180)}
+              x2={32 + 11 * Math.cos((deg * Math.PI) / 180)} y2={33 + 11 * Math.sin((deg * Math.PI) / 180)}
+              stroke="#6a717b" strokeWidth="3.4" strokeLinecap="round" />
+          ))}
+          {spokes.flatMap((deg) => [1, -1].map((s, j) => (
+            <circle key={deg + '' + j} cx={32 + s * 11 * Math.cos((deg * Math.PI) / 180)} cy={33 + s * 11 * Math.sin((deg * Math.PI) / 180)} r="2.1" fill={`url(#${g('bolt')})`} />
+          )))}
+          <circle cx="32" cy="33" r="5.4" fill={`url(#${g('steel')})`} stroke="#565d66" strokeWidth="1.2" />
+          <circle cx="32" cy="33" r="1.8" fill="#565d66" />
+        </g>
         {/* 손잡이 레버 */}
         <rect x="47" y="30.5" width="9" height="5" rx="2.5" fill={`url(#${g('steel2')})`} stroke="#565d66" strokeWidth="1" />
         {/* 상단 광택 */}

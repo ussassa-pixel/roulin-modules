@@ -40,6 +40,7 @@ export default {
         'compass-settle': 'compassSettle 2.6s cubic-bezier(0.3,0.7,0.35,1) both',
         'compass-sway': 'compassSway 5.5s ease-in-out infinite',
         'tremor': 'tremor 0.12s linear infinite',
+        'dial-spin': 'dialSpin 1.3s cubic-bezier(0.2,0.75,0.2,1) forwards',
       },
       keyframes: {
         breath: {
@@ -117,6 +118,10 @@ export default {
           '50%':  { transform: 'translate(-0.6px,0.6px) rotate(-0.4deg)' },
           '75%':  { transform: 'translate(0.5px,0.4px) rotate(0.3deg)' },
           '100%': { transform: 'translate(0,0) rotate(0deg)' },
+        },
+        dialSpin: {
+          '0%':   { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(495deg)' },
         },
       },
     },

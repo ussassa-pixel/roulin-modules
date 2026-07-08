@@ -100,6 +100,17 @@ export default function App() {
       {activeModule === 'bodyrelease'  && <BodyRelease onExit={exit} />}
       {activeModule === 'vault'        && <MindVault onExit={exit} />}
 
+      {/* 어느 모듈 화면에서든 홈(런처)으로 */}
+      {activeModule !== null && (
+        <button
+          onClick={exit}
+          aria-label="홈으로"
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 pl-2.5 pr-3.5 py-1.5 rounded-full bg-white/70 backdrop-blur border border-[#E0DCCD] text-navy/75 text-[12px] shadow-sm hover:bg-white transition"
+        >
+          <HomeIcon /> 홈
+        </button>
+      )}
+
       {activeModule === null && <Launcher onPick={setActiveModule} />}
     </SpeechProvider>
   )
@@ -153,6 +164,16 @@ function Launcher({ onPick }) {
         진단이나 치료를 대신하지 않습니다 · 잠깐 머무는 시간이에요
       </p>
     </div>
+  )
+}
+
+// 홈 아이콘
+function HomeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 11.5 12 4l8 7.5" />
+      <path d="M6 10.5V20h12v-9.5" />
+    </svg>
   )
 }
 

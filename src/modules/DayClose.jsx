@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 import EndRating from '../components/EndRating'
+import StepScene from '../components/StepScene'
 
 // 하루 닫기 — 취침 전 걱정 미루기 + 인지 오프로딩 + 전환 의례.
 // 매듭(완료감) + 이월(내일로) + 닫기(의례)의 3박자. 야간 사용 전제: 저자극·각성 억제(느낌표 최소).
@@ -36,30 +37,27 @@ export default function DayClose({ onExit }) {
 
   if (phase === 'done')
     return page(
-      <div className="max-w-md w-full animate-fade-in">
-        <p className="text-center text-navy text-lg font-light mb-2 leading-relaxed">오늘 그래도 해낸 것,<br />하나만 꼽는다면?</p>
-        <p className="text-center text-r-gray-soft text-xs mb-8">작은 것도 해낸 거예요</p>
+      <StepScene key="done" total={2} index={0} accent="#E0A33E" icon="star" label="오늘 해낸 것" question={'오늘 그래도 해낸 것,\n하나만 꼽는다면?'} hint="작은 것도 해낸 거예요">
         <input className={inputCls} value={done} onChange={(e) => setDone(e.target.value)} placeholder="예: 미루던 전화 한 통을 했다" autoFocus />
         <button
           onClick={() => done.trim() && setPhase('carry')}
           disabled={!done.trim()}
-          className={`w-full py-4 rounded-full transition mt-5 ${done.trim() ? 'bg-navy text-white hover:bg-[#0c1a2b]' : 'bg-line text-r-gray-soft cursor-not-allowed'}`}
+          className={`w-full py-4 rounded-full transition mt-5 ${done.trim() ? 'text-white hover:brightness-95' : 'bg-line text-r-gray-soft cursor-not-allowed'}`}
+          style={done.trim() ? { background: '#E0A33E' } : {}}
         >
           다음
         </button>
-      </div>
+      </StepScene>
     )
 
   if (phase === 'carry')
     return page(
-      <div className="max-w-md w-full animate-fade-in">
-        <p className="text-center text-navy text-lg font-light mb-2">내일의 나에게 넘길 건 뭐예요?</p>
-        <p className="text-center text-r-gray-soft text-xs mb-8">적어두면, 오늘은 놓아도 돼요</p>
+      <StepScene key="carry" total={2} index={1} accent="#7C8598" icon="tomorrow" label="내일로" question="내일의 나에게 넘길 건 뭐예요?" hint="적어두면, 오늘은 놓아도 돼요">
         <textarea className={taCls} rows={2} value={carryOver} onChange={(e) => setCarryOver(e.target.value)} placeholder="예: 보고서 마무리는 내일 오전에" autoFocus />
-        <button onClick={() => setPhase('close')} className="w-full py-4 bg-navy text-white rounded-full hover:bg-[#0c1a2b] transition mt-5">
+        <button onClick={() => setPhase('close')} className="w-full py-4 rounded-full transition mt-5 text-white hover:brightness-95" style={{ background: '#7C8598' }}>
           다음
         </button>
-      </div>
+      </StepScene>
     )
 
   if (phase === 'close') {

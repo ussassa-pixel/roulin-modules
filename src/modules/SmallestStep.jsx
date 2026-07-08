@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 import EndRating from '../components/EndRating'
+import StepScene from '../components/StepScene'
 
 // 가장 작은 한 걸음(2분) — 착수 장벽 낮추기(tiny-step).
 // 목표: 완성이 아니라 '아주 작은 시작'을 강조하고, 현실적인 때를 잡아 부담을 줄이고, 격려로 마무리.
@@ -19,19 +20,18 @@ export default function SmallestStep({ onExit }) {
     </ModuleFrame>
   )
 
-  const field = (question, hint, value, set, placeholder, onNext) => (
-    <div className="max-w-md w-full animate-fade-in">
-      <p className="text-center text-navy text-lg font-light mb-2 whitespace-pre-line leading-relaxed">{question}</p>
-      <p className="text-center text-r-gray-soft text-xs mb-8">{hint}</p>
+  const field = ({ idx, icon, accent, label, question, hint, value, set, placeholder, onNext }) => (
+    <StepScene key={idx} total={3} index={idx} accent={accent} icon={icon} label={label} question={question} hint={hint}>
       <input className={inputCls} value={value} onChange={(e) => set(e.target.value)} placeholder={placeholder} autoFocus />
       <button
         onClick={onNext}
         disabled={!value.trim()}
-        className={`w-full py-4 rounded-full transition mt-5 ${value.trim() ? 'bg-navy text-white hover:bg-[#0c1a2b]' : 'bg-line text-r-gray-soft cursor-not-allowed'}`}
+        className={`w-full py-4 rounded-full transition mt-5 ${value.trim() ? 'text-white hover:brightness-95' : 'bg-line text-r-gray-soft cursor-not-allowed'}`}
+        style={value.trim() ? { background: accent } : {}}
       >
         다음
       </button>
-    </div>
+    </StepScene>
   )
 
   if (phase === 'intro')
@@ -47,23 +47,27 @@ export default function SmallestStep({ onExit }) {
     )
 
   if (phase === 'task')
-    return page(field('어떤 일을 해보고 싶어요?', '지금 손이 안 가는 그 일', task, setTask, '예: 운동하기', () => task.trim() && setPhase('shrink')))
+    return page(field({
+      idx: 0, icon: 'mountain', accent: '#7C8598', label: '막막한 일',
+      question: '어떤 일을 해보고 싶어요?', hint: '지금 손이 안 가는 그 일',
+      value: task, set: setTask, placeholder: '예: 운동하기', onNext: () => task.trim() && setPhase('shrink'),
+    }))
 
   if (phase === 'shrink')
-    return page(field(
-      `'${task}'\n그 중에 2분 안에 시작할 수 있는\n아주 작은 동작 하나는?`,
-      '완성이 아니라, 정말 아주 작은 시작이면 돼요',
-      shrink, setShrink, '예: 운동복으로 갈아입기',
-      () => shrink.trim() && setPhase('anchor')
-    ))
+    return page(field({
+      idx: 1, icon: 'sprout', accent: '#E0A33E', label: '아주 작은 시작',
+      question: `'${task}'\n그 중에 2분 안에 시작할 수 있는\n아주 작은 동작 하나는?`,
+      hint: '완성이 아니라, 정말 아주 작은 시작이면 돼요',
+      value: shrink, set: setShrink, placeholder: '예: 운동복으로 갈아입기', onNext: () => shrink.trim() && setPhase('anchor'),
+    }))
 
   if (phase === 'anchor')
-    return page(field(
-      '언제 시작해 보면\n더 부담이 적을까요?',
-      '부담이 가장 적은 때로 골라봐요',
-      anchor, setAnchor, '예: 저녁 먹고 소파에 앉기 전에',
-      () => anchor.trim() && setPhase('review')
-    ))
+    return page(field({
+      idx: 2, icon: 'clock', accent: '#3E6E8E', label: '언제',
+      question: '언제 시작해 보면\n더 부담이 적을까요?',
+      hint: '부담이 가장 적은 때로 골라봐요',
+      value: anchor, set: setAnchor, placeholder: '예: 저녁 먹고 소파에 앉기 전에', onNext: () => anchor.trim() && setPhase('review'),
+    }))
 
   if (phase === 'review')
     return page(

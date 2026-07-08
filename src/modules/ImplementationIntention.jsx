@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 import EndRating from '../components/EndRating'
+import StepScene from '../components/StepScene'
 
 // 실행의도 (If-Then 계획) — Gollwitzer, 1999. cue 구체성이 핵심 레버.
 // 장애물 처리는 의도적으로 제외(=WOOP 담당). 순수 if-then 유지.
@@ -35,9 +36,7 @@ export default function ImplementationIntention({ onExit }) {
     return (
       <ModuleFrame onExit={onExit}>
         <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-6">
-          <div key={phase} className="max-w-md w-full animate-fade-in">
-            <p className="text-center text-navy text-lg font-light mb-2">어떤 행동을 해보고 싶어요?</p>
-            <p className="text-center text-r-gray-soft text-xs mb-8">작고 구체적일수록 좋아요</p>
+          <StepScene key={phase} total={2} index={0} accent="#E0A33E" icon="action" label="행동" question="어떤 행동을 해보고 싶어요?" hint="작고 구체적일수록 좋아요">
             <input
               className={inputCls}
               value={behavior}
@@ -48,11 +47,12 @@ export default function ImplementationIntention({ onExit }) {
             <button
               onClick={() => behavior.trim() && setPhase('cue')}
               disabled={!behavior.trim()}
-              className={`w-full py-4 rounded-full transition mt-5 ${behavior.trim() ? 'bg-navy text-white hover:bg-[#0c1a2b]' : 'bg-line text-r-gray-soft cursor-not-allowed'}`}
+              className={`w-full py-4 rounded-full transition mt-5 ${behavior.trim() ? 'text-white hover:brightness-95' : 'bg-line text-r-gray-soft cursor-not-allowed'}`}
+              style={behavior.trim() ? { background: '#E0A33E' } : {}}
             >
               다음
             </button>
-          </div>
+          </StepScene>
         </div>
       </ModuleFrame>
     )
@@ -62,9 +62,7 @@ export default function ImplementationIntention({ onExit }) {
     return (
       <ModuleFrame onExit={onExit}>
         <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-6">
-          <div key={phase} className="max-w-md w-full animate-fade-in">
-            <p className="text-center text-navy text-lg font-light mb-2">그걸 언제, 어디서 할까요?</p>
-            <p className="text-center text-r-gray-soft text-xs mb-8">때 · 장소 · 계기를 정해두면 덜 미뤄져요</p>
+          <StepScene key={phase} total={2} index={1} accent="#3E6E8E" icon="clock" label="언제 · 어디서" question="그걸 언제, 어디서 할까요?" hint="때 · 장소 · 계기를 정해두면 덜 미뤄져요">
             <input
               className={inputCls}
               value={cue}
@@ -75,11 +73,12 @@ export default function ImplementationIntention({ onExit }) {
             <button
               onClick={() => cue.trim() && setPhase('assemble')}
               disabled={!cue.trim()}
-              className={`w-full py-4 rounded-full transition mt-5 ${cue.trim() ? 'bg-navy text-white hover:bg-[#0c1a2b]' : 'bg-line text-r-gray-soft cursor-not-allowed'}`}
+              className={`w-full py-4 rounded-full transition mt-5 ${cue.trim() ? 'text-white hover:brightness-95' : 'bg-line text-r-gray-soft cursor-not-allowed'}`}
+              style={cue.trim() ? { background: '#3E6E8E' } : {}}
             >
               다음
             </button>
-          </div>
+          </StepScene>
         </div>
       </ModuleFrame>
     )

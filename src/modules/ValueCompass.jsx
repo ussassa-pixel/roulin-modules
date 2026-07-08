@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 import EndRating from '../components/EndRating'
+import StepScene from '../components/StepScene'
 
 // 나의 나침반 — ACT 가치 명료화(Hayes). '왜'를 다룸(행동 모듈의 '무엇을'과 구분).
 // 안전: 라우터 게이트 통과 후에만 추천되는 전제. 의미 상실을 파고들지 않고 '지금 소중한 것 하나'로만 향함.
@@ -34,49 +35,45 @@ export default function ValueCompass({ onExit }) {
 
   if (phase === 'value')
     return page(
-      <div className="max-w-md w-full animate-fade-in">
-        <p className="text-center text-navy text-lg font-light mb-2 leading-relaxed">요즘의 나에게,<br />이것만은 소중하다 싶은 게 있다면?</p>
-        <p className="text-center text-r-gray-soft text-xs mb-8">사람, 일, 몸, 뭐든 좋아요</p>
+      <StepScene key="value" total={3} index={0} accent="#E0A33E" icon="heart" label="소중한 것" question={'요즘의 나에게,\n이것만은 소중하다 싶은 게 있다면?'} hint="사람, 일, 몸, 뭐든 좋아요">
         <input className={inputCls} value={value} onChange={(e) => setValue(e.target.value)} placeholder="예: 가족과 저녁 먹는 시간" autoFocus />
         <button
           onClick={() => value.trim() && setPhase('why')}
           disabled={!value.trim()}
-          className={`w-full py-4 rounded-full transition mt-5 ${value.trim() ? 'bg-navy text-white hover:bg-[#0c1a2b]' : 'bg-line text-r-gray-soft cursor-not-allowed'}`}
+          className={`w-full py-4 rounded-full transition mt-5 ${value.trim() ? 'text-white hover:brightness-95' : 'bg-line text-r-gray-soft cursor-not-allowed'}`}
+          style={value.trim() ? { background: '#E0A33E' } : {}}
         >
           다음
         </button>
-      </div>
+      </StepScene>
     )
 
   if (phase === 'why')
     return page(
-      <div className="max-w-md w-full animate-fade-in">
-        <p className="text-center text-navy text-lg font-light mb-2 leading-relaxed">그게 소중한 이유를<br />한 줄로 적어본다면?</p>
-        <p className="text-center text-r-gray-soft text-xs mb-8">떠오르는 대로</p>
+      <StepScene key="why" total={3} index={1} accent="#EDB24A" icon="root" label="이유" question={'그게 소중한 이유를\n한 줄로 적어본다면?'} hint="떠오르는 대로">
         <textarea className={taCls} rows={2} value={why} onChange={(e) => setWhy(e.target.value)} placeholder="예: 그때만은 마음이 놓여서" autoFocus />
         <button
           onClick={() => why.trim() && setPhase('tiny')}
           disabled={!why.trim()}
-          className={`w-full py-4 rounded-full transition mt-5 ${why.trim() ? 'bg-navy text-white hover:bg-[#0c1a2b]' : 'bg-line text-r-gray-soft cursor-not-allowed'}`}
+          className={`w-full py-4 rounded-full transition mt-5 ${why.trim() ? 'text-white hover:brightness-95' : 'bg-line text-r-gray-soft cursor-not-allowed'}`}
+          style={why.trim() ? { background: '#EDB24A' } : {}}
         >
           다음
         </button>
-      </div>
+      </StepScene>
     )
 
   if (phase === 'tiny')
     return page(
-      <div className="max-w-md w-full animate-fade-in">
-        <p className="text-center text-navy text-lg font-light mb-2 leading-relaxed">오늘 그것에<br />아주 조금 가까워지는 방법이 있을까요?</p>
-        <p className="text-center text-r-gray-soft text-xs mb-8">2분짜리도 좋아요 · 없으면 건너뛰어도 돼요</p>
+      <StepScene key="tiny" total={3} index={2} accent="#3E6E8E" icon="foot" label="오늘 한 걸음" question={'오늘 그것에\n아주 조금 가까워지는 방법이 있을까요?'} hint="2분짜리도 좋아요 · 없으면 건너뛰어도 돼요">
         <input className={inputCls} value={tinyStep} onChange={(e) => setTinyStep(e.target.value)} placeholder="예: 오늘은 휴대폰 없이 저녁 먹기" autoFocus />
-        <button onClick={() => setPhase('summary')} className="w-full py-4 bg-navy text-white rounded-full hover:bg-[#0c1a2b] transition mt-5">
+        <button onClick={() => setPhase('summary')} className="w-full py-4 rounded-full transition mt-5 text-white hover:brightness-95" style={{ background: '#3E6E8E' }}>
           나침반 보기
         </button>
         <button onClick={() => { setTinyStep(''); setPhase('summary') }} className="w-full py-3 text-[13px] text-r-gray-soft hover:text-navy mt-1">
           건너뛰기
         </button>
-      </div>
+      </StepScene>
     )
 
   if (phase === 'summary')

@@ -82,7 +82,7 @@ export default function ValueCompass({ onExit }) {
   if (phase === 'summary')
     return page(
       <div className="max-w-md w-full text-center animate-fade-up">
-        <div className="flex justify-center mb-6"><CompassIcon /></div>
+        <div className="flex justify-center mb-6"><Compass3D /></div>
         <div className="rounded-2xl bg-amber-soft/50 border border-amber/30 p-6 mb-8 text-left">
           <p className="text-navy font-serif text-[17px] leading-relaxed" style={{ fontWeight: 600 }}>{value}</p>
           <p className="text-r-gray text-[14px] mt-1.5 leading-relaxed">{why}</p>
@@ -103,22 +103,94 @@ export default function ValueCompass({ onExit }) {
   return null
 }
 
-function CompassIcon() {
+// 크고 3D 같은 나침반 — 유리 돔 + 금속 베젤 + 바늘이 흔들리다 자리잡고 미세하게 살아있음
+function Compass3D() {
+  const C = 82 // center
+  const ticks = Array.from({ length: 24 }, (_, i) => i * 15)
   return (
-    <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="200" height="212" viewBox="0 0 164 176" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="cmp-halo" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#E0A33E" stopOpacity="0.35" />
+        <radialGradient id="c3-halo" cx="50%" cy="46%" r="52%">
+          <stop offset="0%" stopColor="#E0A33E" stopOpacity="0.28" />
           <stop offset="100%" stopColor="#E0A33E" stopOpacity="0" />
         </radialGradient>
+        {/* 금속 베젤(위 밝고 아래 어둡게 → 입체) */}
+        <linearGradient id="c3-bezel" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fbf6ea" />
+          <stop offset="45%" stopColor="#e6d3a6" />
+          <stop offset="100%" stopColor="#b1975f" />
+        </linearGradient>
+        {/* 다이얼 면(오목한 느낌) */}
+        <radialGradient id="c3-face" cx="42%" cy="34%" r="75%">
+          <stop offset="0%" stopColor="#fffdf8" />
+          <stop offset="60%" stopColor="#f4efe2" />
+          <stop offset="100%" stopColor="#e3dcc8" />
+        </radialGradient>
+        {/* 바늘 북(빨강) / 남(강철) */}
+        <linearGradient id="c3-north" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#f0623e" />
+          <stop offset="100%" stopColor="#d1402a" />
+        </linearGradient>
+        <linearGradient id="c3-south" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#3a4a63" />
+          <stop offset="100%" stopColor="#1d2a40" />
+        </linearGradient>
+        {/* 유리 돔 광택 */}
+        <radialGradient id="c3-glass" cx="36%" cy="28%" r="45%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="c3-pin" cx="38%" cy="32%" r="70%">
+          <stop offset="0%" stopColor="#fff" />
+          <stop offset="55%" stopColor="#d9c38f" />
+          <stop offset="100%" stopColor="#9c8047" />
+        </radialGradient>
       </defs>
-      <circle cx="36" cy="36" r="34" fill="url(#cmp-halo)" />
-      <circle cx="36" cy="36" r="25" fill="#fff" stroke="#e3c98a" strokeWidth="1.5" />
-      <circle cx="36" cy="36" r="25" fill="none" stroke="#112338" strokeOpacity="0.08" strokeWidth="1" />
-      {/* 바늘 */}
-      <path d="M 36 16 L 41 36 L 36 33 L 31 36 Z" fill="#E0A33E" />
-      <path d="M 36 56 L 31 36 L 36 39 L 41 36 Z" fill="#112338" opacity="0.55" />
-      <circle cx="36" cy="36" r="3" fill="#112338" />
+
+      <ellipse cx={C} cy={C} rx="82" ry="82" fill="url(#c3-halo)" />
+      {/* 바닥 그림자(입체 부양감) */}
+      <ellipse cx={C} cy="162" rx="52" ry="9" fill="#b8a882" opacity="0.35" />
+
+      {/* 베젤 */}
+      <circle cx={C} cy={C} r="72" fill="url(#c3-bezel)" />
+      <circle cx={C} cy={C} r="72" fill="none" stroke="#8f7841" strokeWidth="1" opacity="0.5" />
+      {/* 다이얼 면 */}
+      <circle cx={C} cy={C} r="60" fill="url(#c3-face)" stroke="#cdbf9a" strokeWidth="1" />
+
+      {/* 눈금 */}
+      {ticks.map((deg) => {
+        const major = deg % 90 === 0
+        const a = (deg - 90) * (Math.PI / 180)
+        const r1 = 60, r2 = major ? 50 : 55
+        return (
+          <line key={deg}
+            x1={C + r1 * Math.cos(a)} y1={C + r1 * Math.sin(a)}
+            x2={C + r2 * Math.cos(a)} y2={C + r2 * Math.sin(a)}
+            stroke={major ? '#b1975f' : '#cdbf9a'} strokeWidth={major ? 1.6 : 1} strokeLinecap="round" />
+        )
+      })}
+      {/* 방위 */}
+      <text x={C} y="34" textAnchor="middle" fontSize="13" fontWeight="700" fill="#d1402a" fontFamily="Lora, serif">N</text>
+      <text x={C} y="136" textAnchor="middle" fontSize="12" fill="#7a746a" fontFamily="Lora, serif">S</text>
+      <text x="138" y={C + 5} textAnchor="middle" fontSize="12" fill="#7a746a" fontFamily="Lora, serif">E</text>
+      <text x="27" y={C + 5} textAnchor="middle" fontSize="12" fill="#7a746a" fontFamily="Lora, serif">W</text>
+
+      {/* 바늘 — 흔들리다 자리잡고(settle) 미세하게 계속 살아있음(sway) */}
+      <g className="animate-compass-settle" style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
+        <g className="animate-compass-sway" style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
+          <g>
+            <path d={`M ${C} 34 L ${C + 9} ${C} L ${C} ${C} L ${C - 9} ${C} Z`} fill="url(#c3-north)" />
+            <path d={`M ${C} 130 L ${C - 9} ${C} L ${C} ${C} L ${C + 9} ${C} Z`} fill="url(#c3-south)" />
+            <path d={`M ${C} 34 L ${C} ${C} L ${C - 9} ${C} Z`} fill="#fff" opacity="0.22" />
+          </g>
+        </g>
+      </g>
+      {/* 중심 핀 */}
+      <circle cx={C} cy={C} r="6.5" fill="url(#c3-pin)" stroke="#8f7841" strokeWidth="0.8" />
+      <circle cx={C - 1.5} cy={C - 1.5} r="1.6" fill="#fff" opacity="0.8" />
+
+      {/* 유리 돔 광택 */}
+      <ellipse cx={C - 14} cy={C - 20} rx="42" ry="30" fill="url(#c3-glass)" />
     </svg>
   )
 }

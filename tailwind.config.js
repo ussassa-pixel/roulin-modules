@@ -37,6 +37,8 @@ export default {
         'stop-pulse': 'stopPulse 1.8s ease-out infinite',
         'sink-away': 'sinkAway 1.4s cubic-bezier(0.5,0,0.75,0) forwards',
         'release-rise': 'releaseRise 2.6s cubic-bezier(0.33,0,0.5,1) forwards',
+        'compass-settle': 'compassSettle 2.6s cubic-bezier(0.3,0.7,0.35,1) both',
+        'compass-sway': 'compassSway 5.5s ease-in-out infinite',
       },
       keyframes: {
         breath: {
@@ -95,6 +97,18 @@ export default {
           '0%':   { transform: 'translate(-50%, 0) scale(1) rotate(0deg)', opacity: '1', filter: 'blur(0px)' },
           '25%':  { opacity: '1' },
           '100%': { transform: 'translate(calc(-50% + 34px), -230px) scale(0.8) rotate(7deg)', opacity: '0', filter: 'blur(2.5px)' },
+        },
+        compassSettle: {
+          '0%':   { transform: 'rotate(-42deg)' },
+          '18%':  { transform: 'rotate(25deg)' },
+          '38%':  { transform: 'rotate(-15deg)' },
+          '58%':  { transform: 'rotate(9deg)' },
+          '78%':  { transform: 'rotate(-4deg)' },
+          '100%': { transform: 'rotate(0deg)' },
+        },
+        compassSway: {
+          '0%, 100%': { transform: 'rotate(-5.5deg)' },
+          '50%':      { transform: 'rotate(5.5deg)' },
         },
       },
     },

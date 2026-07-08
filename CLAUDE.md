@@ -57,9 +57,13 @@ src/
   `<ModuleFrame onExit={onExit}><EndRating onComplete={() => onExit()} /></ModuleFrame>`
 - App.jsx에 추가: import + `{activeModule === 'id' && <X onExit={exit} />}` + `MODULES` 배열에 카드 1줄
 
-### 모듈 22개
+### 모듈 27개
 호흡/감각/진정 (16): MoodThermometer, BreathingCircle, BalloonBreathing, FingerBreathing, PresentMoment, Grounding54321, SelfCompassion, SoundGarden, SandGarden, BubbleWrap, LeafFloating, DrinkingMeditation, ButterflyHug, WorryDump, ThreeGoodThings, StopCard
-생각정리·행동 (6, 신규): BrainDump, WorryTree, DecisionalBalance, Woop, ImplementationIntention, SmallestStep
+생각정리·행동 (6): BrainDump, WorryTree, DecisionalBalance, Woop, ImplementationIntention, SmallestStep
+범주 공백 채우기 (5): RelationLens(관계·조망수용), SavoringMoment(음미·상향조절), ValueCompass(가치·ACT), DayClose(하루 닫기·야간 의례), BodyRelease(근이완, **연습형**: 산출물 없음, 타이머 가이드)
+
+> 명세(v2/v3)는 `reason/priorOutput/onSave/ModuleClose` 라우터 계약을 말하지만 **아직 미구현**. 현재 모든 모듈은 `{onExit}` + `EndRating`만 사용. 추천 레이어 구축 시 그 계약을 얹는다.
+> 타이머 모듈(SavoringMoment.dwell, BodyRelease.guide)은 항상 일시정지/건너뛰기 제공(이탈 허용). 카피 원칙: 라벨·조언·효과주장·죄책감 금지, 야간(DayClose)·통증(BodyRelease) 배려.
 
 ## 코딩 컨벤션 / 주의
 - **포커스 버그 회피:** 입력(input/textarea)이 있는 단계용 컴포넌트를 부모 *본문 안에서* 정의해 `<Comp/>`로 쓰지 말 것 — 매 입력마다 리마운트되어 포커스가 풀린다. 모듈 스코프에 정의하거나, 단계 JSX를 인라인(`{field(...)}` 함수 호출)으로 둘 것.

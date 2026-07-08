@@ -22,6 +22,11 @@ import SmallestStep from './modules/SmallestStep'
 import WorryTree from './modules/WorryTree'
 import BrainDump from './modules/BrainDump'
 import DecisionalBalance from './modules/DecisionalBalance'
+import RelationLens from './modules/RelationLens'
+import SavoringMoment from './modules/SavoringMoment'
+import ValueCompass from './modules/ValueCompass'
+import DayClose from './modules/DayClose'
+import BodyRelease from './modules/BodyRelease'
 
 // roulin.ai 모드카드와 같은 결: [번호] · 제목 · 설명("…할 때. …합니다.") · 작은 태그 pill
 const MODULES = [
@@ -49,6 +54,13 @@ const MODULES = [
   { id: 'woop',       title: 'WOOP',             tag: '계획',     desc: '소망과 걸림돌을 함께 볼 때. 네 걸음으로 마음을 정리합니다.' },
   { id: 'intention',  title: '실행 의도',        tag: '실행',     desc: '결심은 섰는데 자꾸 미뤄질 때. 언제·어디서 할지 정해 둡니다.' },
   { id: 'smalleststep', title: '가장 작은 한 걸음', tag: '한 걸음', desc: '막막해서 시작이 안 될 때. 2분짜리 첫 동작 하나만 정합니다.' },
+
+  // ── 범주 공백 채우기 (신규) ──
+  { id: 'relationlens', title: '관계 렌즈',      tag: '관계',   desc: '어떤 관계가 마음에 걸릴 때. 그 사람 자리에 잠깐 서 봅니다.' },
+  { id: 'savoring',     title: '좋은 순간 머무르기', tag: '음미', desc: '오늘 괜찮았던 순간이 있을 때. 그 감각에 잠깐 더 머뭅니다.' },
+  { id: 'compass',      title: '나의 나침반',    tag: '가치',   desc: '뭐가 중요했는지 흐려질 때. 지금 소중한 것 하나를 짚습니다.' },
+  { id: 'dayclose',     title: '하루 닫기',      tag: '마무리', desc: '하루가 닫히지 않은 밤에. 매듭짓고 내일로 넘겨 닫습니다.' },
+  { id: 'bodyrelease',  title: '몸 풀어주기',    tag: '이완',   desc: '몸이 뻣뻣하게 긴장될 때. 부위별로 2분간 풀어줍니다.' },
 ]
 
 export default function App() {
@@ -79,6 +91,11 @@ export default function App() {
       {activeModule === 'woop'       && <Woop onExit={exit} />}
       {activeModule === 'intention'  && <ImplementationIntention onExit={exit} />}
       {activeModule === 'smalleststep' && <SmallestStep onExit={exit} />}
+      {activeModule === 'relationlens' && <RelationLens onExit={exit} />}
+      {activeModule === 'savoring'     && <SavoringMoment onExit={exit} />}
+      {activeModule === 'compass'      && <ValueCompass onExit={exit} />}
+      {activeModule === 'dayclose'     && <DayClose onExit={exit} />}
+      {activeModule === 'bodyrelease'  && <BodyRelease onExit={exit} />}
 
       {activeModule === null && <Launcher onPick={setActiveModule} />}
     </SpeechProvider>

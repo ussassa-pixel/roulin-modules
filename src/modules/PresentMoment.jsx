@@ -15,7 +15,8 @@ export default function PresentMoment({ onExit }) {
   const [stepIndex, setStepIndex] = useState(0)
   const [subIndex, setSubIndex] = useState(0)
   const prevStepRef = useRef(-1)
-  const { speak, isMuted, toggleMute } = useSpeech()
+  const { speak, stop, isMuted, toggleMute } = useSpeech()
+  useEffect(() => () => stop(), [phase, stop])
 
   const stepDuration = duration / STEPS.length
   const subDuration = stepDuration / 2

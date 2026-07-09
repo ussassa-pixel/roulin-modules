@@ -12,7 +12,8 @@ export default function ThreeGoodThings({ onExit }) {
   const [phase, setPhase] = useState('intro')
   const [things, setThings] = useState(['', '', ''])
   const [currentIndex, setCurrentIndex] = useState(0)
-  const { speak } = useSpeech()
+  const { speak, stop } = useSpeech()
+  useEffect(() => () => stop(), [phase, stop])
 
   useEffect(() => {
     if (phase === 'intro') speak('하루를 돌아보며, 좋았던 순간 세 가지를 적어볼게요.')

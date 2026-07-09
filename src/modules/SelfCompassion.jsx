@@ -6,7 +6,8 @@ export default function SelfCompassion({ onExit }) {
   const [phase, setPhase] = useState('intro')
   const [stepIndex, setStepIndex] = useState(0)
   const [pickedMessage, setPickedMessage] = useState(null)
-  const { speak } = useSpeech()
+  const { speak, stop } = useSpeech()
+  useEffect(() => () => stop(), [phase, stop])
 
   const steps = [
     {

@@ -8,13 +8,16 @@ export default function ButterflyHug({ onExit }) {
   const [duration, setDuration] = useState(60)
   const [activeSide, setActiveSide] = useState('left')
   const [secondsLeft, setSecondsLeft] = useState(60)
-  const { speak, isMuted, toggleMute } = useSpeech()
+  const { speak, stop, isMuted, toggleMute } = useSpeech()
 
   useEffect(() => {
     if (phase === 'intro') {
       speak('나비 포옹이에요. 양손을 가슴 위에 X자로 얹고, 화면에 맞춰 좌우 번갈아 가볍게 토닥여요.')
     }
   }, [phase, speak])
+
+  // 단계가 바뀌거나 나갈 때 이전 음성 정지(인트로 음성이 진행 화면으로 새어나오지 않게)
+  useEffect(() => () => stop(), [phase, stop])
 
   useEffect(() => {
     if (phase !== 'running') return

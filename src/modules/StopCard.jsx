@@ -11,7 +11,8 @@ const OBSERVE_TEXTS = [
 export default function StopCard({ onExit }) {
   const [phase, setPhase] = useState('stop')
   const [observeIndex, setObserveIndex] = useState(0)
-  const { speak } = useSpeech()
+  const { speak, stop } = useSpeech()
+  useEffect(() => () => stop(), [phase, stop])
 
   useEffect(() => {
     if (phase === 'stop') speak('STOP. 지금, 하던 것을 멈춰요.')

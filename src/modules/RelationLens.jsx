@@ -71,13 +71,9 @@ export default function RelationLens({ onExit }) {
   if (phase === 'summary')
     return page(
       <div className="max-w-md w-full text-center animate-fade-up">
-        <p className="text-r-gray-soft text-xs mb-6 tracking-wide">오늘 들여다본 것</p>
-        <div className="rounded-2xl bg-amber-soft/50 border border-amber/30 p-6 mb-8 text-left space-y-4">
-          <div><p className="text-[11px] tracking-[0.12em] text-amber mb-1">상대</p><p className="text-ink text-[14px]">{v.person}</p></div>
-          <div><p className="text-[11px] tracking-[0.12em] text-amber mb-1">내 마음</p><p className="text-ink text-[14px]">{v.myFeeling}</p></div>
-          <div><p className="text-[11px] tracking-[0.12em] text-amber mb-1">내가 원하는 것</p><p className="text-navy font-serif text-[16px] leading-relaxed" style={{ fontWeight: 600 }}>{v.myWant}</p></div>
-        </div>
-        <p className="text-[13px] text-r-gray mb-10">여기까지예요. 오늘은 들여다본 것만으로 충분해요.</p>
+        <p className="text-r-gray-soft text-xs mb-4 tracking-wide">이 관계를, 렌즈로 들여다봤어요</p>
+        <LensSummary v={v} />
+        <p className="text-[13px] text-r-gray mt-6 mb-9">여기까지예요. 오늘은 들여다본 것만으로 충분해요.</p>
         <button onClick={() => setPhase('rating')} className="w-full py-4 bg-navy text-white rounded-full hover:bg-[#0c1a2b] transition">마무리</button>
       </div>
     )
@@ -90,4 +86,58 @@ export default function RelationLens({ onExit }) {
     )
 
   return null
+}
+
+// 관계 렌즈 — 정리한 내용을 실제 큰 돋보기 렌즈 안에 담아 보여준다.
+function LensSummary({ v }) {
+  const items = [
+    { label: '상대', value: v.person },
+    { label: '내 마음', value: v.myFeeling },
+    { label: '그 사람 자리', value: v.theirView },
+    { label: '내가 원하는 것', value: v.myWant, strong: true },
+  ].filter((it) => it.value && it.value.trim())
+
+  return (
+    <div className="relative mx-auto" style={{ width: 300, height: 356 }}>
+      <svg width="300" height="356" viewBox="0 0 300 356" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0" aria-hidden="true">
+        <defs>
+          <radialGradient id="lens-glass" cx="42%" cy="34%" r="72%">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.92" />
+            <stop offset="48%" stopColor="#eef4f7" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#dce6ec" stopOpacity="0.4" />
+          </radialGradient>
+          <linearGradient id="lens-rim" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#EDB24A" />
+            <stop offset="52%" stopColor="#E0A33E" />
+            <stop offset="100%" stopColor="#b9822b" />
+          </linearGradient>
+        </defs>
+        {/* 손잡이 */}
+        <line x1="240" y1="233" x2="286" y2="318" stroke="url(#lens-rim)" strokeWidth="20" strokeLinecap="round" />
+        <line x1="240" y1="233" x2="286" y2="318" stroke="rgba(0,0,0,0.10)" strokeWidth="6" strokeLinecap="round" />
+        {/* 유리 */}
+        <circle cx="150" cy="140" r="132" fill="url(#lens-glass)" />
+        {/* 테 */}
+        <circle cx="150" cy="140" r="132" fill="none" stroke="url(#lens-rim)" strokeWidth="9" />
+        <circle cx="150" cy="140" r="127" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" />
+        {/* 광택 */}
+        <path d="M66 84 A 132 132 0 0 1 196 40" stroke="white" strokeWidth="9" strokeLinecap="round" fill="none" opacity="0.4" />
+      </svg>
+
+      <div className="absolute left-1/2 -translate-x-1/2 text-center" style={{ top: 42, width: 210 }}>
+        <div className="space-y-3">
+          {items.map((it) => (
+            <div key={it.label}>
+              <p className="text-[10.5px] tracking-[0.14em] text-amber mb-0.5">{it.label}</p>
+              {it.strong ? (
+                <p className="text-navy font-serif text-[15px] leading-snug line-clamp-2" style={{ fontWeight: 600 }}>{it.value}</p>
+              ) : (
+                <p className="text-ink/90 text-[13px] leading-snug line-clamp-2">{it.value}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }

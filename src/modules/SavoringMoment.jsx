@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 import EndRating from '../components/EndRating'
+import { useSpeech } from '../context/SpeechContext'
 
 // 좋은 순간 머무르기 — 음미(Bryant & Veroff) / 확장-구축(Fredrickson).
 // 효과 주장 금지: "머물러 보기" 프레이밍만. 라벨 금지(관찰만).
 const inputCls =
   'w-full rounded-2xl border border-line bg-white px-5 py-4 text-ink outline-none focus:border-[#DCD5C4] placeholder-[#A8A294] transition'
 
-const DWELL = [
-  '그 순간으로 잠깐 돌아가볼게요.',
-  '그때 뭐가 보였나요, 어떤 소리가 났나요.',
-  '조금만 더, 그 느낌에 머물러볼게요.',
+// 눈을 감고 음성으로 안내받는 유도 스크립트. dur는 다음 안내까지의 여백(상상할 시간).
+const GUIDE = [
+  { text: '이제 눈을 편안히 감아볼게요.', dur: 5500 },
+  { text: '준비되면, 그 순간으로 천천히 돌아가볼게요.', dur: 7000 },
+  { text: '그때 무엇이 보였나요. 어떤 소리가 났나요.', dur: 9000 },
+  { text: '조금만 더, 그 느낌에 머물러볼게요.', dur: 9000 },
 ]
 
 export default function SavoringMoment({ onExit }) {
@@ -112,22 +115,60 @@ export default function SavoringMoment({ onExit }) {
   return null
 }
 
-// dwell 타이머 — 문구 자동 전환(7.5s) + 언제든 건너뛰기(이탈 허용)
+// dwell — 눈을 감고 음성으로 유도. 각 안내를 목소리로 들려주고 상상할 여백을 둔다.
+// 문구 자동 전환 + 언제든 건너뛰기(이탈 허용).
 function Dwell({ onDone }) {
   const [i, setI] = useState(0)
+  const { speak, stop } = useSpeech()
+
   useEffect(() => {
-    if (i >= DWELL.length) { onDone(); return }
-    const t = setTimeout(() => setI(i + 1), 7500)
+    if (i >= GUIDE.length) { onDone(); return }
+    speak(GUIDE[i].text) // 남성 음성 안내(단계 여백 ≫ 음성 길이라 잘리지 않음)
+    const t = setTimeout(() => setI(i + 1), GUIDE[i].dur)
     return () => clearTimeout(t)
   }, [i]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // dwell을 떠나면(건너뛰기·다음) 안내 음성 정지
+  useEffect(() => () => stop(), [stop])
+
+  const cur = GUIDE[Math.min(i, GUIDE.length - 1)]
+  const eyesClosed = i === 0
 
   return (
     <div className="min-h-screen relative flex flex-col items-center justify-center p-8" style={{ background: 'radial-gradient(ellipse at 50% 42%, #FBF3DF 0%, #F5F3EB 60%, #F0EDE2 100%)' }}>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-amber-200/25 blur-3xl animate-breath-slow" />
       <button onClick={onDone} className="absolute top-6 right-6 text-[11px] tracking-wider font-light text-r-gray-soft hover:text-navy transition z-10">건너뛰기</button>
+
+      {/* 감은 눈 아이콘 — 눈을 감아도 되는 시간임을 알려준다 */}
+      <div className="relative z-10 mb-8">
+        <ClosedEye />
+      </div>
+
       <p key={i} className="relative z-10 text-center text-[19px] text-navy/80 font-light animate-fade-in leading-relaxed" style={{ minHeight: '56px' }}>
-        {DWELL[Math.min(i, DWELL.length - 1)]}
+        {cur.text}
       </p>
+      {eyesClosed && (
+        <p className="relative z-10 mt-3 text-center text-[12px] text-r-gray-soft animate-fade-in">
+          소리에 귀만 맡겨 두어도 괜찮아요
+        </p>
+      )}
     </div>
+  )
+}
+
+// 감은 눈 — 부드러운 곡선
+function ClosedEye() {
+  return (
+    <svg width="64" height="40" viewBox="0 0 64 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M8 16 Q32 36 56 16" stroke="#E0A33E" strokeWidth="2.4" strokeLinecap="round" fill="none" opacity="0.85" />
+      {/* 속눈썹 */}
+      <g stroke="#E0A33E" strokeWidth="2" strokeLinecap="round" opacity="0.55">
+        <path d="M16 26 l -3 5" />
+        <path d="M25 30 l -2 5.5" />
+        <path d="M34 31 l 0 6" />
+        <path d="M43 30 l 2 5.5" />
+        <path d="M51 26 l 3 5" />
+      </g>
+    </svg>
   )
 }

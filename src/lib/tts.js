@@ -55,7 +55,12 @@ function humanize(t) {
   return t.replace(/\s*\n+\s*/g, ', ').replace(/[—·]/g, ', ').replace(/\s{2,}/g, ' ').trim()
 }
 
+// 발화 세대 토큰: 새 발화나 정지가 생기면 올라간다.
+// fetch가 늦게 도착한 옛 발화는 자기 세대가 최신이 아니면 재생하지 않는다(겹침 방지).
+let speakSeq = 0
+
 export function stopSpeaking() {
+  speakSeq++ // 진행/대기 중이던 발화를 모두 무효화
   if (currentAudio) { try { currentAudio.pause() } catch { /* noop */ } currentAudio = null }
   if (window.speechSynthesis) window.speechSynthesis.cancel()
 }
@@ -97,15 +102,18 @@ async function fetchTts(text, voice) {
 // ElevenLabs 우선, 실패 시 브라우저 폴백. voice: 'female'(기본) | 'male'
 export async function speakSmart(text, voice = 'female') {
   if (!text) return
-  stopSpeaking()
+  stopSpeaking()          // 이전 발화 즉시 중단 + 세대 증가
+  const seq = speakSeq    // 이 발화의 세대
   if (elState === 'off') { webSpeak(text, voice); return }
   try {
     const url = await fetchTts(text, voice)
+    if (seq !== speakSeq) return // 그 사이 다음으로 넘어갔음(새 발화/정지) → 재생 안 함
     const audio = new Audio(url)
     audio.volume = 0.95
     currentAudio = audio
     await audio.play().catch(() => {})
   } catch {
+    if (seq !== speakSeq) return
     webSpeak(text, voice) // 일시 실패는 이번만 폴백(키 없음 501 이면 elState=off 로 영구 폴백)
   }
 }

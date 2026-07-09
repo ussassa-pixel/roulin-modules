@@ -114,10 +114,10 @@ export default function WorryDump({ onExit }) {
 
             {dumpedWorries.length > 0 && (
               <div className="text-center animate-fade-in">
-                <p className="text-r-gray-soft text-xs mb-3">내려놓은 생각 {dumpedWorries.length}개</p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {dumpedWorries.map((_, i) => (
-                    <div key={i} className="w-2 h-2 rounded-full bg-indigo-300/60 animate-fade-in" />
+                <p className="text-r-gray-soft text-xs mb-3">내려놓은 짐 {dumpedWorries.length}개</p>
+                <div className="flex flex-col-reverse items-center gap-1.5">
+                  {dumpedWorries.map((w, i) => (
+                    <BurdenBox key={i} text={w} index={i} isNew={i === dumpedWorries.length - 1} />
                   ))}
                 </div>
               </div>
@@ -155,10 +155,10 @@ export default function WorryDump({ onExit }) {
         <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-6 relative z-10">
           <div className="max-w-md w-full text-center animate-fade-up">
             <div className="flex justify-center mb-8">
-              <MoonIcon glow />
+              <TrashDump worries={dumpedWorries} />
             </div>
             <p className="font-serif text-[26px] text-navy mb-3" style={{ fontWeight: 600 }}>
-              {dumpedWorries.length}개의 생각을 내려놓았어요
+              {dumpedWorries.length}개의 짐을 비웠어요
             </p>
             <p className="text-r-gray mb-12 leading-relaxed text-sm font-light">
               해결한 건 아닙니다.<br />
@@ -176,6 +176,59 @@ export default function WorryDump({ onExit }) {
   }
 
   return null
+}
+
+// 내려놓은 걱정 = 짐 상자(끈으로 묶인 꾸러미). 새로 놓이면 툭 떨어져 쌓인다.
+function BurdenBox({ text, index, isNew }) {
+  const rot = ((index * 41) % 9) - 4
+  return (
+    <div className={isNew ? 'animate-drop-stack' : ''}>
+      <div
+        style={{ transform: `rotate(${rot}deg)` }}
+        className="relative px-4 py-2.5 rounded-xl bg-gradient-to-b from-[#eef0fb] to-[#dde2f4] border border-indigo-200/70 shadow-sm max-w-[240px]"
+      >
+        <span className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 bg-indigo-300/40" />
+        <p className="relative text-[12.5px] text-slate-500 font-light truncate">{text}</p>
+      </div>
+    </div>
+  )
+}
+
+// 다 비웠을 때 — 짐들이 쓰레기통으로 툭툭 떨어져 사라진다.
+function TrashDump({ worries }) {
+  const shown = worries.slice(-5)
+  return (
+    <div className="relative" style={{ width: 180, height: 150 }}>
+      <div className="absolute inset-x-0 top-0 flex flex-col items-center gap-1.5 pointer-events-none">
+        {shown.map((w, i) => (
+          <div key={i} className="animate-toss-trash" style={{ animationDelay: `${i * 0.22}s` }}>
+            <div className="px-3 py-1.5 rounded-lg bg-gradient-to-b from-[#eef0fb] to-[#dde2f4] border border-indigo-200/70 shadow-sm max-w-[150px]">
+              <p className="text-[11px] text-slate-500 font-light truncate">{w}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
+        <TrashCan />
+      </div>
+    </div>
+  )
+}
+
+function TrashCan() {
+  return (
+    <svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <ellipse cx="48" cy="92" rx="26" ry="3.5" fill="rgba(0,0,0,0.12)" />
+      {/* 뚜껑 */}
+      <rect x="20" y="27" width="56" height="9" rx="4.5" fill="#9aa6c4" />
+      <rect x="40" y="20" width="16" height="8" rx="4" fill="#9aa6c4" />
+      {/* 통 */}
+      <path d="M26 37 L30 84 Q30.5 90 36 90 L60 90 Q65.5 90 66 84 L70 37 Z" fill="#c7cde0" />
+      <g stroke="#9aa6c4" strokeWidth="2" opacity="0.55" strokeLinecap="round">
+        <path d="M40 43 L42 84" /><path d="M48 43 L48 84" /><path d="M56 43 L54 84" />
+      </g>
+    </svg>
+  )
 }
 
 // 프리미엄 글로우 크레센트 달 — 글래스 질감 + 부드러운 후광

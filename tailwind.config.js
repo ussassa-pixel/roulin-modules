@@ -28,6 +28,9 @@ export default {
         'breath': 'breath 10s ease-in-out infinite',
         'breath-slow': 'breath 14s ease-in-out infinite',
         'soothe': 'soothe 3.4s ease-in-out infinite',
+        'steam': 'steamRise 3.2s ease-out infinite',
+        'drop-stack': 'dropStack 0.55s cubic-bezier(0.2,0.7,0.3,1) both',
+        'toss-trash': 'tossTrash 1s cubic-bezier(0.5,0,0.75,0) forwards',
         'fade-in': 'fadeIn 0.8s ease-out',
         'fade-up': 'fadeUp 1s ease-out',
         'fade-out': 'fadeOut 0.6s ease-out',
@@ -53,6 +56,24 @@ export default {
           '0%, 100%': { transform: 'scale(1)' },
           '45%': { transform: 'scale(1.055)' },
           '60%': { transform: 'scale(1.02)' },
+        },
+        // 한 잔의 시간 — 컵에서 피어오르는 김
+        steamRise: {
+          '0%':   { opacity: '0', transform: 'translateY(8px) scaleX(0.85)' },
+          '28%':  { opacity: '0.55' },
+          '100%': { opacity: '0', transform: 'translateY(-26px) scaleX(1.35)' },
+        },
+        // 걱정 비우기 — 적은 걱정이 짐처럼 툭 떨어져 쌓임
+        dropStack: {
+          '0%':   { opacity: '0', transform: 'translateY(-46px) scale(0.9)' },
+          '65%':  { opacity: '1', transform: 'translateY(5px) scale(1.03)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
+        // 걱정 비우기 — 짐이 쓰레기통으로 떨어져 사라짐
+        tossTrash: {
+          '0%':   { opacity: '1', transform: 'translateY(0) rotate(0deg) scale(1)' },
+          '55%':  { opacity: '1' },
+          '100%': { opacity: '0', transform: 'translateY(86px) rotate(14deg) scale(0.35)' },
         },
         fadeIn: {
           '0%': { opacity: '0' },

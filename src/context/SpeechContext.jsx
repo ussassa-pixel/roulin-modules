@@ -20,6 +20,9 @@ export function SpeechProvider({ children }) {
     speakSmart(text, 'male') // 남성 목소리 고정. ElevenLabs 우선, 실패 시 브라우저 음성 폴백
   }, [])
 
+  // 단계 전환·나가기 때 이전 음성을 끊기 위해 모듈에 노출
+  const stop = useCallback(() => stopSpeaking(), [])
+
   const toggleMute = useCallback(() => {
     setIsMuted((prev) => {
       const next = !prev
@@ -30,7 +33,7 @@ export function SpeechProvider({ children }) {
   }, [])
 
   return (
-    <SpeechContext.Provider value={{ isMuted, toggleMute, speak }}>
+    <SpeechContext.Provider value={{ isMuted, toggleMute, speak, stop }}>
       {children}
     </SpeechContext.Provider>
   )

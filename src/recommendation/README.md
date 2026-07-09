@@ -42,9 +42,9 @@ const res = recommend(signal, { n: 2, exclude: ['grounding'] /* 쿨다운 */ })
 - 결정적: 동일 signal → 동일 결과(점수 desc, 동점 시 id asc).
 
 ## v4 즉시 착수분 (이번에 구현)
-- **① daily_action** — 콘텐츠 `content/dailyActions.json`(36개 DRAFT) + `dailyAction.js` 로직 + 런처 `DailyActionCard`. 이 데모엔 위기 신호가 없어 `crisisLevel:'none'` 고정 — 서비스 통합 시 라우터가 넘긴다.
-- **④ time_slots** — 매핑 `content/timeSlots.json`(퇴근길 17:30~20:00 / 잠들기 전 22:00~01:00) + `timeSlots.js` + 런처 `TimeSlotBanner`. worry_drawer는 `pending`으로 두어 출시 후 매핑만 추가하면 됨.
-- **⑥ comfort_draw** — 다정 풀 `content/comfortPool.json`(50개 DRAFT) + 모듈 `modules/ComfortDraw.jsx`(id `comfortdraw`). **따끔 모드 미구현** — 위기 L1+ 차단 게이트 배선 후에만.
+- **① daily_action** — 콘텐츠 `content/dailyActions.json`(36개 DRAFT, "귀찮지만 하고 나면 나은" 어른 톤) + `dailyAction.js` 로직 + 런처 `DailyActionCard`. 이 데모엔 위기 신호가 없어 `crisisLevel:'none'` 고정 — 서비스 통합 시 라우터가 넘긴다. **개인화 계약**: 1순위는 서비스 LLM이 그날의 대화에서 맞춤 행동 생성(③ stateSignal 확장), 이 풀은 폴백 — `preferDomains`(대화 유추 도메인 우선)·`weather`(비 오는 날 항목) 신호를 이미 받는다.
+- **④ time_slots** — 매핑 `content/timeSlots.json`(아침 06:00~11:00 / 퇴근길 17:30~20:00 / 잠들기 전 22:00~01:00) + `timeSlots.js` + 런처 `TimeSlotBanner`. worry_drawer는 `pending`으로 두어 출시 후 매핑만 추가하면 됨. "자기 전"은 클라이언트 시계 휴리스틱 — 카피가 질문형·거절 가능인 이유. 실제 판정(사용 패턴·대화 맥락)은 서비스 몫.
+- **⑥ comfort_draw / fortune** — 다정 풀 `content/comfortPool.json`(50개 DRAFT) + `modules/ComfortDraw.jsx`(id `comfortdraw`), 아침용 포춘 쿠키 `content/fortuneCookies.json`(36개 DRAFT) + `modules/FortuneCookie.jsx`(id `fortune`, 날짜 기반 결정적 — 하루 동안 같은 조각). **리추얼 2종은 EndRating 없음**(기분 측정이 의례의 결을 깸). **따끔 모드 미구현** — 위기 L1+ 차단 게이트 배선 후에만.
 - **②③(걱정 서랍·미래 편지)은 미구현** — 본체 DB(`module_outputs`)+스케줄링 선결(v4 §6), mind_vault와 인프라 공유 설계.
 
 ## SW 확정 필요 (미결)

@@ -144,7 +144,13 @@ export const MODULE_META = {
     targetStates: ['sadness', 'loneliness', 'burnout'],
     safetyLevel: 'general',
     durationSec: 60,
-    hasEndRating: true,
+    hasEndRating: false,
+  },
+  fortune: {
+    targetStates: ['morning-start', 'low-mood', 'flatness'],
+    safetyLevel: 'general',
+    durationSec: 45,
+    hasEndRating: false,
   },
 }
 

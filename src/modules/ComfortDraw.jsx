@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
-import EndRating from '../components/EndRating'
 import comfortPool from '../content/comfortPool.json'
 
 // 위로 뽑기 (v4 §5 comfort_draw) — 심리학적 근거를 주장하지 않는 순수 리추얼.
 // 효과·치유 어휘 금지. 기본은 항상 다정 풀.
 // "따끔" 모드는 안전 게이트(위기 L1+ 차단) 배선 후에만 추가한다 — 지금은 미구현.
+// 리추얼이므로 EndRating 없음 — 카드를 받고 "지금 기분 어떠세요?"를 물으면 의례의 결이 깨진다.
 const DRAWN_KEY = 'roulin_comfort_drawn' // 최근 뽑은 카드 id — 연속 중복 방지용
 const DRAWN_MAX = 10
 
@@ -137,7 +137,7 @@ export default function ComfortDraw({ onExit }) {
 
         {revealed ? (
           <div className="space-y-3">
-            <button onClick={() => setPhase('rating')} className="w-full py-4 bg-navy text-white rounded-full hover:bg-[#0c1a2b] transition">
+            <button onClick={onExit} className="w-full py-4 bg-navy text-white rounded-full hover:bg-[#0c1a2b] transition">
               마음에 담을게요
             </button>
             {!redrawn && (
@@ -152,13 +152,6 @@ export default function ComfortDraw({ onExit }) {
       </div>
     )
   }
-
-  if (phase === 'rating')
-    return (
-      <ModuleFrame onExit={onExit}>
-        <EndRating onComplete={() => onExit()} />
-      </ModuleFrame>
-    )
 
   return null
 }

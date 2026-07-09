@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════════════════════════
-//  registry.js — 28개 모듈 메타데이터 레지스트리 (추천 레이어 선결)
+//  registry.js — 29개 모듈 메타데이터 레지스트리 (추천 레이어 선결)
 //
 //  ⚠️ 임상 필드는 전부 **DRAFT**. safetyLevel / contraindications /
 //     targetStates / durationSec 은 SW(임상) 확정이 필요하다.
@@ -103,9 +103,11 @@ export const MODULES = [
   { id: 'vault', displayName: '마음 금고', type: 'tool', need: ['organize'], domainTags: ['self'], themes: ['containment', 'intrusive', 'reversible'],
     targetStates: ['버리지도 놓지도 못함', '침투적 반추'], safetyLevel: 'caution', contra: ['위기 L1+ 시 라우터 게이트 필수', '급성 해리 경향(SW 확정)'], durationSec: 150, hasEndRating: true },
 
-  // ── 리추얼 (v4 ⑥ — 근거 미주장, 산출물 없음) ──
+  // ── 리추얼 (v4 ⑥ — 근거 미주장, 산출물 없음, EndRating 없음: 기분 측정이 의례의 결을 깬다) ──
   { id: 'comfortdraw', displayName: '위로 뽑기', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['ritual', 'comfort'],
-    targetStates: ['이유 없이 한마디가 필요함', '가볍게 기대고 싶음'], safetyLevel: 'general', contra: ['따끔 모드는 위기 L1+ 차단(미구현)'], durationSec: 60, hasEndRating: true },
+    targetStates: ['이유 없이 한마디가 필요함', '가볍게 기대고 싶음'], safetyLevel: 'general', contra: ['따끔 모드는 위기 L1+ 차단(미구현)'], durationSec: 60, hasEndRating: false },
+  { id: 'fortune', displayName: '포춘 쿠키', type: 'practice', need: ['savor'], domainTags: ['self'], themes: ['ritual', 'morning'],
+    targetStates: ['하루의 시작', '가벼운 기대가 필요함'], safetyLevel: 'general', contra: [], durationSec: 45, hasEndRating: false },
 
   // ── 위기 브릿지 ──
   { id: 'stop', displayName: 'STOP', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['impulse', 'pause'],

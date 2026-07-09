@@ -106,7 +106,7 @@ function BodyGuide({ onDone, onExit }) {
   pausedRef.current = paused
   voiceRef.current = voiceOn
 
-  const speak = (text) => speakSmart(text)
+  const speak = (text) => speakSmart(text, 'male') // 남성 목소리 고정
 
   useEffect(() => {
     if (i >= BEATS.length) { onDone(); return }

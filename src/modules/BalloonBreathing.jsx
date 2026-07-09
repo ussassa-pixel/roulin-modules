@@ -20,7 +20,7 @@ export default function BalloonBreathing({ onExit }) {
     if (!voiceOn) return
     if (lastSpokenRef.current === text) return
     lastSpokenRef.current = text
-    speakSmart(text) // ElevenLabs 우선, 미설정/실패 시 브라우저 폴백
+    speakSmart(text, 'male') // 남성 목소리 고정. ElevenLabs 우선, 실패 시 브라우저 폴백
   }
 
   const handlePressStart = () => {

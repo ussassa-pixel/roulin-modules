@@ -115,6 +115,11 @@ export default function CheckIn({ modules, onPick, onClose }) {
               <span className="text-r-gray-soft text-[12px]">{cat.desc}</span>
             </button>
           ))}
+          {/* 갈래 없이 전부 보고 싶은 사람의 출구 — 런처(전체 목록)로 */}
+          <button onClick={onClose} className="roulin-card w-full px-6 py-5 flex items-center justify-between">
+            <span className="text-navy" style={{ fontWeight: 600, fontSize: '16px' }}>전체 목록</span>
+            <span className="text-r-gray-soft text-[12px]">갈래 없이, 전부 천천히</span>
+          </button>
         </div>
         <button onClick={() => setPhase('chips')} className="mt-8 text-[12px] text-r-gray-soft hover:text-r-gray tracking-wide transition">
           돌아가기

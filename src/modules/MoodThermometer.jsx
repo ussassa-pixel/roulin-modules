@@ -1,16 +1,43 @@
 import { useState } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 
+// ── 마음 온도 → 색 ────────────────────────────────────────────────
+// valence(불쾌 0 ↔ 좋음 100) · arousal(가라앉음 0 ↔ 들뜸 100)을
+// 사분면 코너색으로 이중선형 보간 → 슬라이더를 움직이면 색이 연속적으로 바뀐다.
+const CREAM = [246, 243, 235]
+const mix = (a, b, t) => [0, 1, 2].map((i) => Math.round(a[i] + (b[i] - a[i]) * t))
+
+function moodColor(valence, arousal) {
+  const vx = valence / 100
+  const ay = arousal / 100
+  const lowNeg = [166, 190, 226]  // 가라앉음 — 차가운 파랑
+  const highNeg = [240, 165, 150] // 불안·긴장 — 따뜻한 코랄
+  const lowPos = [173, 216, 183]  // 평온 — 연두
+  const highPos = [242, 199, 118] // 설렘·활기 — 골드
+  const bottom = mix(lowNeg, lowPos, vx)   // arousal 낮음
+  const top = mix(highNeg, highPos, vx)    // arousal 높음
+  return mix(bottom, top, ay)
+}
+
 export default function MoodThermometer({ onExit }) {
   const [phase, setPhase] = useState('intro')
   const [valence, setValence] = useState(50)
   const [arousal, setArousal] = useState(50)
   const [pickedWord, setPickedWord] = useState(null)
 
+  const tint = moodColor(valence, arousal)
+  const soft = mix(tint, CREAM, 0.32) // 배경용 은은한 톤
+  // 온도 색이 위에서 번지고 아래로 크림으로 잦아드는 배경. 슬라이더에 따라 부드럽게 전환.
+  const bgStyle = {
+    background: `radial-gradient(135% 105% at 50% 6%, rgb(${soft}) 0%, #F6F3EB 52%, #F1EEE3 100%)`,
+    transition: 'background 0.6s ease',
+  }
+  const blob = `rgb(${tint})`
+
   const getWords = () => {
     const highArousal = arousal >= 50
     const positive = valence >= 50
-    if (positive && highArousal)  return ['설렘', '활기참', '기대됨', '들뜸']
+    if (positive && highArousal) return ['설렘', '활기참', '기대됨', '들뜸']
     if (positive && !highArousal) return ['평온함', '편안함', '안도됨', '만족스러움']
     if (!positive && highArousal) return ['불안함', '초조함', '짜증남', '긴장됨']
     return ['가라앉음', '지침', '공허함', '무기력함']
@@ -46,8 +73,13 @@ export default function MoodThermometer({ onExit }) {
   if (phase === 'running') {
     return (
       <ModuleFrame onExit={onExit}>
-        <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-6 relative z-10">
-          <div className="max-w-md w-full">
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 relative z-10" style={bgStyle}>
+          {/* 온도 색으로 물드는 은은한 글로우 */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-3xl animate-breath-slow"
+              style={{ background: blob, opacity: 0.22, transition: 'background 0.6s ease' }} />
+          </div>
+          <div className="max-w-md w-full relative">
             <p className="text-center text-r-gray mb-12 text-lg font-light">
               지금 어느 쪽에 가까운가요?
             </p>
@@ -58,10 +90,7 @@ export default function MoodThermometer({ onExit }) {
                 <span>좋아요</span>
               </div>
               <input
-                type="range"
-                min="0"
-                max="100"
-                value={valence}
+                type="range" min="0" max="100" value={valence}
                 onChange={(e) => setValence(Number(e.target.value))}
                 className="w-full accent-amber"
               />
@@ -73,10 +102,7 @@ export default function MoodThermometer({ onExit }) {
                 <span>들떠 있어요</span>
               </div>
               <input
-                type="range"
-                min="0"
-                max="100"
-                value={arousal}
+                type="range" min="0" max="100" value={arousal}
                 onChange={(e) => setArousal(Number(e.target.value))}
                 className="w-full accent-amber"
               />
@@ -98,7 +124,7 @@ export default function MoodThermometer({ onExit }) {
     const words = getWords()
     return (
       <ModuleFrame onExit={onExit}>
-        <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-6 relative z-10">
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 relative z-10" style={bgStyle}>
           <div className="max-w-md w-full">
             <p className="text-center text-r-gray mb-3 text-sm">이 중에 가까운 말이 있나요?</p>
             <p className="text-center text-r-gray-soft mb-10 text-xs">없으면 골라도, 안 골라도 괜찮습니다</p>
@@ -111,7 +137,7 @@ export default function MoodThermometer({ onExit }) {
                   className={`py-5 rounded-2xl transition border ${
                     pickedWord === word
                       ? 'bg-amber-soft text-navy border-amber/40'
-                      : 'bg-white text-ink border-line hover:border-[#DCD5C4]'
+                      : 'bg-white/85 text-ink border-line hover:border-[#DCD5C4]'
                   }`}
                 >
                   {word}
@@ -135,9 +161,10 @@ export default function MoodThermometer({ onExit }) {
     return (
       <ModuleFrame onExit={onExit}>
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/3 left-1/3 w-96 h-96 rounded-full bg-amber-200/25 blur-3xl animate-breath-slow" />
+          <div className="absolute top-1/3 left-1/3 w-96 h-96 rounded-full blur-3xl animate-breath-slow"
+            style={{ background: blob, opacity: 0.28, transition: 'background 0.6s ease' }} />
         </div>
-        <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-6 relative z-10">
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 relative z-10" style={bgStyle}>
           <div className="max-w-md w-full text-center animate-fade-up">
             <p className="text-r-gray mb-2 text-sm">지금, 이런 마음이네요</p>
             <p className="font-serif text-[34px] text-navy mb-12" style={{ fontWeight: 600 }}>

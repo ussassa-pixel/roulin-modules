@@ -138,6 +138,8 @@ function Launcher({ onPick }) {
         <div className="max-w-md mx-auto px-6 h-16 flex items-center gap-2">
           <Star className="w-5 h-5 text-amber" />
           <span className="text-[22px] text-navy tracking-tight" style={{ fontWeight: 600 }}>roulin</span>
+          <span className="w-px h-4 bg-line mx-1" aria-hidden="true" />
+          <span className="text-[15px] text-navy/80" style={{ fontWeight: 500 }}>마음 돌봄</span>
         </div>
       </header>
 

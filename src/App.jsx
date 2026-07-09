@@ -36,6 +36,8 @@ import MindVault from './modules/MindVault'
 import ComfortDraw from './modules/ComfortDraw'
 import FortuneCookie from './modules/FortuneCookie'
 import LuckyCapsule from './modules/LuckyCapsule'
+import MusicPick from './modules/MusicPick'
+import BodyWake from './modules/BodyWake'
 
 // roulin.ai 모드카드와 같은 결: [번호] · 제목 · 설명("…할 때. …합니다.") · 작은 태그 pill
 const MODULES = [
@@ -76,6 +78,10 @@ const MODULES = [
   { id: 'comfortdraw',  title: '위로 뽑기',      tag: '리추얼', desc: '이유 없이 한마디가 필요할 때. 오늘의 카드 한 장을 뒤집어 봅니다.' },
   { id: 'fortune',      title: '포춘 쿠키',      tag: '리추얼', desc: '하루를 시작할 때. 쿠키 하나를 골라 오늘 몫의 좋은 한 줄을 꺼냅니다.' },
   { id: 'capsule',      title: '행운 캡슐',      tag: '리추얼', desc: '작은 기운이 필요할 때. 손잡이를 돌려 오늘의 징표를 뽑습니다.' },
+
+  // ── 기분 상승 (v4.1 부록 — uplift 2종) ──
+  { id: 'music',        title: '노래 한 곡',     tag: '전환',   desc: '기분을 살짝 바꾸고 싶을 때. 지금 마음에서 출발하는 한 곡을 골라드립니다.' },
+  { id: 'bodywake',     title: '몸 깨우기',      tag: '활력',   desc: '몸이 처지고 늘어질 때. 90초, 세 동작으로 살짝 깨웁니다.' },
 ]
 
 export default function App() {
@@ -124,6 +130,8 @@ export default function App() {
       {activeModule === 'comfortdraw'  && <ComfortDraw onExit={exit} />}
       {activeModule === 'fortune'      && <FortuneCookie onExit={exit} />}
       {activeModule === 'capsule'      && <LuckyCapsule onExit={exit} />}
+      {activeModule === 'music'        && <MusicPick onExit={exit} />}
+      {activeModule === 'bodywake'     && <BodyWake onExit={exit} />}
 
       {/* 어느 모듈 화면에서든 홈(런처)으로 */}
       {activeModule !== null && (

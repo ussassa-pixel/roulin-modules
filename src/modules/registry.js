@@ -158,6 +158,18 @@ export const MODULE_META = {
     durationSec: 60,
     hasEndRating: false,
   },
+  music: {
+    targetStates: ['low-mood', 'flatness', 'restlessness'],
+    safetyLevel: 'general',
+    durationSec: 120,
+    hasEndRating: false,
+  },
+  bodywake: {
+    targetStates: ['lethargy', 'low-mood', 'numbness'],
+    safetyLevel: 'general',
+    durationSec: 100,
+    hasEndRating: false,
+  },
 }
 
 // 완료한 모듈을 바탕으로 1~2개 추천 반환

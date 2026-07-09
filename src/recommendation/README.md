@@ -47,6 +47,10 @@ const res = recommend(signal, { n: 2, exclude: ['grounding'] /* 쿨다운 */ })
 - **⑥ comfort_draw / fortune** — 다정 풀 `content/comfortPool.json`(50개 DRAFT) + `modules/ComfortDraw.jsx`(id `comfortdraw`), 아침용 포춘 쿠키 `content/fortuneCookies.json`(36개 DRAFT) + `modules/FortuneCookie.jsx`(id `fortune`, 날짜 기반 결정적 — 하루 동안 같은 조각). **리추얼 2종은 EndRating 없음**(기분 측정이 의례의 결을 깸). **따끔 모드 미구현** — 위기 L1+ 차단 게이트 배선 후에만.
 - **②③(걱정 서랍·미래 편지)은 미구현** — 본체 DB(`module_outputs`)+스케줄링 선결(v4 §6), mind_vault와 인프라 공유 설계.
 
+## v4.1 부록 — 기분 상승(uplift) 2종 (구현됨)
+- **music_pick(id `music`)** — 기분 4분류(처짐/답답/곤두섬/허전) → ISO 원리로 곡 매칭. 풀 `content/musicPool.json`(54곡, 실재 확인 = 배포 전 검수 항목). **저작권 4규칙 준수**: 재생 X·가사 X·앨범아트 X·링크아웃만(코드리뷰 항목, MusicPick.jsx 헤더). 무저장 — 세션 내 중복만 방지.
+- **body_wake(id `bodywake`)** — 90초 3동작 활성 연습. bodyrelease와 정반대(하향 vs 상향) — 라우터 구분: 긴장→release / 처짐→wake / 전환→music (registry 주석 참조).
+
 ## SW 확정 필요 (미결)
 - 28개 safetyLevel·contra 최종 판단, 특히 `compass`의 위기 게이트 조건.
 - targetStates 문구, durationSec 실측.

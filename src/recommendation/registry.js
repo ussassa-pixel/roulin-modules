@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════════════════════════
-//  registry.js — 30개 모듈 메타데이터 레지스트리 (추천 레이어 선결)
+//  registry.js — 32개 모듈 메타데이터 레지스트리 (추천 레이어 선결)
 //
 //  ⚠️ 임상 필드는 전부 **DRAFT**. safetyLevel / contraindications /
 //     targetStates / durationSec 은 SW(임상) 확정이 필요하다.
@@ -110,6 +110,13 @@ export const MODULES = [
     targetStates: ['하루의 시작', '가벼운 기대가 필요함'], safetyLevel: 'general', contra: [], durationSec: 45, hasEndRating: false },
   { id: 'capsule', displayName: '행운 캡슐', type: 'practice', need: ['savor', 'soothe'], domainTags: ['self'], themes: ['ritual', 'luck'],
     targetStates: ['작은 기운이 필요함', '기분 전환이 필요함'], safetyLevel: 'general', contra: [], durationSec: 60, hasEndRating: false },
+
+  // ── 기분 상승 (v4.1 부록 — 능동형 uplift) ──
+  // 라우터 구분: "긴장돼요" → bodyrelease(이완·하향) / "처져요·늘어져요" → bodywake(활성·상향) / "기분 전환" → music
+  { id: 'music', displayName: '노래 한 곡', type: 'tool', need: ['savor'], domainTags: ['self'], themes: ['music', 'uplift', 'mood-shift'],
+    targetStates: ['기분 처짐', '전환 필요'], safetyLevel: 'general', contra: [], durationSec: 90, hasEndRating: false },
+  { id: 'bodywake', displayName: '몸 깨우기', type: 'practice', need: ['savor'], domainTags: ['health', 'self'], themes: ['body', 'activation', 'uplift'],
+    targetStates: ['무기력·처짐', '몸이 늘어짐'], safetyLevel: 'general', contra: ['불편 동작 강제 금지(카피로 처리)'], durationSec: 100, hasEndRating: false },
 
   // ── 위기 브릿지 ──
   { id: 'stop', displayName: 'STOP', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['impulse', 'pause'],

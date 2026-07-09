@@ -19,7 +19,30 @@ import { recommend } from './recommend.js'
 // ── 상태 칩 (6~8개, 문구 확정 = 미결 §7 — DRAFT) ──
 // signal은 recommend.js의 StateSignal 계약을 따른다. reason은 경로 C의
 // 상태 기반 연결문(대화가 없으니 verbatim 인용 대신 칩 기반 문구).
+// 배치 순서: 가벼운 것 → 무거운 것 (사용자 피드백 2026-07-10 — 첫눈에 보이는 칩이
+// 가벼워야 진입 문턱이 낮다. 힘든 표현만 먼저 보이면 "이건 힘든 사람용"이 된다)
 export const CHIPS = [
+  {
+    key: 'bored', label: '심심해요',
+    // 놀이 결('play' 테마: 뽁뽁이·모래/소리 정원·행운 캡슐)만 — 'sensory'는 그라운딩(불안용)도 걸려서 제외
+    signal: { dominantNeed: 'savor', secondaryNeeds: ['soothe'], themes: ['luck', 'play'], crisisLevel: 'none' },
+    reason: '심심하다고 하셔서, 재미있는 걸 골라봤어요.',
+  },
+  {
+    key: 'stiff', label: '몸이 찌뿌둥해요',
+    signal: { dominantNeed: 'soothe', secondaryNeeds: ['savor'], themes: ['body', 'relaxation', 'stretch'], crisisLevel: 'none' },
+    reason: '몸이 찌뿌둥하다고 하셔서, 풀거나 깨울 걸 준비했어요.',
+  },
+  {
+    key: 'reset', label: '그냥 리셋하고 싶어요',
+    signal: { dominantNeed: 'soothe', themes: ['micro', 'reset', 'ritual'], crisisLevel: 'none' },
+    reason: '잠깐 끊어가고 싶다고 하셔서, 가벼운 걸 골랐어요.',
+  },
+  {
+    key: 'hollow', label: '좀 허전해요',
+    signal: { dominantNeed: 'savor', secondaryNeeds: ['soothe'], themes: ['music', 'comfort'], crisisLevel: 'none' },
+    reason: '마음이 좀 허전하다고 하셔서, 채워줄 만한 걸 골랐어요.',
+  },
   {
     key: 'down', label: '처져요',
     signal: { dominantNeed: 'savor', themes: ['uplift', 'activation', 'music'], crisisLevel: 'none' },
@@ -29,11 +52,6 @@ export const CHIPS = [
     key: 'stuffy', label: '답답해요',
     signal: { dominantNeed: 'savor', secondaryNeeds: ['soothe'], themes: ['mood-shift', 'music', 'breath'], crisisLevel: 'none' },
     reason: '답답하다고 하셔서, 숨 트일 만한 걸 골랐어요.',
-  },
-  {
-    key: 'anxious', label: '불안해요',
-    signal: { dominantNeed: 'soothe', acuteDistress: true, themes: ['breath', 'grounding', 'stabilize'], crisisLevel: 'none' },
-    reason: '마음이 곤두서 있다고 하셔서, 가라앉힐 만한 걸 골랐어요.',
   },
   {
     key: 'tangled', label: '머리가 복잡해요',
@@ -46,26 +64,9 @@ export const CHIPS = [
     reason: '막막하다고 하셔서, 아주 작은 시작을 준비했어요.',
   },
   {
-    key: 'reset', label: '그냥 리셋하고 싶어요',
-    signal: { dominantNeed: 'soothe', themes: ['micro', 'reset', 'ritual'], crisisLevel: 'none' },
-    reason: '잠깐 끊어가고 싶다고 하셔서, 가벼운 걸 골랐어요.',
-  },
-  {
-    key: 'hollow', label: '좀 허전해요',
-    signal: { dominantNeed: 'savor', secondaryNeeds: ['soothe'], themes: ['music', 'comfort'], crisisLevel: 'none' },
-    reason: '마음이 좀 허전하다고 하셔서, 채워줄 만한 걸 골랐어요.',
-  },
-  // 가벼운 상태도 문이 된다 — 힘든 표현만 있으면 진입 문턱이 높아진다(사용자 피드백 2026-07-10)
-  {
-    key: 'bored', label: '심심해요',
-    // 놀이 결('play' 테마: 뽁뽁이·모래/소리 정원·행운 캡슐)만 — 'sensory'는 그라운딩(불안용)도 걸려서 제외
-    signal: { dominantNeed: 'savor', secondaryNeeds: ['soothe'], themes: ['luck', 'play'], crisisLevel: 'none' },
-    reason: '심심하다고 하셔서, 재미있는 걸 골라봤어요.',
-  },
-  {
-    key: 'stiff', label: '몸이 찌뿌둥해요',
-    signal: { dominantNeed: 'soothe', secondaryNeeds: ['savor'], themes: ['body', 'relaxation', 'stretch'], crisisLevel: 'none' },
-    reason: '몸이 찌뿌둥하다고 하셔서, 풀거나 깨울 걸 준비했어요.',
+    key: 'anxious', label: '불안해요',
+    signal: { dominantNeed: 'soothe', acuteDistress: true, themes: ['breath', 'grounding', 'stabilize'], crisisLevel: 'none' },
+    reason: '마음이 곤두서 있다고 하셔서, 가라앉힐 만한 걸 골랐어요.',
   },
   // 마지막 칩 [괜찮아요, 둘러볼래요]는 추천이 아니라 브라우즈 출구 — UI에서 처리
 ]

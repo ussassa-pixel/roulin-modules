@@ -4,6 +4,7 @@ import RecommendationSheet from './components/RecommendationSheet'
 import CareTrail from './components/CareTrail'
 import DailyActionCard from './components/DailyActionCard'
 import TimeSlotBanner from './components/TimeSlotBanner'
+import CheckIn from './components/CheckIn'
 import { logCare } from './lib/careLog'
 import PresentMoment from './modules/PresentMoment'
 import StopCard from './modules/StopCard'
@@ -97,6 +98,7 @@ const MODULES = [
 export default function App() {
   const [activeModule, setActiveModule] = useState(null)
   const [pendingRec, setPendingRec] = useState(null)
+  const [checkinOpen, setCheckinOpen] = useState(false) // 경로 C "지금 어때요?"
 
   const exit = () => {
     if (activeModule) {
@@ -158,7 +160,16 @@ export default function App() {
         </button>
       )}
 
-      {activeModule === null && pendingRec !== null && (
+      {/* 경로 C — "지금 어때요?" (recommender 스펙 §3, 규칙 기반) */}
+      {activeModule === null && checkinOpen && (
+        <CheckIn
+          modules={MODULES}
+          onPick={(id) => { setCheckinOpen(false); setActiveModule(id) }}
+          onClose={() => setCheckinOpen(false)}
+        />
+      )}
+
+      {activeModule === null && !checkinOpen && pendingRec !== null && (
         <RecommendationSheet
           completedModuleId={pendingRec}
           allModules={MODULES}
@@ -166,12 +177,14 @@ export default function App() {
           onShowAll={() => setPendingRec(null)}
         />
       )}
-      {activeModule === null && pendingRec === null && <Launcher onPick={setActiveModule} />}
+      {activeModule === null && !checkinOpen && pendingRec === null && (
+        <Launcher onPick={setActiveModule} onCheckIn={() => setCheckinOpen(true)} />
+      )}
     </SpeechProvider>
   )
 }
 
-function Launcher({ onPick }) {
+function Launcher({ onPick, onCheckIn }) {
   return (
     <div className="min-h-screen bg-cream">
       {/* ── 상단 바: roulin 로고 결 ── */}
@@ -194,6 +207,14 @@ function Launcher({ onPick }) {
           말로 다 꺼내기 어려운 순간에.<br />
           지금 마음에 가까운 돌봄을 골라보세요.
         </p>
+        {/* 경로 C 진입 — 뭘 고를지 모르겠을 때 1~2개만 추려주는 문 */}
+        <button
+          onClick={onCheckIn}
+          className="mt-7 px-9 py-3.5 bg-navy text-white rounded-full hover:bg-[#0c1a2b] transition text-[15px]"
+        >
+          지금 어때요?
+        </button>
+        <p className="mt-2.5 text-[12px] text-r-gray-soft">고르기 어려우면, 지금 마음만 알려주세요.</p>
       </div>
 
       {/* ── 시간대 진입점(v4 ④) — 지금 시각이 슬롯 안일 때만, 질문형 1회 ── */}

@@ -88,11 +88,35 @@ export function recommend(signal, opts = {}) {
   const scored = MODULES
     .filter((m) => !exclude.includes(m.id))
     .filter((m) => isEligible(m, signal))
-    .map((m) => ({ id: m.id, displayName: m.displayName, score: scoreModule(m, signal), durationSec: m.durationSec }))
+    .map((m) => ({ id: m.id, displayName: m.displayName, type: m.type, score: scoreModule(m, signal), durationSec: m.durationSec }))
     .filter((c) => c.score > 0)
     .sort((a, b) => (b.score - a.score) || a.id.localeCompare(b.id)) // 결정적: 점수 desc, id asc
 
-  const candidates = scored.slice(0, n).map((c) => ({
+  // ── ④ 상위 1~2 선택 — 절제·다양성 (recommender 스펙 §2④) ──
+  //  · 아무리 후보가 많아도 최대 2개 (선택 부담 전가 금지)
+  //  · 최고점이 3개 이상 동점(모호) → 1개만. 2파전 동점은 결이 다르면 1+1 페어, 같으면 1개만
+  //  · 두 번째는 약한 매칭(3점 미만) 제외, 동점군에선 다른 유형(도구형+연습형) 우선
+  const picks = []
+  if (scored.length > 0) {
+    const first = scored[0]
+    picks.push(first)
+    if (n >= 2 && scored.length > 1) {
+      const topTies = scored.filter((c) => c.score === first.score)
+      if (topTies.length === 2 && topTies[1].type !== first.type) {
+        picks.push(topTies[1])
+      } else if (topTies.length === 1) {
+        const rest = scored.slice(1)
+        const best = rest[0]
+        if (best && best.score >= 3) {
+          const sameScore = rest.filter((c) => c.score === best.score)
+          picks.push(sameScore.find((c) => c.type !== first.type) || best)
+        }
+      }
+      // topTies >= 3 → 모호 — 1개만(과잉 제시보다 절제)
+    }
+  }
+
+  const candidates = picks.slice(0, n).map((c) => ({
     ...c,
     reason: buildReason(c.id, signal),
   }))

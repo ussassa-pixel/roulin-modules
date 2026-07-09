@@ -27,6 +27,7 @@ export default {
         'crumple': 'crumple 0.85s cubic-bezier(0.4, 0, 1, 1) forwards',
         'breath': 'breath 10s ease-in-out infinite',
         'breath-slow': 'breath 14s ease-in-out infinite',
+        'soothe': 'soothe 3.4s ease-in-out infinite',
         'fade-in': 'fadeIn 0.8s ease-out',
         'fade-up': 'fadeUp 1s ease-out',
         'fade-out': 'fadeOut 0.6s ease-out',
@@ -46,6 +47,12 @@ export default {
         breath: {
           '0%, 100%': { transform: 'scale(1)', opacity: '0.5' },
           '50%': { transform: 'scale(1.4)', opacity: '0.9' },
+        },
+        // 자기 다독임 — 가슴에 얹은 손이 부드럽게 토닥이는 느낌(잔잔한 눌림)
+        soothe: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '45%': { transform: 'scale(1.055)' },
+          '60%': { transform: 'scale(1.02)' },
         },
         fadeIn: {
           '0%': { opacity: '0' },

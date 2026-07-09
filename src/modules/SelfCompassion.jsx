@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
+import { useSpeech } from '../context/SpeechContext'
 
 export default function SelfCompassion({ onExit }) {
   const [phase, setPhase] = useState('intro')
   const [stepIndex, setStepIndex] = useState(0)
   const [pickedMessage, setPickedMessage] = useState(null)
+  const { speak } = useSpeech()
 
   const steps = [
     {
@@ -46,6 +48,20 @@ export default function SelfCompassion({ onExit }) {
     }, currentStep.duration * 1000)
     return () => clearTimeout(timer)
   }, [phase, stepIndex])
+
+  // 음성 안내 (남성). 각 단계 8초 ≫ 음성 ~4초라 잘리지 않는다.
+  useEffect(() => {
+    if (phase === 'intro') speak('힘든 순간, 나에게 친절을 건네보는 연습이에요. 천천히 시작해 봐요.')
+    if (phase === 'done') speak('방금 나에게 건넨 말, 필요할 때 또 떠올려도 괜찮습니다.')
+  }, [phase, speak])
+
+  useEffect(() => {
+    if (phase !== 'running') return
+    const s = steps[stepIndex]
+    if (!s) return
+    if (s.isMessageStep) speak('나에게 건네는 말. 마음에 드는 말을 골라, 속으로 천천히 건네 봅니다.')
+    else speak(`${s.guide}. ${s.sub}`)
+  }, [phase, stepIndex, speak])
 
   if (phase === 'intro') {
     return (
@@ -132,6 +148,9 @@ export default function SelfCompassion({ onExit }) {
         </div>
         <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-6 relative z-10">
           <div className="max-w-md w-full text-center">
+            <div className="flex justify-center mb-10">
+              <SoothingHeart />
+            </div>
             <p
               key={`guide-${stepIndex}`}
               className="text-2xl text-navy font-light mb-4 animate-fade-up leading-relaxed"
@@ -196,6 +215,50 @@ export default function SelfCompassion({ onExit }) {
   }
 
   return null
+}
+
+// 진행 화면용 — 후광이 숨쉬고, 가슴에 얹은 손 위 젬 하트가 잔잔히 토닥이는 애니메이션
+function SoothingHeart() {
+  const heart = 'M 60 48 C 50 31, 28 33, 28 53 C 28 70, 52 84, 60 94 C 68 84, 92 70, 92 53 C 92 33, 70 31, 60 48 Z'
+  return (
+    <svg width="150" height="146" viewBox="0 0 120 118" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <radialGradient id="sc-halo" cx="50%" cy="46%" r="52%">
+          <stop offset="0%" stopColor="#fda4af" stopOpacity="0.5" />
+          <stop offset="55%" stopColor="#fb7185" stopOpacity="0.16" />
+          <stop offset="100%" stopColor="#fb7185" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="sc-heart" cx="40%" cy="32%" r="78%">
+          <stop offset="0%"   stopColor="#ffe4e6" />
+          <stop offset="32%"  stopColor="#fda4af" />
+          <stop offset="70%"  stopColor="#fb7185" />
+          <stop offset="100%" stopColor="#e11d63" />
+        </radialGradient>
+        <linearGradient id="sc-hand" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#f6c9a8" />
+          <stop offset="100%" stopColor="#e0a07a" />
+        </linearGradient>
+      </defs>
+
+      {/* 숨쉬는 후광 */}
+      <ellipse cx="60" cy="55" rx="58" ry="54" fill="url(#sc-halo)"
+        className="animate-breath" style={{ transformBox: 'fill-box', transformOrigin: 'center' }} />
+
+      {/* 젬 하트 — 잔잔히 토닥 */}
+      <g className="animate-soothe" style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
+        <path d={heart} fill="url(#sc-heart)" opacity="0.95" />
+        <path d="M 60 52 C 53 41, 39 42, 37 53 C 36 61, 46 70, 55 74 C 48 65, 48 56, 60 52 Z" fill="white" opacity="0.3" />
+        <path d={heart} fill="none" stroke="#e11d63" strokeWidth="1" opacity="0.28" strokeLinejoin="round" />
+        <ellipse cx="46" cy="50" rx="5" ry="6.5" fill="white" opacity="0.55" transform="rotate(-25 46 50)" />
+      </g>
+
+      {/* 가슴에 얹은 손 (감싸는 컵 모양) */}
+      <path d="M 20 72 Q 34 106, 60 106 Q 86 106, 100 72 Q 93 88, 60 95 Q 27 88, 20 72 Z"
+        fill="url(#sc-hand)" opacity="0.6" />
+      <path d="M 20 72 Q 34 106, 60 106 Q 86 106, 100 72"
+        stroke="#cf8f68" strokeWidth="1.2" fill="none" opacity="0.4" strokeLinecap="round" />
+    </svg>
+  )
 }
 
 // 프리미엄 글래스 젬 하트 — 따뜻한 후광 위로 감싸는 두 손

@@ -93,21 +93,8 @@ export default function ButterflyHug({ onExit }) {
         <div className="min-h-screen flex flex-col items-center justify-center p-8 relative z-10">
           <p className="text-[12px] text-white/30 font-light mb-16 tracking-wide">화면에 맞춰 토닥토닥</p>
 
-          <div className="flex justify-center items-center gap-12 mb-16">
-            <div className={`w-28 h-28 rounded-full transition-all duration-700 ${
-              activeSide === 'left'
-                ? 'bg-white/25 scale-110'
-                : 'bg-white/10 scale-90'
-            }`}
-              style={activeSide === 'left' ? { boxShadow: '0 0 60px rgba(255,255,255,0.12)' } : {}}
-            />
-            <div className={`w-28 h-28 rounded-full transition-all duration-700 ${
-              activeSide === 'right'
-                ? 'bg-white/25 scale-110'
-                : 'bg-white/10 scale-90'
-            }`}
-              style={activeSide === 'right' ? { boxShadow: '0 0 60px rgba(255,255,255,0.12)' } : {}}
-            />
+          <div className="flex justify-center items-center mb-16">
+            <CrossedArmsHug activeSide={activeSide} />
           </div>
 
           <p className="text-[13px] text-white/30 font-light mb-2">
@@ -130,6 +117,46 @@ export default function ButterflyHug({ onExit }) {
   }
 
   return null
+}
+
+// X자로 교차한 반투명 팔·손 실루엣 — activeSide 박자에 맞춰 해당 손이 토닥인다.
+function HandShape() {
+  // 원점 기준: 손바닥(아래) + 네 손가락(위를 향함)
+  return (
+    <g fill="#fff">
+      <ellipse cx="0" cy="11" rx="27" ry="20" />
+      <rect x="-24" y="-19" width="11" height="26" rx="5.5" transform="rotate(-13 -18.5 -6)" />
+      <rect x="-10" y="-25" width="11" height="31" rx="5.5" transform="rotate(-4 -4.5 -9)" />
+      <rect x="4"   y="-25" width="11" height="31" rx="5.5" transform="rotate(5 9.5 -9)" />
+      <rect x="18"  y="-18" width="11" height="25" rx="5.5" transform="rotate(14 23.5 -5)" />
+    </g>
+  )
+}
+
+function CrossedArmsHug({ activeSide }) {
+  const armStroke = 'rgba(255,255,255,0.15)'
+  const handStyle = (active) => ({
+    transformBox: 'fill-box',
+    transformOrigin: 'center',
+    transition: 'transform .26s ease, opacity .26s ease',
+    transform: active ? 'translateY(8px) scale(1.1)' : 'translateY(0) scale(1)',
+    opacity: active ? 0.55 : 0.24,
+  })
+  return (
+    <svg width="248" height="248" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      {/* 교차한 두 전완 (X자) */}
+      <path d="M 66 252 Q 118 208 192 106" stroke={armStroke} strokeWidth="30" strokeLinecap="round" />
+      <path d="M 234 252 Q 182 208 108 106" stroke={armStroke} strokeWidth="30" strokeLinecap="round" />
+      {/* 왼쪽 어깨에 얹은 손 (activeSide==='left'일 때 토닥) */}
+      <g style={handStyle(activeSide === 'left')}>
+        <g transform="translate(108 104) rotate(17)"><HandShape /></g>
+      </g>
+      {/* 오른쪽 어깨에 얹은 손 (activeSide==='right'일 때 토닥) */}
+      <g style={handStyle(activeSide === 'right')}>
+        <g transform="translate(192 104) rotate(-17)"><HandShape /></g>
+      </g>
+    </svg>
+  )
 }
 
 // 두 원 뒤에 겹쳐 보이는, 크고 아주 흐릿한 나비 실루엣

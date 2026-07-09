@@ -3,6 +3,16 @@ import { speakSmart, stopSpeaking } from '../lib/tts'
 import ModuleFrame from '../components/ModuleFrame'
 import EndRating from '../components/EndRating'
 
+// 호흡 한 사이클마다 순환하는 풍선 색 (부드러운 파스텔 6색)
+const PALETTE = [
+  { top: '#fbcfe8', mid: '#f9a8d4', bot: '#ec4899', shine: '#fff0f8' }, // 핑크
+  { top: '#bae6fd', mid: '#7dd3fc', bot: '#38bdf8', shine: '#f0fbff' }, // 하늘
+  { top: '#ddd6fe', mid: '#c4b5fd', bot: '#a78bfa', shine: '#f5f3ff' }, // 라벤더
+  { top: '#bbf7d0', mid: '#86efac', bot: '#4ade80', shine: '#f0fff4' }, // 민트
+  { top: '#fed7aa', mid: '#fdba74', bot: '#fb923c', shine: '#fff7ed' }, // 피치
+  { top: '#fecdd3', mid: '#fda4af', bot: '#fb7185', shine: '#fff1f2' }, // 코랄
+]
+
 export default function BalloonBreathing({ onExit }) {
   const [phase, setPhase] = useState('intro')
   const [voiceOn, setVoiceOn] = useState(true)
@@ -79,7 +89,7 @@ export default function BalloonBreathing({ onExit }) {
               누르는 동안 들이마시고, 떼는 동안 내쉽니다
             </p>
             <div className="flex justify-center mb-12">
-              <BalloonSVG size={160} fillRatio={0.5} state="idle" />
+              <BalloonSVG size={160} fillRatio={0.5} state="idle" colorSet={PALETTE[0]} />
             </div>
             <button
               onClick={() => setVoiceOn(!voiceOn)}
@@ -108,6 +118,8 @@ export default function BalloonBreathing({ onExit }) {
       exhaling: '천천히 내쉬어요',
     }
     const fillRatio = (balloonSize - MIN_SIZE) / (MAX_SIZE - MIN_SIZE)
+    // 완료한 사이클 수에 따라 색이 계속 바뀐다
+    const colorSet = PALETTE[completedCycles % PALETTE.length]
 
     return (
       <div className="min-h-screen relative bg-cream">
@@ -140,7 +152,7 @@ export default function BalloonBreathing({ onExit }) {
         >
           <div className="max-w-md w-full text-center">
             <div className="flex justify-center mb-12" style={{ minHeight: '320px', alignItems: 'center' }}>
-              <BalloonSVG size={balloonSize} fillRatio={fillRatio} state={breathState} />
+              <BalloonSVG size={balloonSize} fillRatio={fillRatio} state={breathState} colorSet={colorSet} />
             </div>
 
             <p key={breathState} className="text-2xl text-navy font-light mb-4 animate-fade-in" style={{ minHeight: '36px' }}>
@@ -176,7 +188,7 @@ export default function BalloonBreathing({ onExit }) {
   return null
 }
 
-function BalloonSVG({ size, fillRatio = 0, state = 'idle' }) {
+function BalloonSVG({ size, fillRatio = 0, state = 'idle', colorSet = null }) {
   const w = size
   const h = size * 1.35
   const cx = w / 2
@@ -190,7 +202,9 @@ function BalloonSVG({ size, fillRatio = 0, state = 'idle' }) {
     holding:  { top: '#f472b6', mid: '#db2777', bot: '#be185d', shine: '#ffe4f0' },
     exhaling: { top: '#bae6fd', mid: '#7dd3fc', bot: '#38bdf8', shine: '#f0fbff' },
   }
-  const c = colors[state] || colors.idle
+  // colorSet(사이클별 색)이 있으면 그 색을, 없으면 기존 상태별 색을 쓴다.
+  const c = colorSet || colors[state] || colors.idle
+  const uid = String(c.bot || state).replace('#', '')
 
   const bodyY = h * 0.36
   const knotY = h * 0.73
@@ -202,19 +216,19 @@ function BalloonSVG({ size, fillRatio = 0, state = 'idle' }) {
     >
       <defs>
         {/* 풍선 메인 그라데이션 (radial — 왼쪽 위가 밝음) */}
-        <radialGradient id={`bg-${state}`} cx="35%" cy="30%" r="70%" gradientUnits="objectBoundingBox">
+        <radialGradient id={`bg-${uid}`} cx="35%" cy="30%" r="70%" gradientUnits="objectBoundingBox">
           <stop offset="0%"   stopColor={c.shine} />
           <stop offset="25%"  stopColor={c.top} />
           <stop offset="65%"  stopColor={c.mid} />
           <stop offset="100%" stopColor={c.bot} />
         </radialGradient>
         {/* 하이라이트 그라데이션 */}
-        <radialGradient id={`hl-${state}`} cx="38%" cy="30%" r="45%" gradientUnits="objectBoundingBox">
+        <radialGradient id={`hl-${uid}`} cx="38%" cy="30%" r="45%" gradientUnits="objectBoundingBox">
           <stop offset="0%"   stopColor="white" stopOpacity="0.85" />
           <stop offset="100%" stopColor="white" stopOpacity="0" />
         </radialGradient>
         {/* 아래 반사 */}
-        <radialGradient id={`ref-${state}`} cx="65%" cy="75%" r="35%" gradientUnits="objectBoundingBox">
+        <radialGradient id={`ref-${uid}`} cx="65%" cy="75%" r="35%" gradientUnits="objectBoundingBox">
           <stop offset="0%"   stopColor="white" stopOpacity="0.25" />
           <stop offset="100%" stopColor="white" stopOpacity="0" />
         </radialGradient>
@@ -222,13 +236,13 @@ function BalloonSVG({ size, fillRatio = 0, state = 'idle' }) {
 
       {/* 풍선 본체 */}
       <ellipse cx={cx} cy={bodyY} rx={rx} ry={ry}
-        fill={`url(#bg-${state})`}
+        fill={`url(#bg-${uid})`}
         style={{ transition: 'fill 600ms ease' }}
       />
       {/* 주 하이라이트 */}
-      <ellipse cx={cx} cy={bodyY} rx={rx} ry={ry} fill={`url(#hl-${state})`} />
+      <ellipse cx={cx} cy={bodyY} rx={rx} ry={ry} fill={`url(#hl-${uid})`} />
       {/* 아래 반사 */}
-      <ellipse cx={cx} cy={bodyY} rx={rx} ry={ry} fill={`url(#ref-${state})`} />
+      <ellipse cx={cx} cy={bodyY} rx={rx} ry={ry} fill={`url(#ref-${uid})`} />
 
       {/* 작은 반짝이 (왼쪽 위) */}
       <ellipse

@@ -122,41 +122,59 @@ export default function ButterflyHug({ onExit }) {
   return null
 }
 
-// X자로 교차한 반투명 팔·손 실루엣 — activeSide 박자에 맞춰 해당 손이 토닥인다.
-function HandShape() {
-  // 원점 기준: 손바닥(아래) + 네 손가락(위를 향함)
+// 자연스러운 손 실루엣 — 손바닥 + 부드럽게 모인 손가락(원점 기준, 위를 향함)
+function NaturalHand() {
   return (
     <g fill="#fff">
-      <ellipse cx="0" cy="11" rx="27" ry="20" />
-      <rect x="-24" y="-19" width="11" height="26" rx="5.5" transform="rotate(-13 -18.5 -6)" />
-      <rect x="-10" y="-25" width="11" height="31" rx="5.5" transform="rotate(-4 -4.5 -9)" />
-      <rect x="4"   y="-25" width="11" height="31" rx="5.5" transform="rotate(5 9.5 -9)" />
-      <rect x="18"  y="-18" width="11" height="25" rx="5.5" transform="rotate(14 23.5 -5)" />
+      {/* 손바닥 + 네 손가락(윗변이 완만히 물결져 손가락을 암시) */}
+      <path d="M -16 8
+        C -18 -2 -16 -10 -11 -14
+        C -11 -20 -5 -20 -5 -14
+        C -4 -21 2 -21 2 -14
+        C 3 -20 9 -20 9 -13
+        C 10 -18 15 -17 15 -10
+        C 18 -3 17 6 13 11
+        C 8 17 -3 18 -9 15
+        C -13 13 -15 12 -16 8 Z" />
+      {/* 엄지 */}
+      <path d="M -15 3 C -23 0 -24 -8 -18 -11 C -13 -13 -9 -8 -12 -2 C -13 0 -14 2 -15 3 Z" />
     </g>
   )
 }
 
+// 사람 상반신 실루엣이 스스로를 안는(나비 포옹) 모습 — activeSide 박자에 손이 토닥인다.
 function CrossedArmsHug({ activeSide }) {
-  const armStroke = 'rgba(255,255,255,0.15)'
+  const body = 'rgba(255,255,255,0.12)'
+  const arm = 'rgba(255,255,255,0.2)'
   const handStyle = (active) => ({
     transformBox: 'fill-box',
     transformOrigin: 'center',
     transition: 'transform .26s ease, opacity .26s ease',
-    transform: active ? 'translateY(8px) scale(1.1)' : 'translateY(0) scale(1)',
-    opacity: active ? 0.55 : 0.24,
+    transform: active ? 'translateY(7px) scale(1.09)' : 'translateY(0) scale(1)',
+    opacity: active ? 0.6 : 0.3,
   })
   return (
-    <svg width="248" height="248" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      {/* 교차한 두 전완 (X자) */}
-      <path d="M 66 252 Q 118 208 192 106" stroke={armStroke} strokeWidth="30" strokeLinecap="round" />
-      <path d="M 234 252 Q 182 208 108 106" stroke={armStroke} strokeWidth="30" strokeLinecap="round" />
-      {/* 왼쪽 어깨에 얹은 손 (activeSide==='left'일 때 토닥) */}
-      <g style={handStyle(activeSide === 'left')}>
-        <g transform="translate(108 104) rotate(17)"><HandShape /></g>
+    <svg width="252" height="252" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      {/* 머리 · 목 · 몸통 실루엣 (뒤) */}
+      <g fill={body}>
+        <circle cx="150" cy="50" r="30" />
+        <rect x="135" y="74" width="30" height="36" rx="10" />
+        <path d="M 92 300 C 84 224 82 168 92 132 Q 100 108 128 104 L 172 104 Q 200 108 208 132 C 218 168 216 224 208 300 Z" />
       </g>
-      {/* 오른쪽 어깨에 얹은 손 (activeSide==='right'일 때 토닥) */}
+
+      {/* 교차한 두 팔 (팔꿈치는 아래 중앙, 손은 반대쪽 어깨) */}
+      <g stroke={arm} strokeLinecap="round" strokeLinejoin="round" fill="none">
+        <path d="M 112 122 L 138 212 L 190 134" strokeWidth="29" />
+        <path d="M 188 122 L 162 212 L 110 134" strokeWidth="29" />
+      </g>
+
+      {/* 왼쪽 어깨의 손 (activeSide==='left'일 때 토닥) */}
+      <g style={handStyle(activeSide === 'left')}>
+        <g transform="translate(110 132) rotate(26)"><NaturalHand /></g>
+      </g>
+      {/* 오른쪽 어깨의 손 (activeSide==='right'일 때 토닥) */}
       <g style={handStyle(activeSide === 'right')}>
-        <g transform="translate(192 104) rotate(-17)"><HandShape /></g>
+        <g transform="translate(190 132) rotate(-26)"><NaturalHand /></g>
       </g>
     </svg>
   )

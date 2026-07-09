@@ -26,7 +26,9 @@ export default function StopCard({ onExit }) {
 
   useEffect(() => {
     if (phase !== 'stop') return
-    const timer = setTimeout(() => setPhase('breath'), 3000)
+    // "STOP. 지금, 하던 것을 멈춰요." 음성이 ~2.4초 + 재생 시작 지연이 있어,
+    // 다음 단계로 넘어가며 음성이 끊기지 않도록 넉넉히 5초 머문다.
+    const timer = setTimeout(() => setPhase('breath'), 5000)
     return () => clearTimeout(timer)
   }, [phase])
 

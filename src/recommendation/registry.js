@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════════════════════════
-//  registry.js — 29개 모듈 메타데이터 레지스트리 (추천 레이어 선결)
+//  registry.js — 30개 모듈 메타데이터 레지스트리 (추천 레이어 선결)
 //
 //  ⚠️ 임상 필드는 전부 **DRAFT**. safetyLevel / contraindications /
 //     targetStates / durationSec 은 SW(임상) 확정이 필요하다.
@@ -108,6 +108,8 @@ export const MODULES = [
     targetStates: ['이유 없이 한마디가 필요함', '가볍게 기대고 싶음'], safetyLevel: 'general', contra: ['따끔 모드는 위기 L1+ 차단(미구현)'], durationSec: 60, hasEndRating: false },
   { id: 'fortune', displayName: '포춘 쿠키', type: 'practice', need: ['savor'], domainTags: ['self'], themes: ['ritual', 'morning'],
     targetStates: ['하루의 시작', '가벼운 기대가 필요함'], safetyLevel: 'general', contra: [], durationSec: 45, hasEndRating: false },
+  { id: 'capsule', displayName: '행운 캡슐', type: 'practice', need: ['savor', 'soothe'], domainTags: ['self'], themes: ['ritual', 'luck'],
+    targetStates: ['작은 기운이 필요함', '기분 전환이 필요함'], safetyLevel: 'general', contra: [], durationSec: 60, hasEndRating: false },
 
   // ── 위기 브릿지 ──
   { id: 'stop', displayName: 'STOP', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['impulse', 'pause'],

@@ -101,37 +101,64 @@ export default function ComfortDraw({ onExit }) {
       <div className="max-w-md w-full text-center animate-fade-up">
         <p className="eyebrow mb-8">{revealed ? '오늘의 한 장' : '마음 가는 카드를 한 장 골라요'}</p>
 
-        {/* 카드 세 장 — 고르기 전엔 나란히, 고르면 그 카드만 크게 */}
+        {/* 카드 세 장 — 딥네이비 + 골드 프레임의 뒷면. 고르면 3D 플립으로 공개 */}
         {!revealed && (
-          <div className="flex justify-center gap-3 mb-12">
+          <div className="flex justify-center gap-4 mb-12" style={{ perspective: '900px' }}>
             {cards.map((c, i) => (
               <button
                 key={c.id}
                 onClick={() => flip(i)}
                 aria-label={`카드 ${i + 1}`}
-                className="w-24 h-36 rounded-2xl border border-amber/30 bg-amber-soft flex items-center justify-center
-                           transition duration-300 hover:-translate-y-2 hover:shadow-[0_10px_28px_rgba(17,35,56,0.10)]"
-                style={{ transform: `rotate(${(i - 1) * 4}deg)` }}
+                className="group relative w-[104px] h-[158px] rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-3"
+                style={{
+                  transform: `rotate(${(i - 1) * 4}deg)`,
+                  boxShadow: '0 16px 32px rgba(17,35,56,0.24), 0 3px 8px rgba(17,35,56,0.14)',
+                }}
               >
-                <Spark className="w-6 h-6 text-amber/70" />
+                {/* 딥네이비 바탕 */}
+                <span className="absolute inset-0" style={{ background: 'linear-gradient(150deg, #1E3A5C 0%, #112338 55%, #0A1626 100%)' }} />
+                {/* 골드 이중 프레임 */}
+                <span className="absolute inset-[6px] rounded-xl border border-amber/50 pointer-events-none" />
+                <span className="absolute inset-[10px] rounded-lg border border-amber/15 pointer-events-none" />
+                {/* 중앙 후광 + 스파크 */}
+                <span className="absolute inset-0" style={{ background: 'radial-gradient(circle at 50% 46%, rgba(224,163,62,0.28) 0%, rgba(224,163,62,0) 58%)' }} />
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <Spark className="w-6 h-6 text-amber drop-shadow-[0_0_7px_rgba(224,163,62,0.75)]" />
+                </span>
+                {/* 위아래 작은 점 장식 */}
+                <span className="absolute top-[18px] left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-amber/60" />
+                <span className="absolute bottom-[18px] left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-amber/60" />
+                {/* 광택 스윕 */}
+                <span className="absolute -inset-y-6 left-[-48px] w-9 rotate-[18deg] bg-white/12 blur-[7px] transition-all duration-700 group-hover:left-[130%]" />
               </button>
             ))}
           </div>
         )}
 
         {revealed && (
-          <div className="mb-10" style={{ perspective: '900px' }}>
+          <div className="mb-10" style={{ perspective: '1100px' }}>
             <div
-              className="mx-auto w-64 min-h-[13rem] rounded-3xl bg-white border border-line shadow-[0_12px_36px_rgba(17,35,56,0.08)]
-                         flex flex-col items-center justify-center px-7 py-9"
-              style={{ animation: 'flipIn 0.6s ease both' }}
+              className="relative mx-auto w-72 min-h-[15rem] rounded-3xl overflow-hidden flex flex-col items-center justify-center px-8 py-10"
+              style={{
+                animation: 'flipIn 0.75s cubic-bezier(0.2, 0.75, 0.3, 1) both',
+                background: 'linear-gradient(168deg, #FFFFFF 0%, #FCF9F0 55%, #F6EFDE 100%)',
+                boxShadow: '0 26px 52px rgba(17,35,56,0.18), 0 5px 14px rgba(17,35,56,0.08)',
+              }}
             >
-              <Spark className="w-4 h-4 text-amber mb-5" />
-              <p className="font-serif text-[18px] text-navy leading-relaxed" style={{ fontWeight: 600 }}>
+              {/* 골드 이중 프레임 */}
+              <span className="absolute inset-[8px] rounded-[20px] border border-amber/40 pointer-events-none" />
+              <span className="absolute inset-[13px] rounded-2xl border border-amber/12 pointer-events-none" />
+              <Spark className="w-4 h-4 text-amber mb-5 drop-shadow-[0_0_5px_rgba(224,163,62,0.55)]" />
+              <p className="font-serif text-[19px] text-navy leading-relaxed" style={{ fontWeight: 600 }}>
                 {revealed.text}
               </p>
+              <span className="mt-6 w-8 h-px bg-amber/50" />
             </div>
-            <style>{`@keyframes flipIn { 0% { transform: rotateY(90deg); opacity: 0; } 100% { transform: rotateY(0deg); opacity: 1; } }`}</style>
+            <style>{`@keyframes flipIn {
+              0%   { transform: rotateY(-100deg); opacity: 0; }
+              60%  { transform: rotateY(10deg);   opacity: 1; }
+              100% { transform: rotateY(0deg);    opacity: 1; }
+            }`}</style>
           </div>
         )}
 

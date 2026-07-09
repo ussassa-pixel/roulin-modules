@@ -65,12 +65,12 @@ src/
   `<ModuleFrame onExit={onExit}><EndRating onComplete={() => onExit()} /></ModuleFrame>`
 - App.jsx에 추가: import + `{activeModule === 'id' && <X onExit={exit} />}` + `MODULES` 배열에 카드 1줄
 
-### 모듈 30개
+### 모듈 31개
 호흡/감각/진정 (16): MoodThermometer, BreathingCircle, BalloonBreathing, FingerBreathing, PresentMoment, Grounding54321, SelfCompassion, SoundGarden, SandGarden, BubbleWrap, LeafFloating, DrinkingMeditation, ButterflyHug, WorryDump, ThreeGoodThings, StopCard
 생각정리·행동 (6): BrainDump, WorryTree, DecisionalBalance, Woop, ImplementationIntention, SmallestStep
 범주 공백 채우기 (5): RelationLens(관계·조망수용), SavoringMoment(음미·상향조절), ValueCompass(가치·ACT), DayClose(하루 닫기·야간 의례), BodyRelease(근이완, **연습형**: 산출물 없음, 타이머 가이드)
 보관 (1): MindVault(마음 금고, id `vault`) — **localStorage로 실제 보관**(가역성 실물화). 재방문 시 금고 확인(열어보기/그대로 두기/새로 담기). safetyLevel caution. 카피 가드: 트라우마 어휘·"없애기" 금지, 가역성 문구 필수, [열어보기]와 [그대로 두기] 시각적 동등.
-리추얼 (2): ComfortDraw(위로 뽑기, id `comfortdraw`, v4 ⑥) — 근거 미주장 순수 리추얼(카드 뒤집기). 다정 풀만(`src/content/comfortPool.json` DRAFT). **따끔 모드는 위기 L1+ 차단 게이트 배선 후에만** — 현재 미구현. / FortuneCookie(포춘 쿠키, id `fortune`) — 아침용 "오늘의 좋은 일" 한 줄(`src/content/fortuneCookies.json` DRAFT), 날짜 기반 결정적 선택이라 하루 동안 같은 조각. **리추얼 2종은 EndRating 없음** — 기분 측정이 의례의 결을 깬다(사용자 피드백 2026-07-09).
+리추얼 (3): ComfortDraw(위로 뽑기, id `comfortdraw`, v4 ⑥) — 근거 미주장 순수 리추얼. 딥네이비+골드 프레임 카드 3장 중 택1, 3D 플립 공개. 다정 풀만(`src/content/comfortPool.json` DRAFT). **따끔 모드는 위기 L1+ 차단 게이트 배선 후에만** — 현재 미구현. / FortuneCookie(포춘 쿠키, id `fortune`) — 아침용 "오늘의 좋은 일" 한 줄(`src/content/fortuneCookies.json` DRAFT), 날짜 기반 결정적 선택이라 하루 동안 같은 조각. 가를 때 바삭 소리(Web Audio 합성). / LuckyCapsule(행운 캡슐, id `capsule`) — 뽑기 기계: 손잡이 돌리면 달그락→캡슐 낙하→열면 오늘의 징표(네잎클로버·별·깃털 등 8종 SVG)+한 줄(`src/content/luckyCharms.json` DRAFT). 소리 3종(드르륵·툭·뽁) 합성, isMuted 존중. **리추얼 3종은 EndRating 없음** — 기분 측정이 의례의 결을 깬다(사용자 피드백 2026-07-09).
 
 ### v4 즉시 착수분 (라우터/콘텐츠 — 런처에 배선됨)
 - **① 오늘의 행동 하나**: `src/content/dailyActions.json`(36개 DRAFT, "귀찮지만 하고 나면 나은" 어른 톤 — 유치함 금지) + `src/recommendation/dailyAction.js`(1일 1개·timeband·7일 재노출 금지·위기 L1+ 비노출·weather 조건·preferDomains 우선) + 런처 `DailyActionCard`. **개인화 계약**: 서비스 통합 시 1순위는 LLM이 그날의 대화에서 맞춤 행동을 생성, 이 풀은 폴백(dailyAction.js 헤더 참조).

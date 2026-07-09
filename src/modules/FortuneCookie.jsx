@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
+import { useSpeech } from '../context/SpeechContext'
 import fortunePool from '../content/fortuneCookies.json'
 
 // 포춘 쿠키 — 아침을 시작하는 뽑기(v4 ⑥ 계열). 쿠키 셋 중 하나를 골라
@@ -47,6 +48,47 @@ function CookieHalf({ flip = false, size = 'w-16 h-20' }) {
 export default function FortuneCookie({ onExit }) {
   const [phase, setPhase] = useState('intro') // intro → cracked
   const fortune = todayFortune()
+  const audioRef = useRef(null)
+  const { isMuted } = useSpeech()
+
+  // 갈라지는 소리 — 필터 노이즈 스냅 세 번(균열→갈라짐→부스러기). 좌상단 소리끄기를 존중.
+  const playCrack = () => {
+    if (isMuted) return
+    const Ctx = window.AudioContext || window.webkitAudioContext
+    if (!Ctx) return
+    if (!audioRef.current) audioRef.current = new Ctx()
+    const ctx = audioRef.current
+    if (ctx.state === 'suspended') ctx.resume()
+
+    const snap = (at, freq, dur, vol) => {
+      const len = Math.ceil(ctx.sampleRate * dur)
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate)
+      const data = buf.getChannelData(0)
+      for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 2
+      const src = ctx.createBufferSource()
+      src.buffer = buf
+      const bp = ctx.createBiquadFilter()
+      bp.type = 'bandpass'
+      bp.frequency.value = freq
+      bp.Q.value = 0.9
+      const gain = ctx.createGain()
+      const t = ctx.currentTime + at
+      gain.gain.setValueAtTime(vol, t)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + dur)
+      src.connect(bp)
+      bp.connect(gain)
+      gain.connect(ctx.destination)
+      src.start(t)
+    }
+    snap(0, 3200, 0.07, 0.5) // 톡 — 첫 균열
+    snap(0.06, 2200, 0.09, 0.35) // 쩍 — 갈라짐
+    snap(0.14, 1400, 0.12, 0.18) // 사르르 — 부스러기
+  }
+
+  const crack = () => {
+    playCrack()
+    setPhase('cracked')
+  }
 
   return (
     <ModuleFrame onExit={onExit}>
@@ -70,7 +112,7 @@ export default function FortuneCookie({ onExit }) {
                 {[0, 1, 2].map((i) => (
                   <button
                     key={i}
-                    onClick={() => setPhase('cracked')}
+                    onClick={crack}
                     aria-label={`쿠키 ${i + 1}`}
                     className="relative flex transition duration-300 hover:-translate-y-2 hover:drop-shadow-[0_10px_18px_rgba(17,35,56,0.14)]"
                     style={{ transform: `rotate(${(i - 1) * 7}deg)` }}

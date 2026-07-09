@@ -9,7 +9,7 @@
       "end": "11:00",
       "ask": "오늘을 시작하는 3분, 어때요?",
       "sub": "쿠키 하나 골라 열고, 가볍게 나서봐요.",
-      "modules": ["fortune", "mood"],
+      "modules": ["morningsong", "reset", "fortune"],
       "dailyAction": true
     },
     {

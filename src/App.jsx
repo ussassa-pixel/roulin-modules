@@ -38,6 +38,10 @@ import FortuneCookie from './modules/FortuneCookie'
 import LuckyCapsule from './modules/LuckyCapsule'
 import MusicPick from './modules/MusicPick'
 import BodyWake from './modules/BodyWake'
+import MorningSong from './modules/MorningSong'
+import KindnessNote from './modules/KindnessNote'
+import SuccessStamp from './modules/SuccessStamp'
+import OneMinuteReset from './modules/OneMinuteReset'
 
 // roulin.ai 모드카드와 같은 결: [번호] · 제목 · 설명("…할 때. …합니다.") · 작은 태그 pill
 const MODULES = [
@@ -82,6 +86,12 @@ const MODULES = [
   // ── 기분 상승 (v4.1 부록 — uplift 2종) ──
   { id: 'music',        title: '노래 한 곡',     tag: '전환',   desc: '기분을 살짝 바꾸고 싶을 때. 지금 마음에서 출발하는 한 곡을 골라드립니다.' },
   { id: 'bodywake',     title: '몸 깨우기',      tag: '활력',   desc: '몸이 처지고 늘어질 때. 90초, 세 동작으로 살짝 깨웁니다.' },
+
+  // ── 가벼워짐·아침 계열 (부록 4종) ──
+  { id: 'morningsong',  title: '오늘을 여는 한 곡', tag: '아침', desc: '하루를 시작할 때. 아침에 어울리는 한 곡으로 시동을 겁니다.' },
+  { id: 'kindness',     title: '오늘의 다정 배달', tag: '다정', desc: '나에게 한마디 건네고 싶을 때. 내가 쓴 다정이 나에게 배달됩니다.' },
+  { id: 'stamp',        title: '작은 성공 도장',  tag: '자축', desc: '방금 뭔가 해냈을 때. 그 자리에서 도장 하나, 쾅 찍습니다.' },
+  { id: 'reset',        title: '1분 리셋',        tag: '리셋', desc: '잠깐 끊고 가고 싶을 때. 딱 1분짜리 하나를 뽑아 해봅니다.' },
 ]
 
 export default function App() {
@@ -132,6 +142,10 @@ export default function App() {
       {activeModule === 'capsule'      && <LuckyCapsule onExit={exit} />}
       {activeModule === 'music'        && <MusicPick onExit={exit} />}
       {activeModule === 'bodywake'     && <BodyWake onExit={exit} />}
+      {activeModule === 'morningsong'  && <MorningSong onExit={exit} />}
+      {activeModule === 'kindness'     && <KindnessNote onExit={exit} />}
+      {activeModule === 'stamp'        && <SuccessStamp onExit={exit} />}
+      {activeModule === 'reset'        && <OneMinuteReset onExit={exit} />}
 
       {/* 어느 모듈 화면에서든 홈(런처)으로 */}
       {activeModule !== null && (

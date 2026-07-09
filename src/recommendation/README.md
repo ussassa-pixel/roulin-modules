@@ -51,6 +51,13 @@ const res = recommend(signal, { n: 2, exclude: ['grounding'] /* 쿨다운 */ })
 - **music_pick(id `music`)** — 기분 4분류(처짐/답답/곤두섬/허전) → ISO 원리로 곡 매칭. 풀 `content/musicPool.json`(54곡, 실재 확인 = 배포 전 검수 항목). **저작권 4규칙 준수**: 재생 X·가사 X·앨범아트 X·링크아웃만(코드리뷰 항목, MusicPick.jsx 헤더). 무저장 — 세션 내 중복만 방지.
 - **body_wake(id `bodywake`)** — 90초 3동작 활성 연습. bodyrelease와 정반대(하향 vs 상향) — 라우터 구분: 긴장→release / 처짐→wake / 전환→music (registry 주석 참조).
 
+## 부록 — 가벼워짐·아침 계열 4종 (구현됨)
+겹침 배제가 설계 핵심(registry 주석 참조): morningsong=아침 시동(music은 기분 대응) / kindness=능동 발신(comfortdraw는 수동 수신) / stamp=방금·즉시(dayclose는 밤 정산) / reset=초경량 1분(정식 개입 아님).
+- **morning_song(id `morningsong`)** — musicPool의 `morning:true` 플래그(energy 3~4) 참조, 기분 선택 단계 없음. 저작권 4규칙 동일.
+- **kindness_note(id `kindness`)** / **success_stamp(id `stamp`)** — 저장은 선택 토글(기본 off, localStorage). 저장 시 Chaon 경미 항목(스펙 §7).
+- **one_minute_reset(id `reset`)** — 풀 `content/oneMinuteResets.json`(10개, 15~20개 확장 = SW 감수). 뽑기/목록 양쪽 진입 + 60초 타이머.
+- 아침 슬롯(day_start) 매핑: morningsong·reset·fortune (+오늘의 행동).
+
 ## SW 확정 필요 (미결)
 - 28개 safetyLevel·contra 최종 판단, 특히 `compass`의 위기 게이트 조건.
 - targetStates 문구, durationSec 실측.

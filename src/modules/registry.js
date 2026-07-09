@@ -170,6 +170,30 @@ export const MODULE_META = {
     durationSec: 100,
     hasEndRating: false,
   },
+  morningsong: {
+    targetStates: ['morning-start', 'low-mood'],
+    safetyLevel: 'general',
+    durationSec: 60,
+    hasEndRating: false,
+  },
+  kindness: {
+    targetStates: ['self-criticism', 'sadness', 'shame'],
+    safetyLevel: 'general',
+    durationSec: 90,
+    hasEndRating: false,
+  },
+  stamp: {
+    targetStates: ['low-mood', 'motivation', 'completion'],
+    safetyLevel: 'general',
+    durationSec: 45,
+    hasEndRating: false,
+  },
+  reset: {
+    targetStates: ['overwhelm', 'restlessness', 'tension'],
+    safetyLevel: 'general',
+    durationSec: 60,
+    hasEndRating: false,
+  },
 }
 
 // 완료한 모듈을 바탕으로 1~2개 추천 반환

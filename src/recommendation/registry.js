@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════════════════════════
-//  registry.js — 32개 모듈 메타데이터 레지스트리 (추천 레이어 선결)
+//  registry.js — 36개 모듈 메타데이터 레지스트리 (추천 레이어 선결)
 //
 //  ⚠️ 임상 필드는 전부 **DRAFT**. safetyLevel / contraindications /
 //     targetStates / durationSec 은 SW(임상) 확정이 필요하다.
@@ -117,6 +117,18 @@ export const MODULES = [
     targetStates: ['기분 처짐', '전환 필요'], safetyLevel: 'general', contra: [], durationSec: 90, hasEndRating: false },
   { id: 'bodywake', displayName: '몸 깨우기', type: 'practice', need: ['savor'], domainTags: ['health', 'self'], themes: ['body', 'activation', 'uplift'],
     targetStates: ['무기력·처짐', '몸이 늘어짐'], safetyLevel: 'general', contra: ['불편 동작 강제 금지(카피로 처리)'], durationSec: 100, hasEndRating: false },
+
+  // ── 가벼워짐·아침 계열 (부록 4종) ──
+  // 겹침 배제: morningsong=아침 시동(music은 기분 대응) / kindness=능동 발신(comfortdraw는 수동 수신, compassion은 심상)
+  //           / stamp=방금·즉시 자축(dayclose는 밤 정산) / reset=초경량 1분(정식 그라운딩·호흡 아님)
+  { id: 'morningsong', displayName: '오늘을 여는 한 곡', type: 'tool', need: ['savor'], domainTags: ['self'], themes: ['music', 'morning', 'anticipation'],
+    targetStates: ['하루의 시작', '아침 시동'], safetyLevel: 'general', contra: [], durationSec: 60, hasEndRating: false },
+  { id: 'kindness', displayName: '오늘의 다정 배달', type: 'tool', need: ['soothe', 'savor'], domainTags: ['self'], themes: ['selfkind', 'self-compassion', 'active'],
+    targetStates: ['스스로에게 모짊', '다정이 필요함'], safetyLevel: 'general', contra: [], durationSec: 90, hasEndRating: false },
+  { id: 'stamp', displayName: '작은 성공 도장', type: 'tool', need: ['savor'], domainTags: ['self'], themes: ['celebration', 'completion', 'immediate'],
+    targetStates: ['방금 무언가 해냄', '즉시 자축'], safetyLevel: 'general', contra: [], durationSec: 45, hasEndRating: false },
+  { id: 'reset', displayName: '1분 리셋', type: 'practice', need: ['soothe'], domainTags: ['self', 'health'], themes: ['micro', 'reset', 'break'],
+    targetStates: ['잠깐 끊고 싶음', '1분 전환'], safetyLevel: 'general', contra: [], durationSec: 60, hasEndRating: false },
 
   // ── 위기 브릿지 ──
   { id: 'stop', displayName: 'STOP', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['impulse', 'pause'],

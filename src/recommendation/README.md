@@ -5,8 +5,10 @@
 > ⚠️ 이 폴더는 **스캐폴드**다. 임상 필드(safetyLevel·contra·targetStates·durationSec)는 전부 **DRAFT** — SW(임상) 확정 전까지 프로덕션 추천에 그대로 쓰지 말 것.
 
 ## 파일
-- `registry.js` — 27개 모듈 메타데이터(`MODULES`, `BY_ID`). 각 모듈의 니즈/도메인/테마/안전등급/금기/시간.
+- `registry.js` — 28개 모듈 메타데이터(`MODULES`, `BY_ID`). 각 모듈의 니즈/도메인/테마/안전등급/금기/시간.
 - `recommend.js` — 순수 함수: `safetyGate`, `isEligible`, `scoreModule`, `recommend`. + LLM 스텁 `extractStateSignal`.
+- `dailyAction.js` — v4 ① 오늘의 행동 하나: `pickDailyAction`(1일 1개·timeband 매칭·7일 재노출 금지·위기 L1+ 비노출, 결정적). 풀: `src/content/dailyActions.json` (DRAFT).
+- `timeSlots.js` — v4 ④ 시간대 진입점: `getActiveSlot`·`slotInstanceKey`(자정 넘김 창 처리)·`isDeclined`(당일 재노출 금지). 매핑: `src/content/timeSlots.json`.
 
 ## 파이프라인 (v3 5장)
 ```
@@ -39,7 +41,14 @@ const res = recommend(signal, { n: 2, exclude: ['grounding'] /* 쿨다운 */ })
 - `safetyLevel:'crisis-bridge'`(STOP) → 일반 추천 **대상 아님**(안전 흐름 전용).
 - 결정적: 동일 signal → 동일 결과(점수 desc, 동점 시 id asc).
 
+## v4 즉시 착수분 (이번에 구현)
+- **① daily_action** — 콘텐츠 `content/dailyActions.json`(36개 DRAFT) + `dailyAction.js` 로직 + 런처 `DailyActionCard`. 이 데모엔 위기 신호가 없어 `crisisLevel:'none'` 고정 — 서비스 통합 시 라우터가 넘긴다.
+- **④ time_slots** — 매핑 `content/timeSlots.json`(퇴근길 17:30~20:00 / 잠들기 전 22:00~01:00) + `timeSlots.js` + 런처 `TimeSlotBanner`. worry_drawer는 `pending`으로 두어 출시 후 매핑만 추가하면 됨.
+- **⑥ comfort_draw** — 다정 풀 `content/comfortPool.json`(50개 DRAFT) + 모듈 `modules/ComfortDraw.jsx`(id `comfortdraw`). **따끔 모드 미구현** — 위기 L1+ 차단 게이트 배선 후에만.
+- **②③(걱정 서랍·미래 편지)은 미구현** — 본체 DB(`module_outputs`)+스케줄링 선결(v4 §6), mind_vault와 인프라 공유 설계.
+
 ## SW 확정 필요 (미결)
-- 27개 safetyLevel·contra 최종 판단, 특히 `compass`의 위기 게이트 조건.
+- 28개 safetyLevel·contra 최종 판단, 특히 `compass`의 위기 게이트 조건.
 - targetStates 문구, durationSec 실측.
 - ③ StateSignal 스키마 상의 `dominantNeed` 판정 기준(어떤 종착 톤/모드에서 무엇으로).
+- v4: 행동 풀 36개·다정 풀 50개 감수, 따끔 풀 작성·감수, ② 재개봉 연장 1회 제한, ③ 배달 안전 게이트.

@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "note": "④ 시간대 진입점 (v4 §4) — 슬롯-모듈 매핑은 코드 수정 없이 이 파일로 조정. 카피: 질문형 1회·강요 없음. 거절 시 당일(슬롯 인스턴스) 재노출 금지는 로직에서 처리. pending은 아직 출시 전 모듈(예: worry_drawer).",
+  "slots": [
+    {
+      "id": "commute_home",
+      "label": "퇴근길 3분",
+      "start": "17:30",
+      "end": "20:00",
+      "ask": "지금 퇴근길이세요?",
+      "sub": "3분이면 충분해요. 하나만 골라봐요.",
+      "modules": ["bodyrelease", "smalleststep"],
+      "dailyAction": true,
+      "pending": ["worry_drawer"]
+    },
+    {
+      "id": "before_sleep",
+      "label": "잠들기 전 3분",
+      "start": "22:00",
+      "end": "01:00",
+      "ask": "하루를 닫을 시간이에요.",
+      "sub": "가볍게 하나만 하고, 오늘은 여기서 접어도 돼요.",
+      "modules": ["dayclose", "worry", "mood"],
+      "dailyAction": false,
+      "lowStimulus": true
+    }
+  ]
+}

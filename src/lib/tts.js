@@ -9,6 +9,33 @@ const inflight = new Map() // 'voice|text' -> Promise<url>
 let currentAudio = null
 let koVoice = null
 
+// ── 오디오 출력 예열 ──────────────────────────────────────────────
+// 브라우저는 세션 첫 재생 때 출력 스트림이 깨어나며 앞부분(수백 ms)을 흘린다.
+// 그래서 진입 즉시 말하는 모듈(STOP 등)은 첫 단어가 잘린다.
+// 첫 사용자 제스처에서 무음을 한 번 재생해 스트림을 미리 열어 둔다.
+let warmed = false
+function makeSilentWavUrl(ms = 250) {
+  const rate = 8000
+  const n = Math.floor((rate * ms) / 1000)
+  const buf = new ArrayBuffer(44 + n * 2)
+  const dv = new DataView(buf)
+  const wr = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)) }
+  wr(0, 'RIFF'); dv.setUint32(4, 36 + n * 2, true); wr(8, 'WAVE'); wr(12, 'fmt ')
+  dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true)
+  dv.setUint32(24, rate, true); dv.setUint32(28, rate * 2, true)
+  dv.setUint16(32, 2, true); dv.setUint16(34, 16, true); wr(36, 'data'); dv.setUint32(40, n * 2, true)
+  return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' })) // 샘플이 모두 0 = 무음
+}
+export function warmupAudio() {
+  if (warmed) return
+  warmed = true
+  try {
+    const a = new Audio(makeSilentWavUrl())
+    a.volume = 0.01
+    a.play().catch(() => {})
+  } catch { /* noop */ }
+}
+
 function pickKoVoice(voices) {
   const ko = voices.filter((v) => /ko(-|_)?KR|Korean|한국/i.test(v.lang + ' ' + v.name))
   if (!ko.length) return null

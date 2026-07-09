@@ -1,35 +1,23 @@
-import { createContext, useContext, useState, useCallback, useRef } from 'react'
-import { speakSmart, stopSpeaking } from '../lib/tts'
+import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react'
+import { speakSmart, stopSpeaking, warmupAudio } from '../lib/tts'
 
 const SpeechContext = createContext(null)
-const VOICE_KEY = 'roulin_voice'
-
-function initialVoice() {
-  try {
-    return localStorage.getItem(VOICE_KEY) === 'male' ? 'male' : 'female'
-  } catch {
-    return 'female'
-  }
-}
 
 export function SpeechProvider({ children }) {
   const [isMuted, setIsMuted] = useState(false)
   const isMutedRef = useRef(false)
-  const [voice, setVoiceState] = useState(initialVoice)
-  const voiceRef = useRef(voice)
+
+  // 첫 사용자 제스처(런처 카드 탭 등)에서 오디오 출력을 예열 →
+  // 진입 즉시 말하는 모듈(STOP 등)의 첫 단어가 잘리지 않도록.
+  useEffect(() => {
+    const onFirst = () => warmupAudio()
+    window.addEventListener('pointerdown', onFirst, { once: true, capture: true })
+    return () => window.removeEventListener('pointerdown', onFirst, { capture: true })
+  }, [])
 
   const speak = useCallback((text) => {
     if (isMutedRef.current || !text) return
-    speakSmart(text, voiceRef.current) // ElevenLabs 우선, 미설정/실패 시 브라우저 음성으로 폴백
-  }, [])
-
-  const setVoice = useCallback((v) => {
-    const next = v === 'male' ? 'male' : 'female'
-    if (next === voiceRef.current) return
-    voiceRef.current = next
-    setVoiceState(next)
-    try { localStorage.setItem(VOICE_KEY, next) } catch { /* noop */ }
-    stopSpeaking() // 진행 중 안내는 멈추고, 다음 안내부터 새 목소리로
+    speakSmart(text, 'male') // 남성 목소리 고정. ElevenLabs 우선, 실패 시 브라우저 음성 폴백
   }, [])
 
   const toggleMute = useCallback(() => {
@@ -42,7 +30,7 @@ export function SpeechProvider({ children }) {
   }, [])
 
   return (
-    <SpeechContext.Provider value={{ isMuted, toggleMute, speak, voice, setVoice }}>
+    <SpeechContext.Provider value={{ isMuted, toggleMute, speak }}>
       {children}
     </SpeechContext.Provider>
   )

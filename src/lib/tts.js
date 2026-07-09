@@ -2,6 +2,8 @@
 // ElevenLabs(/api/tts 프록시) 음성을 우선 쓰고, 미설정(키 없음)·실패 시 브라우저 TTS로 폴백.
 // 같은 문구는 세션 내 캐시해 재생성 비용을 줄인다.
 let elState = 'unknown' // 'unknown' | 'on' | 'off'
+// 서버 voice_settings를 바꿀 때마다 올린다 → URL이 바뀌어 immutable 캐시(브라우저·CDN)를 우회.
+const TTS_REV = 2
 const cache = new Map() // 'voice|text' -> objectURL
 const inflight = new Map() // 'voice|text' -> Promise<url>
 let currentAudio = null
@@ -50,7 +52,7 @@ async function fetchTts(text, voice) {
   if (cache.has(key)) return cache.get(key)
   if (inflight.has(key)) return inflight.get(key)
   const promise = (async () => {
-    const q = '/api/tts?text=' + encodeURIComponent(text) + (voice === 'male' ? '&voice=male' : '')
+    const q = '/api/tts?text=' + encodeURIComponent(text) + (voice === 'male' ? '&voice=male' : '') + '&rev=' + TTS_REV
     const res = await fetch(q)
     if (res.status === 501) { elState = 'off'; throw new Error('not_configured') }
     if (!res.ok) throw new Error('tts_' + res.status)

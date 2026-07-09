@@ -33,8 +33,8 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           text,
           model_id: modelId,
-          // 차분하고 따뜻한 룰랭 톤
-          voice_settings: { stability: 0.45, similarity_boost: 0.8, style: 0.15, use_speaker_boost: true },
+          // 명상앱(octos-be TTSService)과 동일한 설정 — style/use_speaker_boost 없음(더 자연스럽게)
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 },
         }),
       }
     )

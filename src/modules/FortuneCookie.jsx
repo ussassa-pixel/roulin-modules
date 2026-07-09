@@ -2,9 +2,10 @@ import { useState } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 import fortunePool from '../content/fortuneCookies.json'
 
-// 포춘 쿠키 — 아침 리추얼(v4 ⑥ 계열). 오늘 몫의 좋은 한 줄을 꺼낸다.
-// 근거를 주장하지 않는 순수 의례. 날짜 기반 결정적 선택이라
-// 하루에 몇 번을 열어도 같은 조각 — "오늘의 운세"처럼 하루 단위로 고정.
+// 포춘 쿠키 — 아침을 시작하는 뽑기(v4 ⑥ 계열). 쿠키 셋 중 하나를 골라
+// 오늘 몫의 좋은 한 줄을 꺼낸다. 근거를 주장하지 않는 순수 의례.
+// 조각은 날짜 기반 결정적 선택 — 어떤 쿠키를 골라도, 몇 번을 열어도
+// 그날은 같은 조각("오늘의 운세"처럼 하루 단위 고정). 고르는 행위가 의례다.
 // 리추얼이므로 EndRating 없음(기분 측정이 의례의 결을 깬다).
 
 function hashStr(s) {
@@ -20,9 +21,9 @@ function todayFortune() {
 }
 
 // 쿠키 반쪽 — 부드러운 앰버 그라데이션 + 살짝의 하이라이트
-function CookieHalf({ flip = false }) {
+function CookieHalf({ flip = false, size = 'w-16 h-20' }) {
   return (
-    <svg viewBox="0 0 80 96" className="w-16 h-20" style={flip ? { transform: 'scaleX(-1)' } : undefined} aria-hidden="true">
+    <svg viewBox="0 0 80 96" className={size} style={flip ? { transform: 'scaleX(-1)' } : undefined} aria-hidden="true">
       <defs>
         <linearGradient id={`ckg${flip ? 'r' : 'l'}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#F0C878" />
@@ -56,28 +57,33 @@ export default function FortuneCookie({ onExit }) {
               <p className="font-serif text-[28px] text-navy mb-3" style={{ fontWeight: 600 }}>포춘 쿠키</p>
               <div className="w-8 h-px bg-amber/60 mx-auto mb-4" />
               <p className="text-[14px] text-r-gray font-light mb-10 leading-relaxed">
-                오늘 몫의 한 줄이 들어 있어요.<br />쿠키를 톡, 갈라봐요.
+                오늘 몫의 한 줄이 들어 있어요.<br />마음 가는 쿠키를 하나 골라봐요.
               </p>
 
-              {/* 닫힌 쿠키 — 후광 위에 두 반쪽이 맞붙어 있음 */}
-              <button
-                onClick={() => setPhase('cracked')}
-                aria-label="쿠키 가르기"
-                className="relative mx-auto mb-10 flex items-center justify-center w-52 h-40 group"
-              >
+              {/* 쿠키 세 개 — 하나를 고르면 톡, 갈라진다 */}
+              <div className="relative mx-auto mb-10 flex items-end justify-center gap-4 h-32">
                 <span
-                  className="absolute inset-0 rounded-full"
-                  style={{ background: 'radial-gradient(ellipse at 50% 55%, rgba(224,163,62,0.22) 0%, rgba(224,163,62,0) 68%)' }}
+                  className="absolute inset-x-0 top-2 bottom-0 rounded-full"
+                  style={{ background: 'radial-gradient(ellipse at 50% 60%, rgba(224,163,62,0.20) 0%, rgba(224,163,62,0) 70%)' }}
+                  aria-hidden="true"
                 />
-                <span className="flex -space-x-6 transition-transform duration-300 group-hover:scale-105">
-                  <CookieHalf />
-                  <CookieHalf flip />
-                </span>
-              </button>
+                {[0, 1, 2].map((i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPhase('cracked')}
+                    aria-label={`쿠키 ${i + 1}`}
+                    className="relative flex transition duration-300 hover:-translate-y-2 hover:drop-shadow-[0_10px_18px_rgba(17,35,56,0.14)]"
+                    style={{ transform: `rotate(${(i - 1) * 7}deg)` }}
+                  >
+                    <span className="flex -space-x-4">
+                      <CookieHalf size="w-11 h-14" />
+                      <CookieHalf flip size="w-11 h-14" />
+                    </span>
+                  </button>
+                ))}
+              </div>
 
-              <button onClick={() => setPhase('cracked')} className="w-full py-4 bg-navy text-white rounded-full hover:bg-[#0c1a2b] transition">
-                톡, 갈라보기
-              </button>
+              <p className="text-[12px] text-r-gray-soft">어떤 쿠키를 골라도, 오늘의 조각은 당신 몫이에요.</p>
             </>
           )}
 

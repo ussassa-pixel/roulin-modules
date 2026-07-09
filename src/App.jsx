@@ -73,7 +73,7 @@ const MODULES = [
 
   // ── 리추얼 (v4 ⑥ — 근거를 주장하지 않는 순수 의례) ──
   { id: 'comfortdraw',  title: '위로 뽑기',      tag: '리추얼', desc: '이유 없이 한마디가 필요할 때. 오늘의 카드 한 장을 뒤집어 봅니다.' },
-  { id: 'fortune',      title: '포춘 쿠키',      tag: '리추얼', desc: '하루를 시작할 때. 오늘 몫의 좋은 한 줄을 꺼내 봅니다.' },
+  { id: 'fortune',      title: '포춘 쿠키',      tag: '리추얼', desc: '하루를 시작할 때. 쿠키 하나를 골라 오늘 몫의 좋은 한 줄을 꺼냅니다.' },
 ]
 
 export default function App() {

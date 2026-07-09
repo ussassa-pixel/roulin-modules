@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useLayoutEffect } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 import EndRating from '../components/EndRating'
 import StepScene from '../components/StepScene'
@@ -89,6 +89,7 @@ export default function RelationLens({ onExit }) {
 }
 
 // 관계 렌즈 — 정리한 내용을 실제 큰 돋보기 렌즈 안에 담아 보여준다.
+// 내용이 많아지면 그만큼 렌즈(반지름)도 커진다.
 function LensSummary({ v }) {
   const items = [
     { label: '상대', value: v.person },
@@ -97,9 +98,34 @@ function LensSummary({ v }) {
     { label: '내가 원하는 것', value: v.myWant, strong: true },
   ].filter((it) => it.value && it.value.trim())
 
+  const W = 216 // 내부 콘텐츠 폭(고정) — 이 폭 기준으로 높이를 재고 렌즈를 키운다
+  const contentRef = useRef(null)
+  const [h, setH] = useState(150)
+  useLayoutEffect(() => {
+    if (contentRef.current) setH(contentRef.current.offsetHeight)
+  }, [v.person, v.myFeeling, v.theirView, v.myWant])
+
+  // 콘텐츠(W×h)가 원 안에 들어가려면 r ≥ 0.5·√(W²+h²). 여백 더하고 min/max로 클램프.
+  const r = Math.max(120, Math.min(210, 0.5 * Math.hypot(W, h) + 30))
+  const pad = 10
+  const size = Math.round(2 * r + pad * 2)
+  const cx = size / 2
+  const cy = r + pad
+  const svgH = Math.round(size + r * 0.62) // 손잡이 공간
+  const rad = (d) => (d * Math.PI) / 180
+  const hx = cx + r * Math.cos(rad(45))
+  const hy = cy + r * Math.sin(rad(45))
+  const hx2 = hx + r * 0.34
+  const hy2 = hy + r * 0.6
+  const rr = r - 14
+  const p1x = cx + rr * Math.cos(rad(202))
+  const p1y = cy + rr * Math.sin(rad(202))
+  const p2x = cx + rr * Math.cos(rad(288))
+  const p2y = cy + rr * Math.sin(rad(288))
+
   return (
-    <div className="relative mx-auto" style={{ width: 300, height: 356 }}>
-      <svg width="300" height="356" viewBox="0 0 300 356" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0" aria-hidden="true">
+    <div className="relative mx-auto" style={{ width: size, height: svgH }}>
+      <svg width={size} height={svgH} viewBox={`0 0 ${size} ${svgH}`} fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0" aria-hidden="true">
         <defs>
           <radialGradient id="lens-glass" cx="42%" cy="34%" r="72%">
             <stop offset="0%" stopColor="#ffffff" stopOpacity="0.92" />
@@ -113,26 +139,26 @@ function LensSummary({ v }) {
           </linearGradient>
         </defs>
         {/* 손잡이 */}
-        <line x1="240" y1="233" x2="286" y2="318" stroke="url(#lens-rim)" strokeWidth="20" strokeLinecap="round" />
-        <line x1="240" y1="233" x2="286" y2="318" stroke="rgba(0,0,0,0.10)" strokeWidth="6" strokeLinecap="round" />
+        <line x1={hx} y1={hy} x2={hx2} y2={hy2} stroke="url(#lens-rim)" strokeWidth={r * 0.15} strokeLinecap="round" />
+        <line x1={hx} y1={hy} x2={hx2} y2={hy2} stroke="rgba(0,0,0,0.10)" strokeWidth={r * 0.045} strokeLinecap="round" />
         {/* 유리 */}
-        <circle cx="150" cy="140" r="132" fill="url(#lens-glass)" />
+        <circle cx={cx} cy={cy} r={r} fill="url(#lens-glass)" />
         {/* 테 */}
-        <circle cx="150" cy="140" r="132" fill="none" stroke="url(#lens-rim)" strokeWidth="9" />
-        <circle cx="150" cy="140" r="127" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" />
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="url(#lens-rim)" strokeWidth="9" />
+        <circle cx={cx} cy={cy} r={r - 5} fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" />
         {/* 광택 */}
-        <path d="M66 84 A 132 132 0 0 1 196 40" stroke="white" strokeWidth="9" strokeLinecap="round" fill="none" opacity="0.4" />
+        <path d={`M ${p1x.toFixed(1)} ${p1y.toFixed(1)} A ${rr} ${rr} 0 0 1 ${p2x.toFixed(1)} ${p2y.toFixed(1)}`} stroke="white" strokeWidth="8" strokeLinecap="round" fill="none" opacity="0.38" />
       </svg>
 
-      <div className="absolute left-1/2 -translate-x-1/2 text-center" style={{ top: 42, width: 210 }}>
+      <div ref={contentRef} className="absolute left-1/2 -translate-x-1/2 text-center" style={{ top: cy - h / 2, width: W }}>
         <div className="space-y-3">
           {items.map((it) => (
             <div key={it.label}>
               <p className="text-[10.5px] tracking-[0.14em] text-amber mb-0.5">{it.label}</p>
               {it.strong ? (
-                <p className="text-navy font-serif text-[15px] leading-snug line-clamp-2" style={{ fontWeight: 600 }}>{it.value}</p>
+                <p className="text-navy font-serif text-[15px] leading-snug" style={{ fontWeight: 600 }}>{it.value}</p>
               ) : (
-                <p className="text-ink/90 text-[13px] leading-snug line-clamp-2">{it.value}</p>
+                <p className="text-ink/90 text-[13px] leading-snug">{it.value}</p>
               )}
             </div>
           ))}

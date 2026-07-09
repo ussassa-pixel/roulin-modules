@@ -90,7 +90,7 @@ src/
 ## 추천 레이어 (`src/recommendation/`) — 경로 C는 UI 연결됨
 - `registry.js` — 36개 모듈 메타데이터(`MODULES`, `BY_ID`). 런처 id와 1:1. **임상 필드(safetyLevel·contra·targetStates·durationSec)는 DRAFT — SW 확정 필요.**
 - `recommend.js` — 순수·결정적 코어: `safetyGate`(위기 L2+ → safety_connector), `isEligible`, `scoreModule`, `recommend(signal,{n,exclude})`. ④선택은 recommender 스펙 §2④: 최대 2개, 3+동점(모호)→1개, 2파전 동점은 다른 유형만 페어, 약한 매칭(3점 미만) 제외, 다른 유형(도구+연습) 우선. `extractStateSignal`(③ LLM)은 서비스 몫 스텁.
-- `checkin.js` + `components/CheckIn.jsx` — **경로 C "지금 어때요?" (recommender 1단계, 런처 히어로 CTA 연결됨)**: 상태 칩 7개+[둘러볼래요](문구 DRAFT) → 같은 엔진 통과 → 1~2 카드+[지금은 괜찮아요] 동등 노출. 도구형 쿨다운 `computeCooldownExcludes`(careLog 기반, N=3일 DRAFT, 연습형 제외). [둘러볼래요]→카테고리 브라우즈(진정/정리/행동/기분전환/아침). **"많이 힘들다면" 안전 화면(109·1577-0199)은 추천 엔진과 완전 분리, 칩 화면에 상시 노출** — 위기 표현은 칩에 넣지 않는다. LLM 0.
+- `checkin.js` + `components/CheckIn.jsx` — **경로 C "지금 어때요?" (recommender 1단계, 런처 히어로 CTA 연결됨)**: 상태 칩 9개+[둘러볼래요](문구 DRAFT, **가벼운 상태 칩 포함** — 심심해요·몸이 찌뿌둥해요, 힘든 표현만 있으면 진입 문턱이 높아진다는 사용자 피드백 2026-07-10) → 같은 엔진 통과 → 1~2 카드+[지금은 괜찮아요] 동등 노출. 체크인 어느 화면에서든 상단 "홈" 플로팅 버튼으로 런처 복귀. 도구형 쿨다운 `computeCooldownExcludes`(careLog 기반, N=3일 DRAFT, 연습형 제외). [둘러볼래요]→카테고리 브라우즈(진정/정리/행동/기분전환/아침). **"많이 힘들다면" 안전 화면(109·1577-0199)은 추천 엔진과 완전 분리, 칩 화면에 상시 노출** — 위기 표현은 칩에 넣지 않는다. LLM 0.
 - 파이프라인: [신호] → ①safetyGate → ②필터(금기·쿨다운·가용성) → ③스코어 → ④상위 1~2 → ⑤제시(+이유). 경로 A(대화, verbatim 인용)·B(시간대)는 같은 엔진에 신호만 다르게 — A는 서비스 통합 후.
 
 ## 다음 단계 (미구현)

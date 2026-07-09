@@ -55,7 +55,19 @@ export const CHIPS = [
     signal: { dominantNeed: 'savor', secondaryNeeds: ['soothe'], themes: ['music', 'comfort'], crisisLevel: 'none' },
     reason: '마음이 좀 허전하다고 하셔서, 채워줄 만한 걸 골랐어요.',
   },
-  // 8번째 칩 [괜찮아요, 둘러볼래요]는 추천이 아니라 브라우즈 출구 — UI에서 처리
+  // 가벼운 상태도 문이 된다 — 힘든 표현만 있으면 진입 문턱이 높아진다(사용자 피드백 2026-07-10)
+  {
+    key: 'bored', label: '심심해요',
+    // 놀이 결('play' 테마: 뽁뽁이·모래/소리 정원·행운 캡슐)만 — 'sensory'는 그라운딩(불안용)도 걸려서 제외
+    signal: { dominantNeed: 'savor', secondaryNeeds: ['soothe'], themes: ['luck', 'play'], crisisLevel: 'none' },
+    reason: '심심하다고 하셔서, 재미있는 걸 골라봤어요.',
+  },
+  {
+    key: 'stiff', label: '몸이 찌뿌둥해요',
+    signal: { dominantNeed: 'soothe', secondaryNeeds: ['savor'], themes: ['body', 'relaxation', 'stretch'], crisisLevel: 'none' },
+    reason: '몸이 찌뿌둥하다고 하셔서, 풀거나 깨울 걸 준비했어요.',
+  },
+  // 마지막 칩 [괜찮아요, 둘러볼래요]는 추천이 아니라 브라우즈 출구 — UI에서 처리
 ]
 
 // ── ② 쿨다운 — 도구형 재추천 피로 방지 (기간 N=3일은 DRAFT, §7 미결) ──

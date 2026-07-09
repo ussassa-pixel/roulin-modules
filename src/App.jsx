@@ -149,6 +149,17 @@ export default function App() {
       {activeModule === 'stamp'        && <SuccessStamp onExit={exit} />}
       {activeModule === 'reset'        && <OneMinuteReset onExit={exit} />}
 
+      {/* "지금 어때요?" 어느 화면에서든 홈(런처)으로 */}
+      {activeModule === null && checkinOpen && (
+        <button
+          onClick={() => setCheckinOpen(false)}
+          aria-label="홈으로"
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 pl-2.5 pr-3.5 py-1.5 rounded-full bg-white/70 backdrop-blur border border-[#E0DCCD] text-navy/75 text-[12px] shadow-sm hover:bg-white transition"
+        >
+          <HomeIcon /> 홈
+        </button>
+      )}
+
       {/* 어느 모듈 화면에서든 홈(런처)으로 */}
       {activeModule !== null && (
         <button

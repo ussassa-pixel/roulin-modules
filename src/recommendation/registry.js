@@ -53,11 +53,11 @@ export const MODULES = [
     targetStates: ['잠깐 멈추고 싶음'], safetyLevel: 'general', contra: [], durationSec: 120, hasEndRating: true },
   { id: 'butterfly', displayName: '나비 포옹', type: 'practice', need: ['soothe'], domainTags: ['self', 'health'], themes: ['stabilize', 'body'],
     targetStates: ['마음이 떨리고 가라앉지 않음'], safetyLevel: 'general', contra: [], durationSec: 90, hasEndRating: true },
-  { id: 'bubble', displayName: '뽁뽁이', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['sensory', 'tactile'],
+  { id: 'bubble', displayName: '뽁뽁이', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['sensory', 'tactile', 'play'],
     targetStates: ['안절부절못함'], safetyLevel: 'general', contra: [], durationSec: 120, hasEndRating: true },
-  { id: 'sound', displayName: '소리 정원', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['sensory', 'audio'],
+  { id: 'sound', displayName: '소리 정원', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['sensory', 'audio', 'play'],
     targetStates: ['말하고 싶지 않음'], safetyLevel: 'general', contra: [], durationSec: 120, hasEndRating: true },
-  { id: 'sand', displayName: '모래 정원', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['sensory', 'tactile'],
+  { id: 'sand', displayName: '모래 정원', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['sensory', 'tactile', 'play'],
     targetStates: ['손을 움직이고 싶음'], safetyLevel: 'general', contra: [], durationSec: 120, hasEndRating: true },
   { id: 'bodyrelease', displayName: '몸 풀어주기', type: 'practice', need: ['soothe'], domainTags: ['health', 'self'], themes: ['relaxation', 'body', 'pmr'],
     targetStates: ['신체 긴장·과각성'], safetyLevel: 'general', contra: ['통증 부위 강제 금지(카피로 처리)'], durationSec: 120, hasEndRating: true },
@@ -108,7 +108,7 @@ export const MODULES = [
     targetStates: ['이유 없이 한마디가 필요함', '가볍게 기대고 싶음'], safetyLevel: 'general', contra: ['따끔 모드는 위기 L1+ 차단(미구현)'], durationSec: 60, hasEndRating: false },
   { id: 'fortune', displayName: '포춘 쿠키', type: 'practice', need: ['savor'], domainTags: ['self'], themes: ['ritual', 'morning'],
     targetStates: ['하루의 시작', '가벼운 기대가 필요함'], safetyLevel: 'general', contra: [], durationSec: 45, hasEndRating: false },
-  { id: 'capsule', displayName: '행운 캡슐', type: 'practice', need: ['savor', 'soothe'], domainTags: ['self'], themes: ['ritual', 'luck'],
+  { id: 'capsule', displayName: '행운 캡슐', type: 'practice', need: ['savor', 'soothe'], domainTags: ['self'], themes: ['ritual', 'luck', 'play'],
     targetStates: ['작은 기운이 필요함', '기분 전환이 필요함'], safetyLevel: 'general', contra: [], durationSec: 60, hasEndRating: false },
 
   // ── 기분 상승 (v4.1 부록 — 능동형 uplift) ──

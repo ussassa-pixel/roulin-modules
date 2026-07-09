@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { SpeechProvider } from './context/SpeechContext'
 import RecommendationSheet from './components/RecommendationSheet'
+import CareTrail from './components/CareTrail'
+import { logCare } from './lib/careLog'
 import PresentMoment from './modules/PresentMoment'
 import StopCard from './modules/StopCard'
 import DrinkingMeditation from './modules/DrinkingMeditation'
@@ -71,6 +73,10 @@ export default function App() {
   const [pendingRec, setPendingRec] = useState(null)
 
   const exit = () => {
+    if (activeModule) {
+      const m = MODULES.find((x) => x.id === activeModule)
+      if (m) logCare({ id: m.id, title: m.title, tag: m.tag }) // 머문 자국 남기기
+    }
     setPendingRec(activeModule)
     setActiveModule(null)
   }
@@ -154,6 +160,9 @@ function Launcher({ onPick }) {
           지금 마음에 가까운 돌봄을 골라보세요.
         </p>
       </div>
+
+      {/* ── 머문 자국(돌봄 기록) — 하나씩 쌓인다 ── */}
+      <CareTrail />
 
       {/* ── 모듈 카드 (roulin 모드카드 결: 번호·제목·설명·태그) ── */}
       <div className="max-w-md mx-auto px-6 pb-8">

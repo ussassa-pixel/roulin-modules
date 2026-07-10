@@ -10,10 +10,12 @@ let currentAudio = null
 let koVoice = null
 
 // ── 오디오 출력 예열 ──────────────────────────────────────────────
-// 브라우저는 세션 첫 재생 때 출력 스트림이 깨어나며 앞부분(수백 ms)을 흘린다.
-// 그래서 진입 즉시 말하는 모듈(STOP 등)은 첫 단어가 잘린다.
-// 첫 사용자 제스처에서 무음을 한 번 재생해 스트림을 미리 열어 둔다.
-let warmed = false
+// 브라우저는 재생이 한동안 없으면 출력 스트림이 잠들고, 다음 재생의 앞부분
+// (수백 ms)을 흘린다. 그래서 진입 즉시 말하는 모듈(STOP 등)은 첫 단어가 잘린다.
+// 세션당 1회 예열로는 부족 — 런처에서 머물다 들어오면 다시 잠들어 있다.
+// 최근 재생이 없을 때마다 무음을 짧게 틀어 스트림을 다시 깨운다.
+let lastAudioAt = 0
+const WARM_IDLE_MS = 15000
 function makeSilentWavUrl(ms = 250) {
   const rate = 8000
   const n = Math.floor((rate * ms) / 1000)
@@ -27,8 +29,8 @@ function makeSilentWavUrl(ms = 250) {
   return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' })) // 샘플이 모두 0 = 무음
 }
 export function warmupAudio() {
-  if (warmed) return
-  warmed = true
+  if (Date.now() - lastAudioAt < WARM_IDLE_MS) return
+  lastAudioAt = Date.now()
   try {
     const a = new Audio(makeSilentWavUrl())
     a.volume = 0.01
@@ -66,8 +68,9 @@ export function stopSpeaking() {
 }
 
 // 브라우저 내장 TTS (폴백). 남성은 피치를 낮춰 최소한의 구분을 준다.
+// 발화가 실제로 끝날 때 resolve — 모듈이 음성 길이에 맞춰 단계를 넘길 수 있게.
 export function webSpeak(text, voice = 'female') {
-  if (!window.speechSynthesis || !text) return
+  if (!window.speechSynthesis || !text) return Promise.resolve()
   window.speechSynthesis.cancel()
   ensureVoice()
   const u = new SpeechSynthesisUtterance(humanize(text))
@@ -76,7 +79,12 @@ export function webSpeak(text, voice = 'female') {
   u.rate = 0.9
   u.pitch = voice === 'male' ? 0.8 : 1.02
   u.volume = 0.95
-  window.speechSynthesis.speak(u)
+  return new Promise((resolve) => {
+    // onend가 안 오는 환경(음성 없음 등) 대비 상한: 글자수 기반 넉넉히
+    const cap = setTimeout(resolve, Math.max(3000, text.length * 250))
+    u.onend = u.onerror = () => { clearTimeout(cap); resolve() }
+    window.speechSynthesis.speak(u)
+  })
 }
 
 async function fetchTts(text, voice) {
@@ -99,21 +107,34 @@ async function fetchTts(text, voice) {
   try { return await promise } finally { inflight.delete(key) }
 }
 
+// 문구들을 미리 받아 캐시에 넣는다(재생 없음) — 진입 즉시 말하는 모듈의 시작 지연 제거.
+export function prefetchTts(texts, voice = 'female') {
+  if (elState === 'off') return
+  for (const t of texts) if (t) fetchTts(t, voice).catch(() => { /* 재생 시점에 폴백 */ })
+}
+
 // ElevenLabs 우선, 실패 시 브라우저 폴백. voice: 'female'(기본) | 'male'
+// 반환 Promise는 발화가 **끝날 때**(중단 포함) resolve — 단계 전환을 음성에 맞출 수 있다.
 export async function speakSmart(text, voice = 'female') {
   if (!text) return
   stopSpeaking()          // 이전 발화 즉시 중단 + 세대 증가
   const seq = speakSeq    // 이 발화의 세대
-  if (elState === 'off') { webSpeak(text, voice); return }
+  if (elState === 'off') { await webSpeak(text, voice); return }
+  warmupAudio() // fetch하는 동안 무음으로 출력 스트림을 깨워 첫 단어 잘림 방지
   try {
     const url = await fetchTts(text, voice)
     if (seq !== speakSeq) return // 그 사이 다음으로 넘어갔음(새 발화/정지) → 재생 안 함
     const audio = new Audio(url)
     audio.volume = 0.95
     currentAudio = audio
-    await audio.play().catch(() => {})
+    lastAudioAt = Date.now()
+    await new Promise((resolve) => {
+      audio.onended = audio.onerror = audio.onpause = resolve
+      audio.play().catch(resolve)
+    })
+    lastAudioAt = Date.now()
   } catch {
     if (seq !== speakSeq) return
-    webSpeak(text, voice) // 일시 실패는 이번만 폴백(키 없음 501 이면 elState=off 로 영구 폴백)
+    await webSpeak(text, voice) // 일시 실패는 이번만 폴백(키 없음 501 이면 elState=off 로 영구 폴백)
   }
 }

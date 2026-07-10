@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 import { useSpeech } from '../context/SpeechContext'
+import { prefetchTts } from '../lib/tts'
 
+const STOP_TEXT = 'STOP. 지금, 하던 것을 멈춰요.'
+const BREATH_TEXT = '숨 한 번.'
+const PROCEED_TEXT = '이제 정하세요. 같은 행동을 해도 괜찮아요. 다른 행동을 선택해도 괜찮아요.'
 const OBSERVE_TEXTS = [
   '지금 무엇을 느끼고 있나요',
   '몸은 어떤 상태인가요',
   '어떤 행동을 하려고 했나요',
 ]
+
+const delay = (ms) => new Promise((r) => setTimeout(r, ms))
 
 export default function StopCard({ onExit }) {
   const [phase, setPhase] = useState('stop')
@@ -14,44 +20,52 @@ export default function StopCard({ onExit }) {
   const { speak, stop } = useSpeech()
   useEffect(() => () => stop(), [phase, stop])
 
+  // 진입 즉시 모든 문구를 미리 받아 둔다 — ElevenLabs 첫 재생 지연(1~2초) 제거
   useEffect(() => {
-    if (phase === 'stop') speak('STOP. 지금, 하던 것을 멈춰요.')
-    if (phase === 'breath') speak('숨 한 번.')
-    if (phase === 'proceed') speak('이제 정하세요. 같은 행동을 해도 괜찮아요. 다른 행동을 선택해도 괜찮아요.')
+    prefetchTts([STOP_TEXT, BREATH_TEXT, ...OBSERVE_TEXTS, PROCEED_TEXT], 'male')
+  }, [])
+
+  // 고정 타이머 대신 "음성이 끝나고 + 최소 체류시간"에 단계를 넘긴다.
+  // (배포판은 ElevenLabs fetch 지연이 있어 고정 5초로는 말이 잘리고 급하게 넘어갔다.)
+  useEffect(() => {
+    if (phase !== 'stop') return
+    let alive = true
+    ;(async () => {
+      await Promise.all([speak(STOP_TEXT), delay(4500)])
+      if (!alive) return
+      await delay(800)
+      if (alive) setPhase('breath')
+    })()
+    return () => { alive = false }
+  }, [phase, speak])
+
+  useEffect(() => {
+    if (phase !== 'breath') return
+    let alive = true
+    ;(async () => {
+      await Promise.all([speak(BREATH_TEXT), delay(10000)])
+      if (alive) setPhase('observe')
+    })()
+    return () => { alive = false }
   }, [phase, speak])
 
   useEffect(() => {
     if (phase !== 'observe') return
-    speak(OBSERVE_TEXTS[observeIndex])
-  }, [phase, observeIndex, speak])
+    let alive = true
+    ;(async () => {
+      for (let i = 0; i < OBSERVE_TEXTS.length; i++) {
+        if (!alive) return
+        setObserveIndex(i)
+        await Promise.all([speak(OBSERVE_TEXTS[i]), delay(4500)])
+        if (i < OBSERVE_TEXTS.length - 1) await delay(600) // 질문 사이 한 박자
+      }
+    })()
+    return () => { alive = false }
+  }, [phase, speak])
 
   useEffect(() => {
-    if (phase !== 'stop') return
-    // "STOP. 지금, 하던 것을 멈춰요." 음성이 ~2.4초 + 재생 시작 지연이 있어,
-    // 다음 단계로 넘어가며 음성이 끊기지 않도록 넉넉히 5초 머문다.
-    const timer = setTimeout(() => setPhase('breath'), 5000)
-    return () => clearTimeout(timer)
-  }, [phase])
-
-  useEffect(() => {
-    if (phase !== 'breath') return
-    const timer = setTimeout(() => setPhase('observe'), 10000)
-    return () => clearTimeout(timer)
-  }, [phase])
-
-  useEffect(() => {
-    if (phase !== 'observe') return
-    const interval = setInterval(() => {
-      setObserveIndex((prev) => {
-        if (prev >= OBSERVE_TEXTS.length - 1) {
-          clearInterval(interval)
-          return prev
-        }
-        return prev + 1
-      })
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [phase])
+    if (phase === 'proceed') speak(PROCEED_TEXT)
+  }, [phase, speak])
 
   if (phase === 'stop') {
     return (

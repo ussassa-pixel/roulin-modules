@@ -6,6 +6,7 @@ import DailyActionCard from './components/DailyActionCard'
 import TimeSlotBanner from './components/TimeSlotBanner'
 import CheckIn from './components/CheckIn'
 import { logCare } from './lib/careLog'
+import { SECTIONS } from './content/sections'
 import PresentMoment from './modules/PresentMoment'
 import StopCard from './modules/StopCard'
 import DrinkingMeditation from './modules/DrinkingMeditation'
@@ -209,33 +210,7 @@ const CHAT_URL = import.meta.env.VITE_CHAT_URL || 'https://roulin.ai'
 const EMBEDDED = typeof window !== 'undefined' && window.self !== window.top
 
 // 37개를 한 줄로 쏟지 않도록 큰 카테고리 4장 → 눌러서 모듈 목록으로 들어가는 2단계 구조.
-// ids는 MODULES 배열의 id와 1:1 (파일 내 구획 주석과 동일한 묶음).
-const SECTIONS = [
-  {
-    key: 'calm',
-    title: '가라앉히기',
-    desc: '마음이 빠르게 달리거나 붕 떠 있을 때. 호흡과 감각으로 지금을 진정시켜요.',
-    ids: ['mood', 'breathing', 'balloon', 'finger', 'present', 'grounding', 'compassion', 'sound', 'sand', 'bubble', 'leaf', 'drinking', 'butterfly', 'worry', 'goodthings', 'stop'],
-  },
-  {
-    key: 'sort',
-    title: '생각 정리 · 행동',
-    desc: '생각이 엉켜 무거울 때. 갈래를 나누고 다음 한 걸음을 정해요.',
-    ids: ['braindump', 'worrytree', 'balance', 'woop', 'intention', 'smalleststep'],
-  },
-  {
-    key: 'life',
-    title: '관계 · 가치 · 하루',
-    desc: '어떤 관계가 마음에 걸리거나, 하루를 닫고 싶을 때.',
-    ids: ['relationlens', 'savoring', 'compass', 'dayclose', 'bodyrelease', 'vault'],
-  },
-  {
-    key: 'lift',
-    title: '리추얼 · 기분 전환',
-    desc: '이유 없이 한마디가 필요하거나, 기분을 살짝 바꾸고 싶을 때.',
-    ids: ['comfortdraw', 'fortune', 'capsule', 'music', 'bodywake', 'morningsong', 'kindness', 'stamp', 'reset'],
-  },
-]
+// 정의는 src/content/sections.js — 머문 자국(CareTrail)의 카테고리 색과 한 몸.
 
 function Launcher({ onPick, onCheckIn }) {
   const [openSection, setOpenSection] = useState(null)

@@ -1,16 +1,11 @@
 import { useState } from 'react'
 import { getCareLog, clearCareLog } from '../lib/careLog'
+import { SECTIONS, sectionOf } from '../content/sections'
 
-// 태그별 부드러운 색 — 컬렉션이 단조롭지 않게
-const TAG_COLOR = {
-  '살피기': '#fbbf24', '호흡': '#7dd3fc', '현재': '#fcd34d', '그라운딩': '#93c5fd',
-  '다독임': '#fda4af', '감각': '#86efac', '내려놓기': '#a5b4fc', '안정': '#c4b5fd',
-  '돌아보기': '#f9a8d4', '멈춤': '#fca5a5', '비우기': '#93c5fd', '정리': '#a7f3d0',
-  '결정': '#fdba74', '계획': '#c4b5fd', '실행': '#fca5a5', '한 걸음': '#6ee7b7',
-  '관계': '#f0abfc', '음미': '#fcd34d', '가치': '#7dd3fc', '마무리': '#a5b4fc',
-  '이완': '#86efac', '보관': '#e0a33e',
-}
-const gemColor = (tag) => TAG_COLOR[tag] || '#E0A33E'
+// 카테고리(런처 섹션)별 색 — 태그별 파스텔은 22종이 서로 뭉개져 구분이 안 됐다.
+// careLog 항목의 id로 섹션을 찾으므로 과거 기록도 그대로 색이 입혀진다.
+const FALLBACK = { base: '#d9cba8', edge: '#a8a294' } // 섹션을 못 찾는 옛/기타 항목
+const gem = (id) => (sectionOf(id) || { color: FALLBACK }).color
 
 function relTime(at) {
   const diff = Date.now() - at
@@ -35,6 +30,7 @@ export default function CareTrail() {
   // 너무 길어지지 않게 최근 60개만 보여준다(전체 수는 따로 안내)
   const shown = log.slice(-60)
   const last = log.length - 1
+  const usedKeys = new Set(shown.map((e) => sectionOf(e.id)?.key).filter(Boolean))
 
   return (
     <div className="max-w-md mx-auto px-6 pb-2">
@@ -48,6 +44,7 @@ export default function CareTrail() {
           {shown.map((e, i) => {
             const idx = log.length - shown.length + i
             const isLast = idx === last
+            const c = gem(e.id)
             return (
               <button
                 key={idx}
@@ -56,24 +53,41 @@ export default function CareTrail() {
                 className={`rounded-full transition ${isLast ? 'animate-drop-stack' : ''}`}
                 style={{
                   width: 15, height: 15,
-                  background: `radial-gradient(circle at 34% 30%, #ffffff 0%, ${gemColor(e.tag)} 60%, ${gemColor(e.tag)} 100%)`,
+                  background: `radial-gradient(circle at 34% 30%, #ffffff 0%, ${c.base} 45%, ${c.edge} 100%)`,
                   boxShadow: sel && sel._i === idx
-                    ? `0 0 0 2px #fff, 0 0 0 3.5px ${gemColor(e.tag)}`
+                    ? `0 0 0 2px #fff, 0 0 0 3.5px ${c.edge}`
                     : '0 1px 3px rgba(120,100,70,0.25)',
-                  opacity: 0.92,
                 }}
               />
             )
           })}
         </div>
 
+        {/* 색 범례 — 지금 보이는 자국의 카테고리만 */}
+        {usedKeys.size > 0 && (
+          <div className="mt-3.5 flex flex-wrap gap-x-3.5 gap-y-1">
+            {SECTIONS.filter((s) => usedKeys.has(s.key)).map((s) => (
+              <span key={s.key} className="inline-flex items-center gap-1.5 text-[10.5px] text-r-gray-soft">
+                <span
+                  className="rounded-full inline-block"
+                  style={{
+                    width: 8, height: 8,
+                    background: `radial-gradient(circle at 34% 30%, #ffffff 0%, ${s.color.base} 45%, ${s.color.edge} 100%)`,
+                  }}
+                />
+                {s.title}
+              </span>
+            ))}
+          </div>
+        )}
+
         {sel ? (
-          <p className="mt-4 text-[12.5px] text-navy/80">
+          <p className="mt-3 text-[12.5px] text-navy/80">
             <span style={{ fontWeight: 600 }}>{sel.title}</span>
             <span className="text-r-gray-soft"> · {relTime(sel.at)}</span>
           </p>
         ) : (
-          <p className="mt-4 text-[11px] text-r-gray-soft">여기 머문 시간이 하나씩 쌓입니다. 눌러 보면 무엇이었는지 보여요.</p>
+          <p className="mt-3 text-[11px] text-r-gray-soft">여기 머문 시간이 하나씩 쌓입니다. 눌러 보면 무엇이었는지 보여요.</p>
         )}
 
         <button

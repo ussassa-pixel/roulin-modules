@@ -195,6 +195,9 @@ export default function App() {
   )
 }
 
+// 채팅 앱(roulin.ai) 복귀 링크 — 사이드바에서 same-window로 넘어오므로 돌아갈 길이 필요하다.
+const CHAT_URL = import.meta.env.VITE_CHAT_URL || 'https://roulin.ai'
+
 function Launcher({ onPick, onCheckIn }) {
   return (
     <div className="min-h-screen bg-cream">
@@ -205,6 +208,12 @@ function Launcher({ onPick, onCheckIn }) {
           <span className="text-[22px] text-navy tracking-tight" style={{ fontWeight: 600 }}>roulin</span>
           <span className="w-px h-4 bg-line mx-1" aria-hidden="true" />
           <span className="text-[15px] text-navy/80" style={{ fontWeight: 500 }}>마음 돌봄</span>
+          <a
+            href={CHAT_URL}
+            className="ml-auto px-3.5 py-1.5 rounded-full bg-white border border-line text-navy/80 text-[12px] hover:bg-white/60 transition"
+          >
+            대화로 돌아가기
+          </a>
         </div>
       </header>
 

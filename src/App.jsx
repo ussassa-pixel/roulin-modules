@@ -43,6 +43,10 @@ import MorningSong from './modules/MorningSong'
 import KindnessNote from './modules/KindnessNote'
 import SuccessStamp from './modules/SuccessStamp'
 import OneMinuteReset from './modules/OneMinuteReset'
+import TtsAdmin from './admin/TtsAdmin'
+
+// 팀 내부 검수 페이지 (?admin=tts) — 유저 UI에는 진입점 없음
+const ADMIN_VIEW = new URLSearchParams(window.location.search).get('admin')
 
 // roulin.ai 모드카드와 같은 결: [번호] · 제목 · 설명("…할 때. …합니다.") · 작은 태그 pill
 const MODULES = [
@@ -99,6 +103,8 @@ export default function App() {
   const [activeModule, setActiveModule] = useState(null)
   const [pendingRec, setPendingRec] = useState(null)
   const [checkinOpen, setCheckinOpen] = useState(false) // 경로 C "지금 어때요?"
+
+  if (ADMIN_VIEW === 'tts') return <TtsAdmin />
 
   const exit = () => {
     if (activeModule) {

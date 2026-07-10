@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
-import { SOUNDS_BY_MOOD, FREE_MEDITATIONS, soundUrl, meditationUrl } from '../content/innerPicks'
+import { SOUNDS_BY_MOOD, MEDITATIONS_BY_MOOD, soundUrl, meditationUrl } from '../content/innerPicks'
 
 // 지금의 소리 (v4.1 music_pick → 2026-07-10 A안 개편) — 기분 전환(uplift) 도구형.
 // ISO 원리: 지금 기분에서 출발하는 소리를 골라 살짝 끌어올린다(급점프 지양 — 매핑에 인코딩됨).
@@ -59,7 +59,7 @@ export default function MusicPick({ onExit }) {
     return picked
   }
 
-  const meditation = FREE_MEDITATIONS[Math.floor(Math.random() * FREE_MEDITATIONS.length)]
+  const meditation = mood ? MEDITATIONS_BY_MOOD[mood] : null
 
   if (phase === 'intro')
     return page(

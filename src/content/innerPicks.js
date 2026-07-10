@@ -32,8 +32,13 @@ export const MORNING_SOUNDS = [
   { id: 'nature_stream', title: '얕은 시냇물', subtitle: '돌 사이로 흐르는 물', to: '시동', note: '오늘 하루가 무리 없이 흘러가도록.' },
 ]
 
-// 무료 명상 (2026-07-10 기준 실질 2편 — PHQ-4 설문 제외). 보강되면 기분별 매핑으로 확장.
-export const FREE_MEDITATIONS = [
-  { id: '705c2a48-f245-4365-a76f-43f7169254d0', title: '마인드풀니스 소개: 주의를 기울이는 것' },
-  { id: 'd0623355-6e12-4938-82cb-23eed4929fad', title: '‘관찰’과 그냥 보는 것의 차이' },
-]
+// 무료 명상 기분별 매핑 (2026-07-10, 프로드 ?scope=all 기준 — 코스 밖 단독 명상 3편 포함).
+// 전부 is_free + 게스트 접근 가능. id는 프로드 DB 기준(딥링크 대상이 meditation.roulin.ai).
+export const MEDITATIONS_BY_MOOD = {
+  처짐: { id: '705c2a48-f245-4365-a76f-43f7169254d0', title: '마인드풀니스 소개: 주의를 기울이는 것' },
+  답답: { id: '1270e04f-f5ce-4899-93c2-198a5b6c618c', title: '지하철 안에서 답답해 내리고 싶을 때 하는 명상' },
+  곤두섬: { id: '918a73ee-99aa-4069-a969-d8c6dc24cee2', title: '잠이 안 올 때 하는 명상' },
+  허전: { id: 'd0623355-6e12-4938-82cb-23eed4929fad', title: '‘관찰’과 그냥 보는 것의 차이' },
+}
+
+export const MORNING_MEDITATION = { id: '5f08352c-d470-48c2-8c9a-c2c37582a39a', title: '출근길 하루를 시작하는 명상' }

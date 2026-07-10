@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
-import { MORNING_SOUNDS, FREE_MEDITATIONS, soundUrl, meditationUrl } from '../content/innerPicks'
+import { MORNING_SOUNDS, MORNING_MEDITATION, soundUrl, meditationUrl } from '../content/innerPicks'
 
 // 오늘을 여는 소리 (부록 morning_song → 2026-07-10 A안 개편) — 아침(pre-work) 시동용.
 // music_pick(지금의 소리)과 소리 풀·딥링크 규칙 공유, 진입 맥락이 다름:
@@ -46,7 +46,7 @@ export default function MorningSong({ onExit }) {
     return picked
   }
 
-  const meditation = FREE_MEDITATIONS[Math.floor(Math.random() * FREE_MEDITATIONS.length)]
+  const meditation = MORNING_MEDITATION
 
   if (phase === 'intro')
     return page(

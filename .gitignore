@@ -27,3 +27,4 @@ dist-ssr
 .gstack/
 
 .env*
+.tts-admin-token.local

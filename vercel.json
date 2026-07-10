@@ -1,8 +1,11 @@
 {
   "rewrites": [
+    { "source": "/care/app/api/(.*)", "destination": "/api/$1" },
     { "source": "/care/api/(.*)", "destination": "/api/$1" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/care/app/assets/(.*)", "destination": "/assets/$1" },
     { "source": "/care/assets/(.*)", "destination": "/assets/$1" },
+    { "source": "/care/app/(.*)", "destination": "/$1" },
     { "source": "/care/(.*)", "destination": "/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]

@@ -198,27 +198,65 @@ export default function App() {
 // 채팅 앱(roulin.ai) 복귀 링크 — 사이드바에서 same-window로 넘어오므로 돌아갈 길이 필요하다.
 const CHAT_URL = import.meta.env.VITE_CHAT_URL || 'https://roulin.ai'
 
+// 채팅 앱의 /care 라우트가 iframe으로 임베드하면 LNB·상단바가 이미 있으므로
+// 자체 헤더(로고·복귀 링크)는 숨긴다. 단독 접속에서는 그대로 보인다.
+const EMBEDDED = typeof window !== 'undefined' && window.self !== window.top
+
+// 37개를 한 줄로 쏟지 않도록 큰 카테고리 4장 → 눌러서 모듈 목록으로 들어가는 2단계 구조.
+// ids는 MODULES 배열의 id와 1:1 (파일 내 구획 주석과 동일한 묶음).
+const SECTIONS = [
+  {
+    key: 'calm',
+    title: '가라앉히기',
+    desc: '마음이 빠르게 달리거나 붕 떠 있을 때. 호흡과 감각으로 지금을 진정시켜요.',
+    ids: ['mood', 'breathing', 'balloon', 'finger', 'present', 'grounding', 'compassion', 'sound', 'sand', 'bubble', 'leaf', 'drinking', 'butterfly', 'worry', 'goodthings', 'stop'],
+  },
+  {
+    key: 'sort',
+    title: '생각 정리 · 행동',
+    desc: '생각이 엉켜 무거울 때. 갈래를 나누고 다음 한 걸음을 정해요.',
+    ids: ['braindump', 'worrytree', 'balance', 'woop', 'intention', 'smalleststep'],
+  },
+  {
+    key: 'life',
+    title: '관계 · 가치 · 하루',
+    desc: '어떤 관계가 마음에 걸리거나, 하루를 닫고 싶을 때.',
+    ids: ['relationlens', 'savoring', 'compass', 'dayclose', 'bodyrelease', 'vault'],
+  },
+  {
+    key: 'lift',
+    title: '리추얼 · 기분 전환',
+    desc: '이유 없이 한마디가 필요하거나, 기분을 살짝 바꾸고 싶을 때.',
+    ids: ['comfortdraw', 'fortune', 'capsule', 'music', 'bodywake', 'morningsong', 'kindness', 'stamp', 'reset'],
+  },
+]
+
 function Launcher({ onPick, onCheckIn }) {
+  const [openSection, setOpenSection] = useState(null)
+
   return (
     <div className="min-h-screen bg-cream">
-      {/* ── 상단 바: roulin 로고 결 ── */}
-      <header className="sticky top-0 z-10 bg-cream/85 backdrop-blur border-b border-line">
-        <div className="max-w-md mx-auto px-6 h-16 flex items-center gap-2">
-          <Star className="w-5 h-5 text-amber" />
-          <span className="text-[22px] text-navy tracking-tight" style={{ fontWeight: 600 }}>roulin</span>
-          <span className="w-px h-4 bg-line mx-1" aria-hidden="true" />
-          <span className="text-[15px] text-navy/80" style={{ fontWeight: 500 }}>마음 돌봄</span>
-          <a
-            href={CHAT_URL}
-            className="ml-auto px-3.5 py-1.5 rounded-full bg-white border border-line text-navy/80 text-[12px] hover:bg-white/60 transition"
-          >
-            대화로 돌아가기
-          </a>
-        </div>
-      </header>
+      {/* ── 상단 바: roulin 로고 결 (임베드 시 채팅 앱 셸이 대신하므로 숨김) ── */}
+      {!EMBEDDED && (
+        <header className="sticky top-0 z-10 bg-cream/85 backdrop-blur border-b border-line">
+          <div className="max-w-md mx-auto px-6 h-16 flex items-center gap-2">
+            <Star className="w-5 h-5 text-amber" />
+            <span className="text-[22px] text-navy tracking-tight" style={{ fontWeight: 600 }}>roulin</span>
+            <span className="w-px h-4 bg-line mx-1" aria-hidden="true" />
+            <span className="text-[15px] text-navy/80" style={{ fontWeight: 500 }}>마음 돌봄</span>
+            <a
+              href={CHAT_URL}
+              target="_top"
+              className="ml-auto px-3.5 py-1.5 rounded-full bg-white border border-line text-navy/80 text-[12px] hover:bg-white/60 transition"
+            >
+              대화로 돌아가기
+            </a>
+          </div>
+        </header>
+      )}
 
       {/* ── 히어로 ── */}
-      <div className="max-w-md mx-auto px-6 pt-14 pb-10 text-center">
+      <div className={`max-w-md mx-auto px-6 pb-10 text-center ${EMBEDDED ? 'pt-8' : 'pt-14'}`}>
         <span className="tag-pill mb-6 inline-block">잠깐의 자기돌봄</span>
         <h1 className="text-navy leading-tight mb-5" style={{ fontWeight: 600, fontSize: '30px' }}>
           혼자 두기엔<br />벅찬 마음
@@ -246,25 +284,64 @@ function Launcher({ onPick, onCheckIn }) {
       {/* ── 머문 자국(돌봄 기록) — 하나씩 쌓인다 ── */}
       <CareTrail />
 
-      {/* ── 모듈 카드 (roulin 모드카드 결: 번호·제목·설명·태그) ── */}
+      {/* ── 카테고리 → 모듈 2단계 (37개를 한 화면에 쏟지 않기) ── */}
       <div className="max-w-md mx-auto px-6 pb-8">
-        <p className="eyebrow mb-4">무엇을 골라도 괜찮습니다</p>
-        <div className="space-y-3">
-          {MODULES.map((m, i) => (
-            <button
-              key={m.id}
-              onClick={() => onPick(m.id)}
-              className="roulin-card w-full text-left px-6 py-5 block"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="card-num">{String(i + 1).padStart(2, '0')}</span>
-                <span className="tag-pill">{m.tag}</span>
-              </div>
-              <div className="text-navy mb-1.5" style={{ fontWeight: 600, fontSize: '18px' }}>{m.title}</div>
-              <div className="text-r-gray leading-relaxed" style={{ fontSize: '13.5px' }}>{m.desc}</div>
-            </button>
-          ))}
-        </div>
+        {openSection === null ? (
+          <>
+            <p className="eyebrow mb-4">어떤 시간이 필요하세요?</p>
+            <div className="space-y-3">
+              {SECTIONS.map((s) => (
+                <button
+                  key={s.key}
+                  onClick={() => setOpenSection(s.key)}
+                  className="roulin-card w-full text-left px-6 py-6 block"
+                >
+                  <div className="flex items-center justify-between mb-2.5">
+                    <span className="text-navy" style={{ fontWeight: 600, fontSize: '20px' }}>{s.title}</span>
+                    <span className="tag-pill">{s.ids.length}가지</span>
+                  </div>
+                  <div className="text-r-gray leading-relaxed" style={{ fontSize: '14px' }}>{s.desc}</div>
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          (() => {
+            const section = SECTIONS.find((s) => s.key === openSection)
+            const items = section.ids
+              .map((id) => MODULES.find((m) => m.id === id))
+              .filter(Boolean)
+            return (
+              <>
+                <div className="flex items-center gap-3 mb-4">
+                  <button
+                    onClick={() => setOpenSection(null)}
+                    className="px-3.5 py-1.5 rounded-full bg-white border border-line text-navy/80 text-[12px] hover:bg-white/60 transition"
+                  >
+                    ← 전체 보기
+                  </button>
+                  <p className="eyebrow" style={{ marginBottom: 0 }}>{section.title}</p>
+                </div>
+                <div className="space-y-3">
+                  {items.map((m, i) => (
+                    <button
+                      key={m.id}
+                      onClick={() => onPick(m.id)}
+                      className="roulin-card w-full text-left px-6 py-5 block"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="card-num">{String(i + 1).padStart(2, '0')}</span>
+                        <span className="tag-pill">{m.tag}</span>
+                      </div>
+                      <div className="text-navy mb-1.5" style={{ fontWeight: 600, fontSize: '18px' }}>{m.title}</div>
+                      <div className="text-r-gray leading-relaxed" style={{ fontSize: '13.5px' }}>{m.desc}</div>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )
+          })()
+        )}
       </div>
 
       <p className="text-center text-r-gray-soft pb-12" style={{ fontSize: '12px' }}>

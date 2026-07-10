@@ -113,7 +113,7 @@ export const MODULES = [
 
   // ── 기분 상승 (v4.1 부록 — 능동형 uplift) ──
   // 라우터 구분: "긴장돼요" → bodyrelease(이완·하향) / "처져요·늘어져요" → bodywake(활성·상향) / "기분 전환" → music
-  { id: 'music', displayName: '노래 한 곡', type: 'tool', need: ['savor'], domainTags: ['self'], themes: ['music', 'uplift', 'mood-shift'],
+  { id: 'music', displayName: '지금의 소리', type: 'tool', need: ['savor'], domainTags: ['self'], themes: ['music', 'uplift', 'mood-shift'],
     targetStates: ['기분 처짐', '전환 필요'], safetyLevel: 'general', contra: [], durationSec: 90, hasEndRating: false },
   { id: 'bodywake', displayName: '몸 깨우기', type: 'practice', need: ['savor'], domainTags: ['health', 'self'], themes: ['body', 'activation', 'uplift'],
     targetStates: ['무기력·처짐', '몸이 늘어짐'], safetyLevel: 'general', contra: ['불편 동작 강제 금지(카피로 처리)'], durationSec: 100, hasEndRating: false },
@@ -121,7 +121,7 @@ export const MODULES = [
   // ── 가벼워짐·아침 계열 (부록 4종) ──
   // 겹침 배제: morningsong=아침 시동(music은 기분 대응) / kindness=능동 발신(comfortdraw는 수동 수신, compassion은 심상)
   //           / stamp=방금·즉시 자축(dayclose는 밤 정산) / reset=초경량 1분(정식 그라운딩·호흡 아님)
-  { id: 'morningsong', displayName: '오늘을 여는 한 곡', type: 'tool', need: ['savor'], domainTags: ['self'], themes: ['music', 'morning', 'anticipation'],
+  { id: 'morningsong', displayName: '오늘을 여는 소리', type: 'tool', need: ['savor'], domainTags: ['self'], themes: ['music', 'morning', 'anticipation'],
     targetStates: ['하루의 시작', '아침 시동'], safetyLevel: 'general', contra: [], durationSec: 60, hasEndRating: false },
   { id: 'kindness', displayName: '오늘의 다정 배달', type: 'tool', need: ['soothe', 'savor'], domainTags: ['self'], themes: ['selfkind', 'self-compassion', 'active'],
     targetStates: ['스스로에게 모짊', '다정이 필요함'], safetyLevel: 'general', contra: [], durationSec: 90, hasEndRating: false },

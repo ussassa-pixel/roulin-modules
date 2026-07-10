@@ -84,7 +84,7 @@ async function fetchTts(text, voice) {
   if (cache.has(key)) return cache.get(key)
   if (inflight.has(key)) return inflight.get(key)
   const promise = (async () => {
-    const q = '/api/tts?text=' + encodeURIComponent(text) + (voice === 'male' ? '&voice=male' : '') + '&rev=' + TTS_REV
+    const q = import.meta.env.BASE_URL + 'api/tts?text=' + encodeURIComponent(text) + (voice === 'male' ? '&voice=male' : '') + '&rev=' + TTS_REV
     const res = await fetch(q)
     if (res.status === 501) { elState = 'off'; throw new Error('not_configured') }
     if (!res.ok) throw new Error('tts_' + res.status)

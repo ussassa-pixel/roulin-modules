@@ -149,3 +149,11 @@ textarea::placeholder {
   90%  { opacity: 1; }
   100% { left: 100%; opacity: 0; }
 }
+
+/* ── 모바일 키보드 대응 (2026-07-10) ──
+   min-h-screen(100vh)은 모바일에서 키보드·브라우저 크롬을 무시해 입력창이 가려진다.
+   dvh는 동적 뷰포트를 따라가므로 지원 브라우저에서만 덮어쓴다(구형은 100vh 유지). */
+@supports (min-height: 100dvh) {
+  .min-h-screen { min-height: 100dvh; }
+  .bg-app { min-height: 100dvh; }
+}

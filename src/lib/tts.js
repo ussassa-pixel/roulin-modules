@@ -1,7 +1,11 @@
 // 룰랭 음성 레이어.
-// ElevenLabs(/api/tts 프록시) 음성을 우선 쓰고, 미설정(키 없음)·실패 시 브라우저 TTS로 폴백.
-// 같은 문구는 세션 내 캐시해 재생성 비용을 줄인다.
-let elState = 'unknown' // 'unknown' | 'on' | 'off'
+// 재생 우선순위: ① 사전 생성된 정적 음원(public/voice + voiceManifest, 0.4s 무음 리드인 포함)
+// → ② /api/tts (ElevenLabs 프록시, Blob 캐시) → ③ 브라우저 TTS.
+// 같은 문구는 세션 내 캐시해 재요청을 줄인다.
+// 음원 생성·갱신: scripts/generate-voice.mjs (문구 목록은 scripts/voice-lines.mjs)
+import manifest from '../content/voiceManifest.json'
+
+let elState = 'unknown' // 'unknown' | 'on' | 'off' — /api/tts 폴백 경로에만 적용
 // 서버 voice_settings를 바꿀 때마다 올린다 → URL이 바뀌어 immutable 캐시(브라우저·CDN)를 우회.
 const TTS_REV = 2
 const cache = new Map() // 'voice|text' -> objectURL
@@ -87,11 +91,39 @@ export function webSpeak(text, voice = 'female') {
   })
 }
 
+// 사전 생성된 정적 음원 URL (manifest에 없으면 null → API 폴백)
+export function staticVoiceUrl(text, voice) {
+  const entry = manifest[voice + '|' + text]
+  return entry ? import.meta.env.BASE_URL + 'voice/' + entry.file : null
+}
+
+const warnedMisses = new Set()
+
 async function fetchTts(text, voice) {
   const key = voice + '|' + text
   if (cache.has(key)) return cache.get(key)
   if (inflight.has(key)) return inflight.get(key)
   const promise = (async () => {
+    // ① 정적 음원 — 서버리스 경유 없음, CDN/브라우저 캐시
+    const staticUrl = staticVoiceUrl(text, voice)
+    if (staticUrl) {
+      try {
+        const res = await fetch(staticUrl)
+        if (!res.ok) throw new Error('static_' + res.status)
+        const blob = await res.blob()
+        if (!blob.size || !/audio/i.test(blob.type)) throw new Error('bad_static_audio')
+        const url = URL.createObjectURL(blob)
+        cache.set(key, url)
+        return url
+      } catch {
+        // 파일 누락 등 — 아래 API 폴백으로 계속
+      }
+    } else if (Object.keys(manifest).length && !warnedMisses.has(key)) {
+      warnedMisses.add(key)
+      console.warn('[tts] manifest에 없는 문구 — scripts/voice-lines.mjs 갱신 필요:', text)
+    }
+    // ② /api/tts 폴백 (ElevenLabs + Blob 캐시)
+    if (elState === 'off') throw new Error('not_configured')
     const q = import.meta.env.BASE_URL + 'api/tts?text=' + encodeURIComponent(text) + (voice === 'male' ? '&voice=male' : '') + '&rev=' + TTS_REV
     const res = await fetch(q)
     if (res.status === 501) { elState = 'off'; throw new Error('not_configured') }
@@ -108,9 +140,13 @@ async function fetchTts(text, voice) {
 }
 
 // 문구들을 미리 받아 캐시에 넣는다(재생 없음) — 진입 즉시 말하는 모듈의 시작 지연 제거.
+// 정적 음원은 항상 프리페치, API 폴백 대상은 키가 있을 때만.
 export function prefetchTts(texts, voice = 'female') {
-  if (elState === 'off') return
-  for (const t of texts) if (t) fetchTts(t, voice).catch(() => { /* 재생 시점에 폴백 */ })
+  for (const t of texts) {
+    if (!t) continue
+    if (!staticVoiceUrl(t, voice) && elState === 'off') continue
+    fetchTts(t, voice).catch(() => { /* 재생 시점에 폴백 */ })
+  }
 }
 
 // ElevenLabs 우선, 실패 시 브라우저 폴백. voice: 'female'(기본) | 'male'
@@ -119,7 +155,7 @@ export async function speakSmart(text, voice = 'female') {
   if (!text) return
   stopSpeaking()          // 이전 발화 즉시 중단 + 세대 증가
   const seq = speakSeq    // 이 발화의 세대
-  if (elState === 'off') { await webSpeak(text, voice); return }
+  if (elState === 'off' && !staticVoiceUrl(text, voice)) { await webSpeak(text, voice); return }
   warmupAudio() // fetch하는 동안 무음으로 출력 스트림을 깨워 첫 단어 잘림 방지
   try {
     const url = await fetchTts(text, voice)

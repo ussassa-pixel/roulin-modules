@@ -117,25 +117,43 @@ export default function FocusOrder({ onExit }) {
   }
 
   if (phase === 'play') {
+    const hueOf = (n) => Math.round(((n - 1) * (360 / count) + 20) % 360)
+    const cMain = (n) => `hsl(${hueOf(n)} 62% 57%)`
+    const cLight = (n) => `hsl(${hueOf(n)} 72% 80%)`
+    const cDark = (n) => `hsl(${hueOf(n)} 55% 38%)`
+    const cGlow = (n) => `hsl(${hueOf(n)} 70% 58% / 0.6)`
+    const dp = pts.filter((p) => p.n <= done).sort((a, b) => a.n - b.n)
     return (
       <ModuleFrame onExit={onExit}>
-        <style>{`@keyframes fo-shake{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% - 5px),-50%)}75%{transform:translate(calc(-50% + 5px),-50%)}}.fo-shake{animation:fo-shake .3s ease}`}</style>
-        <div ref={areaRef} className="min-h-screen bg-cream relative overflow-hidden select-none" style={{ touchAction: 'none' }}>
+        <style>{`
+          @keyframes fo-shake{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% - 5px),-50%)}75%{transform:translate(calc(-50% + 5px),-50%)}}
+          .fo-shake{animation:fo-shake .3s ease}
+          @keyframes fo-pulse{0%,100%{box-shadow:0 2px 7px rgba(120,100,70,.14), 0 0 0 0 rgba(224,163,62,0)}50%{box-shadow:0 2px 7px rgba(120,100,70,.14), 0 0 0 7px rgba(224,163,62,.18)}}
+          .fo-next{animation:fo-pulse 1.9s ease-in-out infinite}
+        `}</style>
+        <div
+          ref={areaRef}
+          className="min-h-screen relative overflow-hidden select-none"
+          style={{ touchAction: 'none', background: 'radial-gradient(ellipse at 50% 28%, #FBF7EC 0%, #F4F0E3 62%, #ECE5D4 100%)' }}
+        >
           <div className="absolute top-16 left-0 right-0 text-center pointer-events-none z-10">
-            <p className="text-r-gray-soft text-[12px] tabular-nums">{mm}:{ss} · {done}/{count}</p>
+            <p className="text-r-gray-soft text-[12px] tabular-nums tracking-wide">{mm}:{ss} · {done}/{count}</p>
           </div>
 
-          {/* 트레일 */}
+          {/* 트레일 — 숫자 색을 따라가는 굵고 빛나는 세그먼트 */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
-            {done >= 2 && (
-              <polyline
-                points={pts.filter((p) => p.n <= done).sort((a, b) => a.n - b.n).map((p) => `${p.x},${p.y}`).join(' ')}
-                fill="none" stroke="#E0A33E" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.75"
-              />
-            )}
+            {dp.slice(1).map((p, i) => {
+              const a = dp[i]; const col = cMain(p.n)
+              return (
+                <g key={p.n}>
+                  <line x1={a.x} y1={a.y} x2={p.x} y2={p.y} stroke={cGlow(p.n)} strokeWidth="18" strokeLinecap="round" opacity="0.4" />
+                  <line x1={a.x} y1={a.y} x2={p.x} y2={p.y} stroke={col} strokeWidth="6" strokeLinecap="round" />
+                </g>
+              )
+            })}
           </svg>
 
-          {/* 숫자 */}
+          {/* 숫자 — 색색의 글래스 젬 칩(세리프) */}
           {pts.map((p) => {
             const isDone = p.n <= done
             const isNext = p.n === done + 1
@@ -143,14 +161,19 @@ export default function FocusOrder({ onExit }) {
               <button
                 key={p.n}
                 onClick={() => tap(p.n)}
-                className={`absolute rounded-full flex items-center justify-center transition-colors ${wrong === p.n ? 'fo-shake' : ''}`}
+                className={`font-serif absolute rounded-full flex items-center justify-center ${wrong === p.n ? 'fo-shake' : ''} ${isNext ? 'fo-next' : ''}`}
                 style={{
                   left: p.x, top: p.y, transform: 'translate(-50%, -50%)',
-                  width: 42, height: 42, fontWeight: 600, fontSize: 16,
-                  color: isDone ? '#0c1a2b' : '#112338',
-                  background: isDone ? '#F3E7CC' : '#ffffff',
-                  border: isDone ? '1.5px solid rgba(224,163,62,0.7)' : '1.5px solid #E7E2D5',
-                  boxShadow: isNext ? '0 0 0 3px rgba(224,163,62,0.12)' : '0 1px 3px rgba(120,100,70,0.12)',
+                  width: 46, height: 46, fontWeight: 600, fontSize: 18,
+                  color: isDone ? '#ffffff' : cDark(p.n),
+                  background: isDone
+                    ? `radial-gradient(circle at 38% 30%, ${cLight(p.n)} 0%, ${cMain(p.n)} 60%, ${cDark(p.n)} 100%)`
+                    : 'radial-gradient(circle at 38% 28%, #ffffff 0%, #f6f2e8 100%)',
+                  border: isDone ? `1.5px solid ${cDark(p.n)}` : `1.8px solid ${cMain(p.n)}`,
+                  boxShadow: isDone
+                    ? `0 0 22px 5px ${cGlow(p.n)}, inset 0 1px 2px rgba(255,255,255,0.55)`
+                    : (isNext ? undefined : '0 2px 7px rgba(120,100,70,0.16), inset 0 1px 0 rgba(255,255,255,0.9)'),
+                  transition: 'background .3s ease, border-color .3s ease, color .3s ease, box-shadow .3s ease',
                 }}
               >
                 {p.n}

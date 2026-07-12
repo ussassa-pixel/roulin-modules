@@ -34,7 +34,7 @@ export const SECTIONS = [
     title: '집중이 안 될 때',
     desc: '시작이 안 되거나 자꾸 흐트러질 때. 시동을 걸고 잡념을 비워 몰입해요.',
     color: { base: '#f4a0be', edge: '#e0518a' },
-    ids: ['focuslaunch', 'grow', 'parking', 'follow', 'catch', 'order'],
+    ids: ['focuslaunch', 'grow', 'parking', 'follow', 'catch', 'order', 'memory', 'still', 'together', 'ambient', 'wave'],
   },
 ]
 

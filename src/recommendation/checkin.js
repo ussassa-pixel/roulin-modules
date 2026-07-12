@@ -39,6 +39,11 @@ export const CHIPS = [
     reason: '잠깐 끊어가고 싶다고 하셔서, 가벼운 걸 골랐어요.',
   },
   {
+    // 집중 코너 직접 연결 — 추천 엔진(registry 스코어) 대신 focus 섹션에서 고른다
+    key: 'unfocused', label: '집중이 안 돼요', focus: true,
+    reason: '집중이 잘 안 된다고 하셔서, 시동 걸거나 붙잡아 줄 걸 골랐어요.',
+  },
+  {
     key: 'hollow', label: '좀 허전해요',
     signal: { dominantNeed: 'savor', secondaryNeeds: ['soothe'], themes: ['music', 'comfort'], crisisLevel: 'none' },
     reason: '마음이 좀 허전하다고 하셔서, 채워줄 만한 걸 골랐어요.',
@@ -71,6 +76,10 @@ export const CHIPS = [
   // 마지막 칩 [괜찮아요, 둘러볼래요]는 추천이 아니라 브라우즈 출구 — UI에서 처리
 ]
 
+// ── 집중 코너 직접 연결용 id (sections.js 'focus' 섹션과 동일) ──
+// 이 모듈들은 registry 임상 스코어 대상이 아니라 엔진을 거치지 않고 여기서 고른다.
+const FOCUS_IDS = ['focuslaunch', 'grow', 'parking', 'follow', 'catch', 'order', 'memory', 'still', 'together', 'ambient', 'wave']
+
 // ── ② 쿨다운 — 도구형 재추천 피로 방지 (기간 N=3일은 DRAFT, §7 미결) ──
 // 연습형(호흡·bodyrelease 등)은 반복이 정상이라 쿨다운 없음.
 export const COOLDOWN_DAYS = 3
@@ -96,6 +105,14 @@ export function computeCooldownExcludes(careLog, { now = new Date(), days = COOL
 export function recommendForChip(chipKey, opts = {}) {
   const chip = CHIPS.find((c) => c.key === chipKey)
   if (!chip) return { blocked: false, candidates: [] }
+  // 집중 칩 — 엔진 미경유. focus 섹션에서 2개를 살짝 섞어 제시(매번 같지 않게).
+  if (chip.focus) {
+    const excl = new Set(computeCooldownExcludes(opts.careLog || [], { now: opts.now }))
+    const pool = FOCUS_IDS.filter((id) => !excl.has(id))
+    const src = pool.length >= 2 ? pool : FOCUS_IDS
+    const picks = [...src].sort(() => Math.random() - 0.5).slice(0, 2)
+    return { blocked: false, candidates: picks.map((id) => ({ id })), reason: chip.reason }
+  }
   const exclude = computeCooldownExcludes(opts.careLog || [], { now: opts.now })
   const res = recommend(chip.signal, { n: 2, exclude })
   return { ...res, reason: chip.reason }

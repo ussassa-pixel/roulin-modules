@@ -50,6 +50,11 @@ import FocusTimer from './modules/FocusTimer'
 import FollowDot from './modules/FollowDot'
 import FocusCatch from './modules/FocusCatch'
 import FocusOrder from './modules/FocusOrder'
+import FocusMemory from './modules/FocusMemory'
+import FocusStill from './modules/FocusStill'
+import FocusTogether from './modules/FocusTogether'
+import FocusSound from './modules/FocusSound'
+import FocusWave from './modules/FocusWave'
 import TtsAdmin from './admin/TtsAdmin'
 
 // 팀 내부 검수 페이지 (?admin=tts) — 유저 UI에는 진입점 없음
@@ -114,6 +119,11 @@ const MODULES = [
   { id: 'follow',       title: '한 점 따라가기',  tag: '집중', desc: '주의가 자꾸 흩어질 때. 천천히 떠다니는 빛을 손끝으로 따라갑니다.' },
   { id: 'catch',        title: '딴짓 잡기',       tag: '집중', desc: '자꾸 딴생각이 들 때. 알아챈 순간마다 톡 잡아 다시 돌아옵니다.' },
   { id: 'order',        title: '순서대로',        tag: '집중', desc: '머리가 어수선할 때. 흩어진 숫자를 1부터 차례로 이어갑니다.' },
+  { id: 'memory',       title: '집중력 카드',     tag: '집중', desc: '기억이 자꾸 새어나갈 때. 뒤집어 같은 짝을 찾아 맞춥니다.' },
+  { id: 'still',        title: '가만히',          tag: '집중', desc: '충동이 들썩일 때. 빛나는 점에 손끝을 얹고 가만히 머뭅니다.' },
+  { id: 'together',     title: '같이 집중해요',   tag: '집중', desc: '혼자 집중이 버거울 때. 곁의 작은 친구와 함께 집중합니다.' },
+  { id: 'ambient',      title: '집중 소리',       tag: '집중', desc: '조용하면 더 산만할 때. 비·파도·바람을 섞어 배경음을 만듭니다.' },
+  { id: 'wave',         title: '집중 파동',       tag: '집중', desc: '인공 사운드가 천천히 바뀌며 몰입 분위기를 만드는 5·10·15분 코스.' },
 ]
 
 export default function App() {
@@ -180,6 +190,11 @@ export default function App() {
       {activeModule === 'follow'       && <FollowDot onExit={exit} />}
       {activeModule === 'catch'        && <FocusCatch onExit={exit} />}
       {activeModule === 'order'        && <FocusOrder onExit={exit} />}
+      {activeModule === 'memory'       && <FocusMemory onExit={exit} />}
+      {activeModule === 'still'        && <FocusStill onExit={exit} />}
+      {activeModule === 'together'     && <FocusTogether onExit={exit} />}
+      {activeModule === 'ambient'      && <FocusSound onExit={exit} />}
+      {activeModule === 'wave'         && <FocusWave onExit={exit} />}
 
       {/* "지금 어때요?" 어느 화면에서든 홈(런처)으로 */}
       {activeModule === null && checkinOpen && (

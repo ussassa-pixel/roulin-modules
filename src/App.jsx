@@ -44,6 +44,10 @@ import MorningSong from './modules/MorningSong'
 import KindnessNote from './modules/KindnessNote'
 import SuccessStamp from './modules/SuccessStamp'
 import OneMinuteReset from './modules/OneMinuteReset'
+import FocusLaunch from './modules/FocusLaunch'
+import ParkingLot from './modules/ParkingLot'
+import FocusTimer from './modules/FocusTimer'
+import FollowDot from './modules/FollowDot'
 import TtsAdmin from './admin/TtsAdmin'
 
 // 팀 내부 검수 페이지 (?admin=tts) — 유저 UI에는 진입점 없음
@@ -100,6 +104,12 @@ const MODULES = [
   { id: 'kindness',     title: '오늘의 다정 배달', tag: '다정', desc: '나에게 한마디 건네고 싶을 때. 내가 쓴 다정이 나에게 배달됩니다.' },
   { id: 'stamp',        title: '작은 성공 도장',  tag: '자축', desc: '방금 뭔가 해냈을 때. 그 자리에서 도장 하나, 쾅 찍습니다.' },
   { id: 'reset',        title: '1분 리셋',        tag: '리셋', desc: '잠깐 끊고 가고 싶을 때. 딱 1분짜리 하나를 뽑아 해봅니다.' },
+
+  // ── 집중이 안 될 때 (신규 코너) ──
+  { id: 'focuslaunch',  title: '3·2·1 시작',      tag: '집중', desc: '막상 시작이 안 될 때. 딱 하나 정하고 카운트다운으로 시동을 겁니다.' },
+  { id: 'parking',      title: '딴생각 주차장',   tag: '집중', desc: '집중하는데 자꾸 딴 게 떠오를 때. 잡념을 한 칸씩 주차해 비웁니다.' },
+  { id: 'grow',         title: '자라는 것',       tag: '집중', desc: '시간을 정해 집중하고 싶을 때. 그동안 한 송이가 자라고 벨이 울립니다.' },
+  { id: 'follow',       title: '한 점 따라가기',  tag: '집중', desc: '주의가 자꾸 흩어질 때. 천천히 떠다니는 빛을 손끝으로 따라갑니다.' },
 ]
 
 export default function App() {
@@ -160,6 +170,10 @@ export default function App() {
       {activeModule === 'kindness'     && <KindnessNote onExit={exit} />}
       {activeModule === 'stamp'        && <SuccessStamp onExit={exit} />}
       {activeModule === 'reset'        && <OneMinuteReset onExit={exit} />}
+      {activeModule === 'focuslaunch'  && <FocusLaunch onExit={exit} />}
+      {activeModule === 'parking'      && <ParkingLot onExit={exit} />}
+      {activeModule === 'grow'         && <FocusTimer onExit={exit} />}
+      {activeModule === 'follow'       && <FollowDot onExit={exit} />}
 
       {/* "지금 어때요?" 어느 화면에서든 홈(런처)으로 */}
       {activeModule === null && checkinOpen && (

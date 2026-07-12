@@ -29,6 +29,13 @@ export const SECTIONS = [
     color: { base: '#f6bd4e', edge: '#dd8a10' },
     ids: ['comfortdraw', 'fortune', 'capsule', 'music', 'bodywake', 'morningsong', 'kindness', 'stamp', 'reset'],
   },
+  {
+    key: 'focus',
+    title: '집중이 안 될 때',
+    desc: '시작이 안 되거나 자꾸 흐트러질 때. 시동을 걸고 잡념을 비워 몰입해요.',
+    color: { base: '#f4a0be', edge: '#e0518a' },
+    ids: ['focuslaunch', 'grow', 'parking', 'follow'],
+  },
 ]
 
 const ID_TO_SECTION = new Map(SECTIONS.flatMap((s) => s.ids.map((id) => [id, s])))

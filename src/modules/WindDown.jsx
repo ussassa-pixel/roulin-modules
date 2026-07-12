@@ -24,12 +24,23 @@ export default function WindDown({ onExit }) {
       const C = window.AudioContext || window.webkitAudioContext; if (!C) return
       const ctx = new C()
       const master = ctx.createGain(); master.gain.value = 0.16; master.connect(ctx.destination)
-      // 부드러운 빗소리 — 브라운 노이즈 + 로우패스
-      const len = Math.floor(ctx.sampleRate * 2); const b = ctx.createBuffer(1, len, ctx.sampleRate); const d = b.getChannelData(0)
-      let last = 0
-      for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.2 }
+      // 핑크 노이즈 — 백색소음보다 수면에 도움된다는 (약하지만) 연구가 있는 쪽.
+      // Paul Kellet 근사 필터로 1/f 스펙트럼 생성 → 고른 빗소리/나뭇잎 결.
+      const len = Math.floor(ctx.sampleRate * 4); const b = ctx.createBuffer(1, len, ctx.sampleRate); const d = b.getChannelData(0)
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0
+      for (let i = 0; i < len; i++) {
+        const w = Math.random() * 2 - 1
+        b0 = 0.99886 * b0 + w * 0.0555179
+        b1 = 0.99332 * b1 + w * 0.0750759
+        b2 = 0.96900 * b2 + w * 0.1538520
+        b3 = 0.86650 * b3 + w * 0.3104856
+        b4 = 0.55000 * b4 + w * 0.5329522
+        b5 = -0.7616 * b5 - w * 0.0168980
+        d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11
+        b6 = w * 0.115926
+      }
       const s = ctx.createBufferSource(); s.buffer = b; s.loop = true
-      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 620
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200
       s.connect(lp); lp.connect(master); s.start()
       audioRef.current = { ctx, master }
     } catch { /* noop */ }
@@ -68,9 +79,9 @@ export default function WindDown({ onExit }) {
             <div className="w-8 h-px bg-amber/60 mx-auto mb-6" />
             <div className="flex justify-center mb-8"><Moon glow={1} /></div>
             <p className="text-[14px] text-white/75 font-light mb-2 leading-relaxed">
-              정한 시간 동안 화면이 천천히 어두워지고,<br />빗소리가 스르르 잦아들어요.
+              정한 시간 동안 화면이 천천히 어두워지고,<br />핑크 노이즈가 스르르 잦아들어요.
             </p>
-            <p className="text-[12px] text-white/45 mb-10">아무것도 안 해도 돼요. 그냥 눕거나 눈을 감아 보세요.</p>
+            <p className="text-[12px] text-white/45 mb-10">백색소음보다 수면에 도움된다는 연구가 조금 있는 소리예요 · 효과는 사람마다 달라요.</p>
             <div className="grid grid-cols-3 gap-2.5">
               {DURS.map((m) => (
                 <button key={m} onClick={() => start(m)}

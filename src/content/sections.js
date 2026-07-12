@@ -48,14 +48,14 @@ export const SECTIONS = [
     title: '화가 날 때',
     desc: '화가 치밀어 오를 때. 안전하게 내보내고 천천히 가라앉혀요.',
     color: { base: '#f0a07e', edge: '#d85a34' },
-    ids: ['smash', 'cooldown', 'nameanger'],
+    ids: ['smash', 'plates', 'cooldown', 'nameanger'],
   },
   {
     key: 'fun',
     title: '그냥 재밌는 것',
     desc: '별 이유 없이 기분을 바꾸고 싶을 때. 소소하고 엉뚱한 재미 한 스푼.',
     color: { base: '#3fd0d8', edge: '#0e9aa4' },
-    ids: ['tinymission', 'whimsy', 'squishtoy'],
+    ids: ['tinymission', 'whimsy', 'squishtoy', 'clean'],
   },
 ]
 

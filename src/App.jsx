@@ -64,6 +64,8 @@ import NameAnger from './modules/NameAnger'
 import TinyMission from './modules/TinyMission'
 import Whimsy from './modules/Whimsy'
 import SquishToy from './modules/SquishToy'
+import PlateSmash from './modules/PlateSmash'
+import Clean from './modules/Clean'
 import TtsAdmin from './admin/TtsAdmin'
 
 // 팀 내부 검수 페이지 (?admin=tts) — 유저 UI에는 진입점 없음
@@ -140,7 +142,8 @@ const MODULES = [
   { id: 'bodyscan',     title: '몸 훑기',         tag: '수면', desc: '몸이 잠들지 못할 때. 머리부터 발끝까지 힘을 하나씩 풉니다.' },
 
   // ── 화가 날 때 (신규 코너) ──
-  { id: 'smash',        title: '터뜨리기',        tag: '분노', desc: '화가 치밀 때. 떠오른 걸 톡톡 터뜨려 안전하게 내보냅니다.' },
+  { id: 'smash',        title: '터뜨리기',        tag: '분노', desc: '화가 치밀 때. 떠오른 걸 팡팡 터뜨려 시원하게 내보냅니다.' },
+  { id: 'plates',       title: '접시 깨기',       tag: '분노', desc: '제대로 쏟아내고 싶을 때. 접시를 내리쳐 와장창 깨뜨립니다.' },
   { id: 'cooldown',     title: '식히기',          tag: '분노', desc: '달아올랐을 때. 느린 숨으로 벌건 화면을 서늘하게 식힙니다.' },
   { id: 'nameanger',    title: '화에 이름 붙이기', tag: '분노', desc: '화가 가시지 않을 때. 그 아래 숨은 마음에 이름을 붙여봅니다.' },
 
@@ -148,6 +151,7 @@ const MODULES = [
   { id: 'tinymission',  title: '소소한 미션',     tag: '재미', desc: '기분을 살짝 바꾸고 싶을 때. 30초짜리 다정한 미션을 뽑습니다.' },
   { id: 'whimsy',       title: '오늘의 엉뚱 질문', tag: '재미', desc: '잠깐 딴 세상이 필요할 때. 정답 없는 공상 질문 하나를 엽니다.' },
   { id: 'squishtoy',    title: '말랑 토이',       tag: '재미', desc: '만지작거리고 싶을 때. 누르면 말랑 통 튀어오르는 감각 장난감.' },
+  { id: 'clean',        title: '말끔 클리닝',     tag: '재미', desc: '심심할 때. 오돌토돌·피지·털을 톡톡 정리하는 심심풀이.' },
 ]
 
 export default function App() {
@@ -228,6 +232,8 @@ export default function App() {
       {activeModule === 'tinymission'  && <TinyMission onExit={exit} />}
       {activeModule === 'whimsy'       && <Whimsy onExit={exit} />}
       {activeModule === 'squishtoy'    && <SquishToy onExit={exit} />}
+      {activeModule === 'plates'       && <PlateSmash onExit={exit} />}
+      {activeModule === 'clean'        && <Clean onExit={exit} />}
 
       {/* "지금 어때요?" 어느 화면에서든 홈(런처)으로 */}
       {activeModule === null && checkinOpen && (

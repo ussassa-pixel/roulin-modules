@@ -102,6 +102,14 @@ export default function DrinkingMeditation({ onExit }) {
                 />
               ))}
             </div>
+
+            {/* 준비되면 기다리지 않고 직접 진행 — 새 단계 음성이 이전 음성을 즉시 끊는다 */}
+            <button
+              onClick={() => setStepIndex((prev) => prev + 1)}
+              className="mt-10 px-6 py-2.5 rounded-full text-[12px] tracking-wide text-white/40 hover:text-white/70 border border-white/15 transition"
+            >
+              다음
+            </button>
           </div>
         </div>
       </div>

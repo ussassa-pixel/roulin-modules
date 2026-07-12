@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 import EndRating from '../components/EndRating'
 import { useSpeech } from '../context/SpeechContext'
@@ -9,6 +9,31 @@ export default function ButterflyHug({ onExit }) {
   const [activeSide, setActiveSide] = useState('left')
   const [secondsLeft, setSecondsLeft] = useState(60)
   const { speak, stop, isMuted, toggleMute } = useSpeech()
+  const audioCtxRef = useRef(null)
+  const isMutedRef = useRef(isMuted)
+  useEffect(() => { isMutedRef.current = isMuted }, [isMuted])
+
+  // 손바닥이 가슴에 닿는 낮고 둥근 '톡' — 좌우 음높이를 살짝 다르게 (Web Audio 합성)
+  const playPat = (side) => {
+    if (isMutedRef.current) return
+    const Ctx = window.AudioContext || window.webkitAudioContext
+    if (!Ctx) return
+    if (!audioCtxRef.current) audioCtxRef.current = new Ctx()
+    const c = audioCtxRef.current
+    if (c.state === 'suspended') c.resume()
+    const t = c.currentTime
+    const o = c.createOscillator()
+    const g = c.createGain()
+    o.type = 'sine'
+    o.frequency.setValueAtTime(side === 'left' ? 150 : 132, t)
+    o.frequency.exponentialRampToValueAtTime(55, t + 0.09)
+    g.gain.setValueAtTime(0.16, t)
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.13)
+    o.connect(g)
+    g.connect(c.destination)
+    o.start(t)
+    o.stop(t + 0.14)
+  }
 
   useEffect(() => {
     if (phase === 'intro') {
@@ -21,8 +46,11 @@ export default function ButterflyHug({ onExit }) {
 
   useEffect(() => {
     if (phase !== 'running') return
+    let side = 'left'
     const interval = setInterval(() => {
-      setActiveSide((prev) => (prev === 'left' ? 'right' : 'left'))
+      side = side === 'left' ? 'right' : 'left'
+      setActiveSide(side)
+      playPat(side)
     }, 1000)
     return () => clearInterval(interval)
   }, [phase])

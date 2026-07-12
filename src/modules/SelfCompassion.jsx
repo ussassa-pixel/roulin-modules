@@ -177,6 +177,14 @@ export default function SelfCompassion({ onExit }) {
                 />
               ))}
             </div>
+
+            {/* 준비되면 기다리지 않고 직접 진행 — 새 단계 음성이 이전 음성을 즉시 끊는다 */}
+            <button
+              onClick={() => setStepIndex((i) => Math.min(i + 1, steps.length - 1))}
+              className="mt-8 px-5 py-2.5 rounded-full text-r-gray text-[13px] hover:text-navy transition"
+            >
+              다음
+            </button>
           </div>
         </div>
       </ModuleFrame>

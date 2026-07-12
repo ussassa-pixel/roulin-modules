@@ -15,6 +15,8 @@ export default function PresentMoment({ onExit }) {
   const [stepIndex, setStepIndex] = useState(0)
   const [subIndex, setSubIndex] = useState(0)
   const prevStepRef = useRef(-1)
+  const elapsedRef = useRef(0)
+  const applyRef = useRef(null)
   const { speak, stop, isMuted, toggleMute } = useSpeech()
   useEffect(() => () => stop(), [phase, stop])
 
@@ -39,22 +41,28 @@ export default function PresentMoment({ onExit }) {
 
   useEffect(() => {
     if (phase !== 'running') return
-    let elapsed = 0
+    elapsedRef.current = 0
+    const apply = () => {
+      const currentStep = Math.floor(elapsedRef.current / stepDuration)
+      if (currentStep >= STEPS.length) { setPhase('rating'); return true }
+      const intoStep = elapsedRef.current - currentStep * stepDuration
+      setStepIndex(currentStep)
+      setSubIndex(intoStep < subDuration ? 0 : 1)
+      return false
+    }
+    applyRef.current = apply
     const interval = setInterval(() => {
-      elapsed += 1
-      const currentStep = Math.floor(elapsed / stepDuration)
-      const intoStep = elapsed - currentStep * stepDuration
-      const currentSub = intoStep < subDuration ? 0 : 1
-      if (currentStep >= STEPS.length) {
-        clearInterval(interval)
-        setPhase('rating')
-      } else {
-        setStepIndex(currentStep)
-        setSubIndex(currentSub)
-      }
+      elapsedRef.current += 1
+      if (apply()) clearInterval(interval)
     }, 1000)
-    return () => clearInterval(interval)
+    return () => { clearInterval(interval); applyRef.current = null }
   }, [phase, stepDuration, subDuration])
+
+  // 다음 안내(서브 경계)로 점프 — 새 안내 음성이 이전 음성을 즉시 끊는다
+  const skipToNext = () => {
+    elapsedRef.current = (Math.floor(elapsedRef.current / subDuration) + 1) * subDuration
+    applyRef.current?.()
+  }
 
   if (phase === 'intro') {
     return (
@@ -128,6 +136,13 @@ export default function PresentMoment({ onExit }) {
                 />
               ))}
             </div>
+
+            <button
+              onClick={skipToNext}
+              className="mt-10 px-6 py-2.5 rounded-full text-[12px] tracking-wide text-white/40 hover:text-white/70 border border-white/15 transition"
+            >
+              다음
+            </button>
           </div>
         </div>
       </div>

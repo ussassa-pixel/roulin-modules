@@ -48,6 +48,8 @@ import TtsAdmin from './admin/TtsAdmin'
 
 // 팀 내부 검수 페이지 (?admin=tts) — 유저 UI에는 진입점 없음
 const ADMIN_VIEW = new URLSearchParams(window.location.search).get('admin')
+// 챗 앱(대화·역할극 종료 후 케어 제안)이 모듈을 바로 여는 딥링크 — /care/app?module=stop
+const DEEP_LINK_MODULE = new URLSearchParams(window.location.search).get('module')
 
 // roulin.ai 모드카드와 같은 결: [번호] · 제목 · 설명("…할 때. …합니다.") · 작은 태그 pill
 const MODULES = [
@@ -101,7 +103,10 @@ const MODULES = [
 ]
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState(null)
+  // 유효한 딥링크면 런처를 거치지 않고 해당 모듈에서 시작
+  const [activeModule, setActiveModule] = useState(() =>
+    MODULES.some((m) => m.id === DEEP_LINK_MODULE) ? DEEP_LINK_MODULE : null
+  )
   const [pendingRec, setPendingRec] = useState(null)
   const [checkinOpen, setCheckinOpen] = useState(false) // 경로 C "지금 어때요?"
 

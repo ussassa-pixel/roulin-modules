@@ -49,6 +49,7 @@ import ParkingLot from './modules/ParkingLot'
 import FocusTimer from './modules/FocusTimer'
 import FollowDot from './modules/FollowDot'
 import FocusCatch from './modules/FocusCatch'
+import FocusOrder from './modules/FocusOrder'
 import TtsAdmin from './admin/TtsAdmin'
 
 // 팀 내부 검수 페이지 (?admin=tts) — 유저 UI에는 진입점 없음
@@ -112,6 +113,7 @@ const MODULES = [
   { id: 'grow',         title: '자라는 것',       tag: '집중', desc: '시간을 정해 집중하고 싶을 때. 그동안 한 송이가 자라고 벨이 울립니다.' },
   { id: 'follow',       title: '한 점 따라가기',  tag: '집중', desc: '주의가 자꾸 흩어질 때. 천천히 떠다니는 빛을 손끝으로 따라갑니다.' },
   { id: 'catch',        title: '딴짓 잡기',       tag: '집중', desc: '자꾸 딴생각이 들 때. 알아챈 순간마다 톡 잡아 다시 돌아옵니다.' },
+  { id: 'order',        title: '순서대로',        tag: '집중', desc: '머리가 어수선할 때. 흩어진 숫자를 1부터 차례로 이어갑니다.' },
 ]
 
 export default function App() {
@@ -177,6 +179,7 @@ export default function App() {
       {activeModule === 'grow'         && <FocusTimer onExit={exit} />}
       {activeModule === 'follow'       && <FollowDot onExit={exit} />}
       {activeModule === 'catch'        && <FocusCatch onExit={exit} />}
+      {activeModule === 'order'        && <FocusOrder onExit={exit} />}
 
       {/* "지금 어때요?" 어느 화면에서든 홈(런처)으로 */}
       {activeModule === null && checkinOpen && (

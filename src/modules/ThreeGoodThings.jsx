@@ -2,10 +2,23 @@ import { useState, useEffect } from 'react'
 import ModuleFrame from '../components/ModuleFrame'
 import { useSpeech } from '../context/SpeechContext'
 
+// speech: 회차마다 결이 다른 질문 — 같은 문장 반복은 기계적으로 들린다(피드백 2026-07-11)
 const PROMPTS = [
-  { label: '첫 번째', placeholder: '아주 작은 것도 괜찮아요. 따뜻한 커피 한 잔, 누군가의 말 한마디...' },
-  { label: '두 번째', placeholder: '오늘 잠깐이라도 마음이 가벼웠던 순간이 있었나요?' },
-  { label: '세 번째', placeholder: '내가 잘 해낸 것, 누군가에게 받은 것, 그저 다행이었던 것...' },
+  {
+    label: '첫 번째',
+    placeholder: '아주 작은 것도 괜찮아요. 따뜻한 커피 한 잔, 누군가의 말 한마디...',
+    speech: '첫 번째, 오늘 좋았던 일은 무엇이었나요?',
+  },
+  {
+    label: '두 번째',
+    placeholder: '오늘 잠깐이라도 마음이 가벼웠던 순간이 있었나요?',
+    speech: '오늘 두 번째로 좋았던 점은 어떤 것이 있었을까요?',
+  },
+  {
+    label: '세 번째',
+    placeholder: '내가 잘 해낸 것, 누군가에게 받은 것, 그저 다행이었던 것...',
+    speech: '마지막으로 하나만 더 생각해볼게요. 오늘의 좋았던 점, 하나만 더요.',
+  },
 ]
 
 export default function ThreeGoodThings({ onExit }) {
@@ -22,7 +35,7 @@ export default function ThreeGoodThings({ onExit }) {
 
   useEffect(() => {
     if (phase !== 'writing') return
-    speak(`${PROMPTS[currentIndex].label}, 오늘 좋았던 일은 무엇이었나요?`)
+    speak(PROMPTS[currentIndex].speech)
   }, [phase, currentIndex, speak])
 
   const updateThing = (value) => {
@@ -97,7 +110,6 @@ export default function ThreeGoodThings({ onExit }) {
                 boxSizing: 'border-box',
                 background: '#ffffff',
                 borderRadius: '16px',
-                border: 'none',
                 outline: 'none',
                 resize: 'none',
                 color: '#3A3733',

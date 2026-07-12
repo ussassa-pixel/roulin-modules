@@ -1,13 +1,8 @@
-import { useState, useEffect } from 'react'
-import { useSpeech } from '../context/SpeechContext'
+import { useState } from 'react'
 
+// 음성 없음 — 종료 평가 질문까지 읽어주면 과하다는 피드백(2026-07-11)으로 화면 텍스트만.
 export default function EndRating({ onComplete }) {
   const [selected, setSelected] = useState(null)
-  const { speak } = useSpeech()
-
-  useEffect(() => {
-    speak('지금 기분 어떠세요?')
-  }, [speak])
 
   const options = [
     { value: 'better', label: '조금 나아졌어요' },

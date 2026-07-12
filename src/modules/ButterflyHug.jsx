@@ -82,6 +82,12 @@ export default function ButterflyHug({ onExit }) {
             </p>
             <div className="space-y-3">
               <button
+                onClick={() => { setDuration(30); setPhase('running') }}
+                className="w-full py-4 bg-white text-ink rounded-full text-[14px] tracking-wide border border-line active:scale-[0.98] transition hover:border-[#DCD5C4]"
+              >
+                30초
+              </button>
+              <button
                 onClick={() => { setDuration(60); setPhase('running') }}
                 className="w-full py-4 bg-navy text-white rounded-full text-[14px] tracking-wide active:scale-[0.98] transition"
               >

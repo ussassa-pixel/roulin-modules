@@ -18,9 +18,8 @@ export default function WindDown({ onExit }) {
   const mutedRef = useRef(isMuted); mutedRef.current = isMuted
   const audioRef = useRef(null)
 
-  // 소리 OFF (사용자 요청 2026-07-12) — 스르르는 화면 어두워짐만으로 진행.
-  // 다시 켜려면 SOUND_ON=true (아래 핑크 노이즈 생성 복구).
-  const SOUND_ON = false
+  // 앱에서는 핑크 노이즈가 반드시 재생된다(사용자 확인 2026-07-12). isMuted면 자동 무음.
+  const SOUND_ON = true
   const buildAudio = () => {
     if (!SOUND_ON || audioRef.current || mutedRef.current) return
     try {
@@ -82,9 +81,9 @@ export default function WindDown({ onExit }) {
             <div className="w-8 h-px bg-amber/60 mx-auto mb-6" />
             <div className="flex justify-center mb-8"><Moon glow={1} /></div>
             <p className="text-[14px] text-white/75 font-light mb-2 leading-relaxed">
-              정한 시간 동안 화면이 아주 천천히<br />어두워지며, 잠들 준비를 도와줘요.
+              정한 시간 동안 화면이 천천히 어두워지고,<br />핑크 노이즈가 스르르 잦아들어요.
             </p>
-            <p className="text-[12px] text-white/45 mb-10">아무것도 안 해도 돼요. 그냥 눕거나 눈을 감아 보세요.</p>
+            <p className="text-[12px] text-white/45 mb-10">백색소음보다 수면에 도움된다는 연구가 조금 있는 소리예요 · 효과는 사람마다 달라요.</p>
             <div className="grid grid-cols-3 gap-2.5">
               {DURS.map((m) => (
                 <button key={m} onClick={() => start(m)}

@@ -3,81 +3,104 @@ import ModuleFrame from '../components/ModuleFrame'
 import { useSpeech } from '../context/SpeechContext'
 
 // 말끔 클리닝 — '그냥 재밌는 것' 코너.
-// 파스텔 패치 위의 오돌토돌(여드름)·피지·삐죽 털을 톡톡 정리하는 심심풀이 게임.
-// 다 정리하면 '말끔!' 하고 새 패치가 나온다. 자극적이지 않게 스타일라이즈. isMuted 존중.
-const FUN_BG = { background: 'radial-gradient(ellipse at 50% 32%, #123a3c 0%, #0c2628 68%, #071618 100%)' }
-const SKIN = ['#f3d9c4', '#f0d2bd', '#efd8cb', '#f2ddc9']
+// 꾹 눌러 추출하는 심심풀이. 여드름=오래 누르면 속 덩어리가 쑥, 피지=검은 점에서
+// 노랗고 긴 덩어리가 쭉, 털=뿌리까지 천천히 뽑힘. 코드 기반이라 '실사풍' 그라데이션.
+const FUN_BG = { background: 'radial-gradient(ellipse at 50% 30%, #14312e 0%, #0c2422 68%, #071614 100%)' }
+const SKINS = ['#e7b192', '#e9b593', '#e0a17e', '#edc0a2']
 const TYPES = ['pimple', 'sebum', 'hair']
+const HOLD_STEP = 0.05 // 40ms마다 진행 → 약 0.8초 홀드
 
 function makePatch() {
-  const n = 7 + Math.floor(Math.random() * 4)
+  const n = 6 + Math.floor(Math.random() * 4)
   const items = []
   let tries = 0
   while (items.length < n && tries < 200) {
     tries++
-    const x = 14 + Math.random() * 72, y = 14 + Math.random() * 72
-    if (items.some((it) => Math.hypot(it.x - x, it.y - y) < 15)) continue
-    items.push({ id: Math.random().toString(36).slice(2), type: TYPES[Math.floor(Math.random() * TYPES.length)], x, y, s: 0.8 + Math.random() * 0.6, rot: Math.random() * 360 })
+    const x = 16 + Math.random() * 68, y = 16 + Math.random() * 68
+    if (items.some((it) => Math.hypot(it.x - x, it.y - y) < 17)) continue
+    items.push({ id: Math.random().toString(36).slice(2), type: TYPES[Math.floor(Math.random() * TYPES.length)], x, y, s: 0.9 + Math.random() * 0.5, rot: Math.random() * 50 - 25 })
   }
   return items
 }
 
 export default function Clean({ onExit }) {
   const [phase, setPhase] = useState('intro')
-  const [skin, setSkin] = useState(SKIN[0])
+  const [skin, setSkin] = useState(SKINS[0])
   const [items, setItems] = useState([])
   const [fx, setFx] = useState([])
   const [cleared, setCleared] = useState(0)
   const [sparkle, setSparkle] = useState(false)
+  const [activeId, setActiveId] = useState(null)
+  const [prog, setProg] = useState(0)
   const clearedRef = useRef(0)
   const lockRef = useRef(false)
+  const activeRef = useRef(null)
+  const progRef = useRef(0)
+  const holdIv = useRef(null)
 
   const { isMuted } = useSpeech()
   const mutedRef = useRef(isMuted); mutedRef.current = isMuted
   const acRef = useRef(null)
   const ac = () => { if (mutedRef.current) return null; try { if (!acRef.current) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; acRef.current = new C() } if (acRef.current.state === 'suspended') acRef.current.resume(); return acRef.current } catch { return null } }
-  useEffect(() => () => { try { acRef.current && acRef.current.close() } catch { /* noop */ } }, [])
+  useEffect(() => () => { if (holdIv.current) clearInterval(holdIv.current); try { acRef.current && acRef.current.close() } catch { /* noop */ } }, [])
 
-  const sound = (type) => {
+  const pop = (type) => {
     const c = ac(); if (!c) return
     const t = c.currentTime
-    if (type === 'pimple') { // 뾱 — 짧게 튀는 사인
-      const o = c.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(720, t); o.frequency.exponentialRampToValueAtTime(180, t + 0.09)
-      const g = c.createGain(); g.gain.setValueAtTime(0.16, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12)
-      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.13)
-    } else if (type === 'sebum') { // 슉 — 노이즈 스윕
-      const l = Math.floor(c.sampleRate * 0.14); const b = c.createBuffer(1, l, c.sampleRate); const d = b.getChannelData(0)
+    if (type === 'pimple') { // 뾱 — 눌려 터지는
+      const o = c.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(640, t); o.frequency.exponentialRampToValueAtTime(150, t + 0.11)
+      const g = c.createGain(); g.gain.setValueAtTime(0.18, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14)
+      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.15)
+    } else if (type === 'sebum') { // 쭈욱 — 길게 밀려나오는
+      const l = Math.floor(c.sampleRate * 0.24); const b = c.createBuffer(1, l, c.sampleRate); const d = b.getChannelData(0)
       for (let k = 0; k < l; k++) d[k] = (Math.random() * 2 - 1) * (1 - k / l)
       const s = c.createBufferSource(); s.buffer = b
-      const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.setValueAtTime(900, t); bp.frequency.exponentialRampToValueAtTime(3200, t + 0.12); bp.Q.value = 1.2
-      const g = c.createGain(); g.gain.setValueAtTime(0.2, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15)
-      s.connect(bp); bp.connect(g); g.connect(c.destination); s.start(t); s.stop(t + 0.16)
-    } else { // 톡 — 짧은 pluck
-      const o = c.createOscillator(); o.type = 'triangle'; o.frequency.value = 1400
-      const g = c.createGain(); g.gain.setValueAtTime(0.14, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07)
-      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.08)
+      const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.setValueAtTime(700, t); bp.frequency.exponentialRampToValueAtTime(2600, t + 0.22); bp.Q.value = 1.4
+      const g = c.createGain(); g.gain.setValueAtTime(0.16, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.24)
+      s.connect(bp); bp.connect(g); g.connect(c.destination); s.start(t); s.stop(t + 0.25)
+    } else { // 쑥 — 뽑히는 톡
+      const o = c.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(900, t); o.frequency.exponentialRampToValueAtTime(1500, t + 0.05)
+      const g = c.createGain(); g.gain.setValueAtTime(0.15, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.1)
+      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.11)
     }
   }
 
-  const begin = () => { clearedRef.current = 0; setCleared(0); setSkin(SKIN[Math.floor(Math.random() * SKIN.length)]); setItems(makePatch()); setFx([]); setSparkle(false); lockRef.current = false; setPhase('play') }
+  const stopHold = () => { if (holdIv.current) { clearInterval(holdIv.current); holdIv.current = null } }
 
-  const remove = (it) => (e) => {
+  const startHold = (it) => (e) => {
     e.stopPropagation()
-    sound(it.type)
+    if (lockRef.current || activeRef.current) return
+    activeRef.current = it; setActiveId(it.id); progRef.current = 0; setProg(0)
+    holdIv.current = setInterval(() => {
+      progRef.current = Math.min(1, progRef.current + HOLD_STEP)
+      setProg(progRef.current)
+      if (progRef.current >= 1) { stopHold(); finish(it) }
+    }, 40)
+  }
+  const endHold = () => {
+    if (!activeRef.current) return
+    stopHold()
+    if (progRef.current < 1) { activeRef.current = null; setActiveId(null); setProg(0) } // 덜 눌러서 도로 들어감
+  }
+
+  const finish = (it) => {
+    pop(it.type)
     const fxId = it.id
-    setFx((f) => [...f, { id: fxId, type: it.type, x: it.x, y: it.y }])
-    setTimeout(() => setFx((f) => f.filter((x) => x.id !== fxId)), 600)
+    setFx((f) => [...f, { id: fxId, type: it.type, x: it.x, y: it.y, rot: it.rot }])
+    setTimeout(() => setFx((f) => f.filter((x) => x.id !== fxId)), 700)
+    activeRef.current = null; setActiveId(null); setProg(0)
     setItems((list) => {
       const next = list.filter((x) => x.id !== it.id)
       if (next.length === 0 && !lockRef.current) {
-        lockRef.current = true
-        setSparkle(true)
-        setTimeout(() => { setSparkle(false); setSkin(SKIN[Math.floor(Math.random() * SKIN.length)]); setItems(makePatch()); lockRef.current = false }, 950)
+        lockRef.current = true; setSparkle(true)
+        setTimeout(() => { setSparkle(false); setSkin(SKINS[Math.floor(Math.random() * SKINS.length)]); setItems(makePatch()); lockRef.current = false }, 950)
       }
       return next
     })
     clearedRef.current += 1; setCleared(clearedRef.current)
   }
+
+  const begin = () => { clearedRef.current = 0; setCleared(0); setSkin(SKINS[Math.floor(Math.random() * SKINS.length)]); setItems(makePatch()); setFx([]); setSparkle(false); lockRef.current = false; activeRef.current = null; setActiveId(null); setProg(0); setPhase('play') }
 
   if (phase === 'intro') {
     return (
@@ -87,14 +110,14 @@ export default function Clean({ onExit }) {
             <p className="font-serif text-[28px] text-white mb-3" style={{ fontWeight: 600 }}>말끔 클리닝</p>
             <div className="w-8 h-px bg-amber/60 mx-auto mb-6" />
             <div className="flex justify-center mb-8">
-              <div style={{ width: 88, height: 88, borderRadius: 22, background: `radial-gradient(circle at 40% 35%, #fff6, ${SKIN[0]})`, boxShadow: '0 6px 20px rgba(0,0,0,0.3)', position: 'relative' }}>
-                <Spot type="pimple" s={1} rot={0} style={{ left: '32%', top: '40%' }} />
-                <Spot type="sebum" s={1} rot={0} style={{ left: '62%', top: '55%' }} />
-                <Spot type="hair" s={1} rot={40} style={{ left: '48%', top: '28%' }} />
+              <div style={{ width: 96, height: 96, borderRadius: 24, background: `radial-gradient(circle at 38% 30%, #f6d8c2, ${SKINS[0]} 62%, #d69a78 100%)`, boxShadow: 'inset 0 3px 10px rgba(255,255,255,0.35), inset 0 -6px 14px rgba(150,90,60,0.25), 0 6px 20px rgba(0,0,0,0.3)', position: 'relative' }}>
+                <div style={{ position: 'absolute', left: '30%', top: '38%' }}><Spot type="pimple" s={1.1} rot={0} p={0.6} active /></div>
+                <div style={{ position: 'absolute', left: '64%', top: '58%' }}><Spot type="sebum" s={1.1} rot={0} p={0.55} active /></div>
+                <div style={{ position: 'absolute', left: '50%', top: '26%' }}><Spot type="hair" s={1.1} rot={30} p={0.4} active /></div>
               </div>
             </div>
             <p className="text-[14px] text-white/75 font-light mb-2 leading-relaxed">
-              오돌토돌·피지·삐죽 털을<br />톡톡 눌러 말끔하게 정리해요.
+              여드름은 <b className="text-white/90">꾹 오래</b> 눌러 속을 쏙,<br />피지는 검은 점에서 쭈욱, 털은 뿌리째 쑥.
             </p>
             <p className="text-[12px] text-white/45 mb-10">다 정리하면 새 패치가 나와요. 그냥 손이 가는 재미예요.</p>
             <button onClick={begin}
@@ -110,49 +133,61 @@ export default function Clean({ onExit }) {
   return (
     <ModuleFrame onExit={onExit} dark>
       <style>{`
-        @keyframes cl-pop{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(0);opacity:0}}
-        @keyframes cl-spray{0%{transform:translate(0,0) scale(1);opacity:.9}100%{transform:translate(var(--tx),var(--ty)) scale(.3);opacity:0}}
-        @keyframes cl-shoot{0%{transform:translateY(0) scaleY(.4);opacity:0}30%{opacity:1}100%{transform:translateY(-38px) scaleY(1.3);opacity:0}}
-        @keyframes cl-fly{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),-46px) rotate(var(--r));opacity:0}}
-        @keyframes cl-clean{0%{transform:scale(.4);opacity:.8}100%{transform:scale(2);opacity:0}}
+        @keyframes cl-core{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-42px) scale(.5);opacity:0}}
+        @keyframes cl-plug{0%{transform:translateY(0) scaleY(1) rotate(0);opacity:1}100%{transform:translateY(-56px) scaleY(1.05) rotate(10deg);opacity:0}}
+        @keyframes cl-hairout{0%{transform:translate(0,0) rotate(var(--r0));opacity:1}100%{transform:translate(var(--tx),-54px) rotate(var(--r));opacity:0}}
+        @keyframes cl-mark{0%{opacity:.55;transform:scale(.8)}100%{opacity:0;transform:scale(1.9)}}
         @keyframes cl-spk{0%,100%{opacity:0;transform:scale(.6)}50%{opacity:1;transform:scale(1)}}
       `}</style>
       <div className="min-h-screen flex flex-col items-center justify-center p-6" style={FUN_BG}>
         <div className="max-w-md w-full flex flex-col items-center">
-          <div className="relative select-none" style={{ width: 320, height: 380, borderRadius: 34, background: `radial-gradient(circle at 42% 34%, #ffffff55, ${skin})`, boxShadow: 'inset 0 2px 20px rgba(255,255,255,0.3), 0 10px 34px rgba(0,0,0,0.4)', touchAction: 'none' }}>
-            {/* 은은한 모공 텍스처 */}
-            <div className="absolute inset-0 rounded-[34px] pointer-events-none" style={{ background: 'radial-gradient(circle at 30% 60%, rgba(0,0,0,0.04) 0 1px, transparent 1px), radial-gradient(circle at 70% 30%, rgba(0,0,0,0.04) 0 1px, transparent 1px)', backgroundSize: '18px 18px, 22px 22px' }} />
+          <div
+            className="relative select-none"
+            style={{ width: 320, height: 380, borderRadius: 34, background: `radial-gradient(circle at 40% 30%, #f7dcc7 0%, ${skin} 58%, #cf9270 100%)`, boxShadow: 'inset 0 4px 22px rgba(255,255,255,0.35), inset 0 -10px 26px rgba(150,90,60,0.28), 0 12px 36px rgba(0,0,0,0.42)', touchAction: 'none', overflow: 'hidden' }}
+            onPointerUp={endHold} onPointerLeave={endHold} onPointerCancel={endHold}
+          >
+            {/* 모공 텍스처 */}
+            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 25% 55%, rgba(120,60,40,0.10) 0 1.2px, transparent 1.6px), radial-gradient(circle at 68% 32%, rgba(120,60,40,0.08) 0 1.2px, transparent 1.6px), radial-gradient(circle at 45% 75%, rgba(120,60,40,0.07) 0 1px, transparent 1.4px)', backgroundSize: '15px 15px, 19px 21px, 13px 14px', opacity: 0.7 }} />
+            {/* 은은한 홍조 */}
+            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 60% 65%, rgba(210,110,90,0.18), transparent 45%)' }} />
 
-            {items.map((it) => (
-              <button key={it.id} onPointerDown={remove(it)} aria-label="정리하기"
-                style={{ position: 'absolute', left: `${it.x}%`, top: `${it.y}%`, transform: 'translate(-50%,-50%)', padding: 8, margin: -8 }}>
-                <Spot type={it.type} s={it.s} rot={it.rot} />
-              </button>
-            ))}
+            {items.map((it) => {
+              const p = activeId === it.id ? prog : 0
+              return (
+                <button key={it.id} onPointerDown={startHold(it)} aria-label="정리하기"
+                  style={{ position: 'absolute', left: `${it.x}%`, top: `${it.y}%`, transform: 'translate(-50%,-50%)', padding: 12, margin: -12, background: 'none', border: 'none' }}>
+                  {/* 홀드 진행 링 */}
+                  {p > 0 && p < 1 && (
+                    <svg width="46" height="46" viewBox="0 0 46 46" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', pointerEvents: 'none' }}>
+                      <circle cx="23" cy="23" r="20" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={`${2 * Math.PI * 20}`} strokeDashoffset={`${2 * Math.PI * 20 * (1 - p)}`} transform="rotate(-90 23 23)" />
+                    </svg>
+                  )}
+                  <Spot type={it.type} s={it.s} rot={it.rot} p={p} active={activeId === it.id} />
+                </button>
+              )
+            })}
 
-            {/* 제거 이펙트 */}
+            {/* 추출 이펙트 */}
             {fx.map((f) => (
               <div key={f.id} style={{ position: 'absolute', left: `${f.x}%`, top: `${f.y}%`, transform: 'translate(-50%,-50%)', pointerEvents: 'none' }}>
-                <span style={{ position: 'absolute', left: -13, top: -13, width: 26, height: 26, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.85)', animation: 'cl-clean .5s ease-out both' }} />
-                {f.type === 'pimple' && Array.from({ length: 6 }).map((_, k) => {
-                  const a = (k / 6) * Math.PI * 2
-                  return <span key={k} style={{ position: 'absolute', left: -3, top: -3, width: 6, height: 6, borderRadius: '50%', background: '#f5e6d8', '--tx': `${Math.cos(a) * 26}px`, '--ty': `${Math.sin(a) * 26}px`, animation: 'cl-spray .5s ease-out both' }} />
-                })}
-                {f.type === 'sebum' && <span style={{ position: 'absolute', left: -2, top: -30, width: 4, height: 30, borderRadius: 2, background: 'linear-gradient(to top, #e8d3ba, #fff8ee)', transformOrigin: 'bottom', animation: 'cl-shoot .45s ease-out both' }} />}
-                {f.type === 'hair' && <span style={{ position: 'absolute', left: -1, top: -18, width: 2, height: 22, background: '#5b4636', '--tx': `${(Math.random() * 30 - 15).toFixed(0)}px`, '--r': `${(Math.random() * 240 - 120).toFixed(0)}deg`, animation: 'cl-fly .5s ease-out both' }} />}
+                <span style={{ position: 'absolute', left: -14, top: -14, width: 28, height: 28, borderRadius: '50%', background: 'radial-gradient(circle, rgba(200,110,90,0.5), transparent 70%)', animation: 'cl-mark .6s ease-out both' }} />
+                {f.type === 'pimple' && <span style={{ position: 'absolute', left: -7, top: -7, width: 14, height: 14, borderRadius: '50%', background: 'radial-gradient(circle at 38% 34%, #fff7d8, #e8cf74 70%, #d8b84e)', boxShadow: '0 0 4px rgba(180,150,60,0.5)', animation: 'cl-core .55s ease-out both' }} />}
+                {f.type === 'sebum' && <span style={{ position: 'absolute', left: -3.5, top: -40, width: 7, height: 40, borderRadius: 4, transformOrigin: 'bottom', background: 'linear-gradient(to top, #6b5636 0%, #d8c24a 30%, #efe08a 80%, #2a2018 100%)', boxShadow: '0 0 3px rgba(0,0,0,0.3)', animation: 'cl-plug .6s ease-out both' }} />}
+                {f.type === 'hair' && <span style={{ position: 'absolute', left: -2, top: -30, width: 4, height: 34, '--tx': `${(Math.random() * 34 - 17).toFixed(0)}px`, '--r': `${(Math.random() * 300 - 150).toFixed(0)}deg`, '--r0': '0deg', animation: 'cl-hairout .6s ease-out both' }}>
+                  <Hair s={1.2} withRoot />
+                </span>}
               </div>
             ))}
 
-            {/* 말끔! */}
             {sparkle && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <span className="font-serif text-navy text-[30px]" style={{ fontWeight: 600, animation: 'cl-spk .9s ease-in-out both' }}>말끔!</span>
+                <span className="font-serif text-[#5a3b28] text-[32px]" style={{ fontWeight: 700, textShadow: '0 1px 2px rgba(255,255,255,0.5)', animation: 'cl-spk .9s ease-in-out both' }}>말끔!</span>
               </div>
             )}
           </div>
 
           <p className="text-white/45 text-[12px] font-light mt-8">
-            {sparkle ? '깨끗해졌어요 · 새 패치가 나와요' : '오돌토돌한 걸 톡 눌러 정리해요'}
+            {sparkle ? '깨끗해졌어요 · 새 패치가 나와요' : '꾹 눌러서 쏙 빼내요'}
             {cleared > 0 && <span className="text-white/30"> · {cleared}개 정리</span>}
           </p>
         </div>
@@ -161,32 +196,58 @@ export default function Clean({ onExit }) {
   )
 }
 
-// 오돌토돌(pimple)·피지(sebum)·털(hair)
-function Spot({ type, s = 1, rot = 0, style }) {
+// ── 개별 블레미시 (p: 추출 진행 0~1) ──
+function Spot({ type, s = 1, rot = 0, p = 0, active = false }) {
   if (type === 'pimple') {
+    const coreH = 3 + p * 13 * s
     return (
-      <span style={{ display: 'block', width: 22 * s, height: 22 * s, borderRadius: '50%',
-        background: 'radial-gradient(circle at 38% 34%, #ffe3d0 0%, #f2a98f 55%, #d98069 100%)',
-        boxShadow: 'inset -2px -3px 5px rgba(150,70,50,0.4), 0 1px 3px rgba(0,0,0,0.2)',
-        position: style ? 'absolute' : 'static', transform: style ? 'translate(-50%,-50%)' : 'none', ...style }}>
-        <span style={{ position: 'absolute', left: '38%', top: '34%', width: 5 * s, height: 5 * s, borderRadius: '50%', background: '#fff6ec' }} />
+      <span style={{ display: 'block', position: 'relative', width: 26 * s, height: 26 * s }}>
+        {/* 염증 링 */}
+        <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: `radial-gradient(circle at 40% 36%, #f0a892 0%, #e08066 55%, #cc6349 100%)`, boxShadow: `inset -2px -3px 5px rgba(150,60,45,0.5), inset 2px 2px 4px rgba(255,220,200,0.5), 0 1px 3px rgba(0,0,0,0.25)`, transform: `scale(${1 - p * 0.14})` }} />
+        {/* 속 덩어리(화이트헤드) — 누를수록 솟음 */}
+        <span style={{ position: 'absolute', left: '50%', top: '50%', width: 8 * s, height: coreH, marginLeft: -4 * s, transform: `translate(-50%, calc(-50% - ${p * 5}px))`, borderRadius: 5 * s, background: 'radial-gradient(circle at 40% 30%, #fff7dc 0%, #f0dc94 55%, #dcc260 100%)', boxShadow: '0 0 3px rgba(180,150,70,0.5)', opacity: p > 0.05 ? 1 : 0 }} />
+        {/* 유광 하이라이트 */}
+        <span style={{ position: 'absolute', left: '34%', top: '30%', width: 6 * s, height: 4 * s, borderRadius: '50%', background: 'rgba(255,255,255,0.7)', filter: 'blur(0.5px)' }} />
       </span>
     )
   }
   if (type === 'sebum') {
+    const plugH = p * 30 * s
     return (
-      <span style={{ display: 'block', width: 12 * s, height: 12 * s, borderRadius: '50%',
-        background: 'radial-gradient(circle at 40% 38%, #b9a68f 0%, #6b5a48 70%, #3e3327 100%)',
-        boxShadow: 'inset -1px -1px 2px rgba(0,0,0,0.5)',
-        position: style ? 'absolute' : 'static', transform: style ? 'translate(-50%,-50%)' : 'none', ...style }} />
+      <span style={{ display: 'block', position: 'relative', width: 16 * s, height: 16 * s }}>
+        {/* 모공(약간 파임) */}
+        <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'radial-gradient(circle at 42% 40%, #d69a78 0%, #b9744f 70%, #9a5c3c 100%)', boxShadow: 'inset 1px 1px 3px rgba(0,0,0,0.35)' }} />
+        {/* 밀려나오는 노란 피지 덩어리 */}
+        {p > 0.03 && (
+          <span style={{ position: 'absolute', left: '50%', bottom: '46%', width: 6 * s, height: plugH, marginLeft: -3 * s, transformOrigin: 'bottom', transform: 'translateX(-50%)', borderRadius: 3 * s, background: 'linear-gradient(to top, #6b5636 0%, #cbb44a 26%, #efe08a 78%, #2a2018 100%)', boxShadow: '0 0 2px rgba(0,0,0,0.3)' }} />
+        )}
+        {/* 검은 산화 점(안 눌렀을 때 표면) */}
+        <span style={{ position: 'absolute', left: '50%', top: '42%', width: 7 * s, height: 7 * s, marginLeft: -3.5 * s, marginTop: -3.5 * s, borderRadius: '50%', background: 'radial-gradient(circle at 40% 38%, #4a3a2a, #241c14 70%, #120d08)', opacity: 1 - p * 0.6 }} />
+      </span>
     )
   }
-  // hair — 삐죽한 곡선 털
+  // hair — 누를수록 뿌리까지 올라옴
+  const rise = p * 20 * s
   return (
-    <span style={{ display: 'block', width: 4, height: 26 * s, position: style ? 'absolute' : 'static', transform: `${style ? 'translate(-50%,-50%) ' : ''}rotate(${rot}deg)`, transformOrigin: 'bottom', ...style }}>
-      <svg width="8" height={26 * s} viewBox="0 0 8 26" fill="none" aria-hidden="true">
-        <path d="M4 26 C 1 18, 7 12, 3 4 C 2.5 2, 4 1, 4 0" stroke="#4a3a2c" strokeWidth="2" strokeLinecap="round" fill="none" />
-      </svg>
+    <span style={{ display: 'block', position: 'relative', width: 12 * s, height: 30 * s }}>
+      {/* 모공 자국 */}
+      <span style={{ position: 'absolute', left: '50%', bottom: 0, width: 5 * s, height: 5 * s, marginLeft: -2.5 * s, borderRadius: '50%', background: 'radial-gradient(circle, rgba(120,70,50,0.5), transparent 70%)' }} />
+      <span style={{ position: 'absolute', left: '50%', bottom: 0, transform: `translate(-50%, ${-rise}px) rotate(${rot}deg)`, transformOrigin: 'bottom' }}>
+        <Hair s={s} withRoot={p > 0.35} />
+      </span>
     </span>
+  )
+}
+
+// 털 한 올(뿌리 옵션)
+function Hair({ s = 1, withRoot = false }) {
+  return (
+    <svg width={10 * s} height={34 * s} viewBox="0 0 10 34" fill="none" aria-hidden="true" style={{ display: 'block' }}>
+      <path d="M5 34 C 2 25, 8 18, 4 9 C 3 5, 5 3, 5 0" stroke="url(#hairg)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+      {withRoot && <ellipse cx="5" cy="33" rx="3.4" ry="4.6" fill="rgba(240,228,214,0.92)" stroke="rgba(180,150,130,0.6)" strokeWidth="0.6" />}
+      <defs>
+        <linearGradient id="hairg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#6a5238" /><stop offset="1" stopColor="#3a2c1e" /></linearGradient>
+      </defs>
+    </svg>
   )
 }

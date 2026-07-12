@@ -494,6 +494,60 @@
       "duration_sec": 60
     },
     {
+      "id": "focuslaunch",
+      "name": "3·2·1 시작",
+      "type": "tool",
+      "need": [
+        "act"
+      ],
+      "target_states": [
+        "막상 시작이 안 됨",
+        "착수 마찰"
+      ],
+      "safety_level": "general",
+      "duration_sec": 90
+    },
+    {
+      "id": "grow",
+      "name": "자라는 것",
+      "type": "practice",
+      "need": [
+        "act"
+      ],
+      "target_states": [
+        "시간을 정해 집중하고 싶음",
+        "몰입 유지가 어려움"
+      ],
+      "safety_level": "general",
+      "duration_sec": 300
+    },
+    {
+      "id": "parking",
+      "name": "딴생각 주차장",
+      "type": "tool",
+      "need": [
+        "organize"
+      ],
+      "target_states": [
+        "집중 중 잡념이 자꾸 침투"
+      ],
+      "safety_level": "general",
+      "duration_sec": 120
+    },
+    {
+      "id": "follow",
+      "name": "한 점 따라가기",
+      "type": "practice",
+      "need": [
+        "soothe"
+      ],
+      "target_states": [
+        "주의가 자꾸 흩어짐"
+      ],
+      "safety_level": "general",
+      "duration_sec": 80
+    },
+    {
       "id": "stop",
       "name": "STOP",
       "type": "practice",

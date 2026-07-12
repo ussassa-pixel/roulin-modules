@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════════════════════════
-//  registry.js — 36개 모듈 메타데이터 레지스트리 (추천 레이어 선결)
+//  registry.js — 41개 모듈 메타데이터 레지스트리 (추천 레이어 선결)
 //
 //  ⚠️ 임상 필드는 전부 **DRAFT**. safetyLevel / contraindications /
 //     targetStates / durationSec 은 SW(임상) 확정이 필요하다.
@@ -129,6 +129,18 @@ export const MODULES = [
     targetStates: ['방금 무언가 해냄', '즉시 자축'], safetyLevel: 'general', contra: [], durationSec: 45, hasEndRating: false },
   { id: 'reset', displayName: '1분 리셋', type: 'practice', need: ['soothe'], domainTags: ['self', 'health'], themes: ['micro', 'reset', 'break'],
     targetStates: ['잠깐 끊고 싶음', '1분 전환'], safetyLevel: 'general', contra: [], durationSec: 60, hasEndRating: false },
+
+  // ── 집중 ('집중이 안 될 때' 코너) ──
+  // 겹침 배제: focuslaunch=착수 시동(smalleststep은 계획 산출, 이쪽은 즉시 의례) / grow=타임박스 지속
+  //           / parking=집중 중 잡념 오프로딩(braindump는 전면 비우기) / follow=지속주의 앵커 게임
+  { id: 'focuslaunch', displayName: '3·2·1 시작', type: 'tool', need: ['act'], domainTags: ['work', 'self'], themes: ['activation', 'procrastination', 'ritual', 'focus'],
+    targetStates: ['막상 시작이 안 됨', '착수 마찰'], safetyLevel: 'general', contra: [], durationSec: 90, hasEndRating: false },
+  { id: 'grow', displayName: '자라는 것', type: 'practice', need: ['act'], domainTags: ['work', 'self'], themes: ['focus', 'timebox', 'timer'],
+    targetStates: ['시간을 정해 집중하고 싶음', '몰입 유지가 어려움'], safetyLevel: 'general', contra: [], durationSec: 300, hasEndRating: false },
+  { id: 'parking', displayName: '딴생각 주차장', type: 'tool', need: ['organize'], domainTags: ['work', 'self'], themes: ['offload', 'intrusive', 'focus'],
+    targetStates: ['집중 중 잡념이 자꾸 침투'], safetyLevel: 'general', contra: [], durationSec: 120, hasEndRating: false },
+  { id: 'follow', displayName: '한 점 따라가기', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['attention', 'focus', 'play'],
+    targetStates: ['주의가 자꾸 흩어짐'], safetyLevel: 'general', contra: [], durationSec: 80, hasEndRating: false },
 
   // ── 위기 브릿지 ──
   { id: 'stop', displayName: 'STOP', type: 'practice', need: ['soothe'], domainTags: ['self'], themes: ['impulse', 'pause'],

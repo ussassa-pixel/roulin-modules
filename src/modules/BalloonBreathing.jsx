@@ -30,7 +30,7 @@ export default function BalloonBreathing({ onExit }) {
     if (!voiceOn) return
     if (lastSpokenRef.current === text) return
     lastSpokenRef.current = text
-    speakSmart(text, 'male') // 남성 목소리 고정. ElevenLabs 우선, 실패 시 브라우저 폴백
+    return speakSmart(text, 'male') // 남성 목소리 고정. 발화 종료 시 resolve
   }
 
   const handlePressStart = () => {
@@ -47,8 +47,11 @@ export default function BalloonBreathing({ onExit }) {
     if (intervalRef.current) clearInterval(intervalRef.current)
     if (balloonSize >= MAX_SIZE - 20) {
       setBreathState('holding')
-      speak('잠깐')
-      setTimeout(() => { setBreathState('exhaling'); speak('천천히 내쉬어요') }, 800)
+      // '잠깐' 음성이 끝나고(+최소 800ms 유지) 내쉬기로 — 고정 800ms는 말을 끊었다
+      Promise.all([
+        Promise.resolve(speak('잠깐')),
+        new Promise((r) => setTimeout(r, 800)),
+      ]).then(() => { setBreathState('exhaling'); speak('천천히 내쉬어요') })
     } else {
       setBreathState('exhaling')
       speak('천천히 내쉬어요')

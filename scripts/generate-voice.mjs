@@ -30,32 +30,36 @@ for (const f of ['.env.local', '.env']) {
   }
 }
 
+// 키가 없으면 배포된 /api/tts 프록시로 생성한다 — 키를 로컬에서 만질 필요가 없고,
+// 목소리 설정도 프록시(_tts-core.js)의 것을 그대로 쓴다. 문구는 프록시가 ElevenLabs에
+// 원문 그대로 전달하므로 <break> 리드인도 동일하게 적용된다.
 const API_KEY = process.env.ELEVENLABS_API_KEY
-if (!API_KEY) {
-  console.error('ELEVENLABS_API_KEY 가 없습니다. 먼저 `vercel env pull .env.local` 을 실행하세요.')
-  process.exit(1)
-}
+const PROXY = process.env.TTS_PROXY_URL || 'https://roulin-modules.vercel.app/api/tts'
+if (!API_KEY) console.log(`ELEVENLABS_API_KEY 없음 → 배포 프록시 사용: ${PROXY}`)
 
-// api/_tts-core.js resolveVoice와 동일한 해석
+// api/_tts-core.js resolveVoice와 동일한 해석 (직접 호출 모드에서만 사용)
 const femaleId = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM'
 const voiceId = VOICE === 'male' ? (process.env.ELEVENLABS_MALE_VOICE_ID || femaleId) : femaleId
 const modelId = process.env.ELEVENLABS_MODEL_ID || 'eleven_multilingual_v2'
 const voiceSettings = { stability: 0.5, similarity_boost: 0.75 }
 
+// 파일명은 (voice, 원문)으로 안정 — 목소리 설정을 바꾸면 --force로 전량 재생성할 것
 const hashOf = (text) =>
-  createHash('sha256').update([VOICE, voiceId, modelId, text].join('|')).digest('hex').slice(0, 16)
+  createHash('sha256').update([VOICE, text].join('|')).digest('hex').slice(0, 16)
 
 async function generate(text) {
-  const r = await fetch(
-    `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_128`,
-    {
-      method: 'POST',
-      headers: { 'xi-api-key': API_KEY, 'content-type': 'application/json', accept: 'audio/mpeg' },
-      body: JSON.stringify({ text: `${LEAD_IN} ${text}`, model_id: modelId, voice_settings: voiceSettings }),
-    }
-  )
+  const padded = `${LEAD_IN} ${text}`
+  const r = API_KEY
+    ? await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_128`, {
+        method: 'POST',
+        headers: { 'xi-api-key': API_KEY, 'content-type': 'application/json', accept: 'audio/mpeg' },
+        body: JSON.stringify({ text: padded, model_id: modelId, voice_settings: voiceSettings }),
+      })
+    : await fetch(`${PROXY}?text=${encodeURIComponent(padded)}&voice=${VOICE}`)
   if (!r.ok) throw new Error(`tts_failed ${r.status} ${(await r.text().catch(() => '')).slice(0, 200)}`)
-  return Buffer.from(await r.arrayBuffer())
+  const buf = Buffer.from(await r.arrayBuffer())
+  if (!buf.length || !/audio/i.test(r.headers.get('content-type') || '')) throw new Error('bad_audio')
+  return buf
 }
 
 mkdirSync(OUT_DIR, { recursive: true })

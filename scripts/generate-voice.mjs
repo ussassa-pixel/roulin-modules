@@ -6,19 +6,23 @@
 //   .env.local / .env 를 자동으로 읽는다. --force 는 기존 해시도 전량 재생성.
 //
 // 설정은 api/_tts-core.js(런타임 폴백)와 동일해야 목소리 톤이 같다.
-// 각 음원 앞에 0.4초 무음 리드인을 굽는다(<break/>) — 브라우저 오디오 출력이
+// 각 음원 앞에 0.4초 '디지털 무음'을 ffmpeg로 패딩한다 — 브라우저 오디오 출력이
 // 유휴 후 깨어나며 첫 200~400ms를 감쇠시키는 문제를 무음이 흡수한다.
+// (초기엔 ElevenLabs <break/> 태그를 썼지만 웅얼거림 아티팩트가 관찰돼 교체 — 2026-07-11)
 import { createHash } from 'node:crypto'
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
+import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import ffmpegPath from 'ffmpeg-static'
 import { VOICE, VOICE_LINES } from './voice-lines.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const OUT_DIR = path.join(ROOT, 'public', 'voice')
 const MANIFEST = path.join(ROOT, 'src', 'content', 'voiceManifest.json')
 const FORCE = process.argv.includes('--force')
-const LEAD_IN = '<break time="0.4s" />'
+const LEAD_IN_MS = 400
 
 // .env.local / .env 간이 로더 (dotenv 의존성 없이)
 for (const f of ['.env.local', '.env']) {
@@ -48,18 +52,36 @@ const hashOf = (text) =>
   createHash('sha256').update([VOICE, text].join('|')).digest('hex').slice(0, 16)
 
 async function generate(text) {
-  const padded = `${LEAD_IN} ${text}`
   const r = API_KEY
     ? await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_128`, {
         method: 'POST',
         headers: { 'xi-api-key': API_KEY, 'content-type': 'application/json', accept: 'audio/mpeg' },
-        body: JSON.stringify({ text: padded, model_id: modelId, voice_settings: voiceSettings }),
+        body: JSON.stringify({ text, model_id: modelId, voice_settings: voiceSettings }),
       })
-    : await fetch(`${PROXY}?text=${encodeURIComponent(padded)}&voice=${VOICE}`)
+    : await fetch(`${PROXY}?text=${encodeURIComponent(text)}&voice=${VOICE}`)
   if (!r.ok) throw new Error(`tts_failed ${r.status} ${(await r.text().catch(() => '')).slice(0, 200)}`)
   const buf = Buffer.from(await r.arrayBuffer())
   if (!buf.length || !/audio/i.test(r.headers.get('content-type') || '')) throw new Error('bad_audio')
-  return buf
+  return padLeadInSilence(buf)
+}
+
+// 앞 0.4초 디지털 무음 패딩 + 128k CBR 재인코딩 (모델 아티팩트 없는 확정적 무음)
+function padLeadInSilence(buf) {
+  const tmpIn = path.join(tmpdir(), `voice-in-${process.pid}.mp3`)
+  const tmpOut = path.join(tmpdir(), `voice-out-${process.pid}.mp3`)
+  writeFileSync(tmpIn, buf)
+  try {
+    execFileSync(ffmpegPath, [
+      '-y', '-i', tmpIn,
+      '-af', `adelay=${LEAD_IN_MS}:all=1`,
+      '-c:a', 'libmp3lame', '-b:a', '128k', '-ar', '44100',
+      tmpOut,
+    ], { stdio: 'pipe' })
+    return readFileSync(tmpOut)
+  } finally {
+    rmSync(tmpIn, { force: true })
+    rmSync(tmpOut, { force: true })
+  }
 }
 
 mkdirSync(OUT_DIR, { recursive: true })

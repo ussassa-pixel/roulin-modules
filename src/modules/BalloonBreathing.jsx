@@ -22,6 +22,7 @@ export default function BalloonBreathing({ onExit }) {
   const [completedCycles, setCompletedCycles] = useState(0)
   const intervalRef = useRef(null)
   const lastSpokenRef = useRef(null)
+  const holdSeqRef = useRef(0)
 
   const MIN_SIZE = 80
   const MAX_SIZE = 280
@@ -34,6 +35,8 @@ export default function BalloonBreathing({ onExit }) {
   }
 
   const handlePressStart = () => {
+    holdSeqRef.current++ // 진행 중이던 '잠깐' 대기를 무효화
+    if (intervalRef.current) clearInterval(intervalRef.current)
     setIsPressed(true)
     setBreathState('inhaling')
     speak('들이마셔요')
@@ -42,20 +45,7 @@ export default function BalloonBreathing({ onExit }) {
     }, 50)
   }
 
-  const handlePressEnd = () => {
-    setIsPressed(false)
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    if (balloonSize >= MAX_SIZE - 20) {
-      setBreathState('holding')
-      // '잠깐' 음성이 끝나고(+최소 800ms 유지) 내쉬기로 — 고정 800ms는 말을 끊었다
-      Promise.all([
-        Promise.resolve(speak('잠깐')),
-        new Promise((r) => setTimeout(r, 800)),
-      ]).then(() => { setBreathState('exhaling'); speak('천천히 내쉬어요') })
-    } else {
-      setBreathState('exhaling')
-      speak('천천히 내쉬어요')
-    }
+  const startDeflate = () => {
     intervalRef.current = setInterval(() => {
       setBalloonSize((prev) => {
         if (prev <= MIN_SIZE) {
@@ -68,6 +58,30 @@ export default function BalloonBreathing({ onExit }) {
         return prev - 3
       })
     }, 50)
+  }
+
+  const handlePressEnd = () => {
+    setIsPressed(false)
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (balloonSize >= MAX_SIZE - 20) {
+      // 최대로 커진 채 멈춘 상태에서 '잠깐' — 다 듣고 나서야 수축+내쉬기 시작
+      // (예전엔 떼자마자 쪼그라들어 '잠깐'이 뒷북이었다)
+      const seq = ++holdSeqRef.current
+      setBreathState('holding')
+      Promise.all([
+        Promise.resolve(speak('잠깐')),
+        new Promise((r) => setTimeout(r, 800)),
+      ]).then(() => {
+        if (seq !== holdSeqRef.current) return // 그 사이 다시 눌렀으면 취소
+        setBreathState('exhaling')
+        speak('천천히 내쉬어요')
+        startDeflate()
+      })
+    } else {
+      setBreathState('exhaling')
+      speak('천천히 내쉬어요')
+      startDeflate()
+    }
   }
 
   useEffect(() => {
@@ -191,7 +205,7 @@ export default function BalloonBreathing({ onExit }) {
   return null
 }
 
-function BalloonSVG({ size, fillRatio = 0, state = 'idle', colorSet = null }) {
+function BalloonSVG({ size, state = 'idle', colorSet = null }) {
   const w = size
   const h = size * 1.35
   const cx = w / 2

@@ -55,6 +55,15 @@ import FocusStill from './modules/FocusStill'
 import FocusTogether from './modules/FocusTogether'
 import FocusSound from './modules/FocusSound'
 import FocusWave from './modules/FocusWave'
+import StarCount from './modules/StarCount'
+import WindDown from './modules/WindDown'
+import BodyScan from './modules/BodyScan'
+import Smash from './modules/Smash'
+import CoolDown from './modules/CoolDown'
+import NameAnger from './modules/NameAnger'
+import TinyMission from './modules/TinyMission'
+import Whimsy from './modules/Whimsy'
+import SquishToy from './modules/SquishToy'
 import TtsAdmin from './admin/TtsAdmin'
 
 // 팀 내부 검수 페이지 (?admin=tts) — 유저 UI에는 진입점 없음
@@ -124,6 +133,21 @@ const MODULES = [
   { id: 'together',     title: '같이 집중해요',   tag: '집중', desc: '혼자 집중이 버거울 때. 곁의 작은 친구와 함께 집중합니다.' },
   { id: 'ambient',      title: '집중 소리',       tag: '집중', desc: '조용하면 더 산만할 때. 비·파도·바람을 섞어 배경음을 만듭니다.' },
   { id: 'wave',         title: '집중 파동',       tag: '집중', desc: '인공 사운드가 천천히 바뀌며 몰입 분위기를 만드는 5·10·15분 코스.' },
+
+  // ── 잠이 안 올 때 (신규 코너) ──
+  { id: 'starcount',    title: '별 세기',         tag: '수면', desc: '잠이 오지 않는 밤에. 톡톡 눌러 밤하늘에 별을 세며 가라앉습니다.' },
+  { id: 'winddown',     title: '스르르',          tag: '수면', desc: '아무것도 하기 싫은 밤에. 화면과 빗소리가 서서히 잦아듭니다.' },
+  { id: 'bodyscan',     title: '몸 훑기',         tag: '수면', desc: '몸이 잠들지 못할 때. 머리부터 발끝까지 힘을 하나씩 풉니다.' },
+
+  // ── 화가 날 때 (신규 코너) ──
+  { id: 'smash',        title: '터뜨리기',        tag: '분노', desc: '화가 치밀 때. 떠오른 걸 톡톡 터뜨려 안전하게 내보냅니다.' },
+  { id: 'cooldown',     title: '식히기',          tag: '분노', desc: '달아올랐을 때. 느린 숨으로 벌건 화면을 서늘하게 식힙니다.' },
+  { id: 'nameanger',    title: '화에 이름 붙이기', tag: '분노', desc: '화가 가시지 않을 때. 그 아래 숨은 마음에 이름을 붙여봅니다.' },
+
+  // ── 그냥 재밌는 것 (신규 코너) ──
+  { id: 'tinymission',  title: '소소한 미션',     tag: '재미', desc: '기분을 살짝 바꾸고 싶을 때. 30초짜리 다정한 미션을 뽑습니다.' },
+  { id: 'whimsy',       title: '오늘의 엉뚱 질문', tag: '재미', desc: '잠깐 딴 세상이 필요할 때. 정답 없는 공상 질문 하나를 엽니다.' },
+  { id: 'squishtoy',    title: '말랑 토이',       tag: '재미', desc: '만지작거리고 싶을 때. 누르면 말랑 통 튀어오르는 감각 장난감.' },
 ]
 
 export default function App() {
@@ -195,6 +219,15 @@ export default function App() {
       {activeModule === 'together'     && <FocusTogether onExit={exit} />}
       {activeModule === 'ambient'      && <FocusSound onExit={exit} />}
       {activeModule === 'wave'         && <FocusWave onExit={exit} />}
+      {activeModule === 'starcount'    && <StarCount onExit={exit} />}
+      {activeModule === 'winddown'     && <WindDown onExit={exit} />}
+      {activeModule === 'bodyscan'     && <BodyScan onExit={exit} />}
+      {activeModule === 'smash'        && <Smash onExit={exit} />}
+      {activeModule === 'cooldown'     && <CoolDown onExit={exit} />}
+      {activeModule === 'nameanger'    && <NameAnger onExit={exit} />}
+      {activeModule === 'tinymission'  && <TinyMission onExit={exit} />}
+      {activeModule === 'whimsy'       && <Whimsy onExit={exit} />}
+      {activeModule === 'squishtoy'    && <SquishToy onExit={exit} />}
 
       {/* "지금 어때요?" 어느 화면에서든 홈(런처)으로 */}
       {activeModule === null && checkinOpen && (

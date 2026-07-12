@@ -16,6 +16,13 @@
 import { MODULES, BY_ID } from './registry.js'
 import { recommend } from './recommend.js'
 
+// ── 코너 직접 연결용 id (sections.js의 각 섹션과 동일) ──
+// 이 모듈들은 registry 임상 스코어 대상이 아니라 엔진을 거치지 않고 여기서 고른다.
+// (CHIPS가 이 값들을 참조하므로 반드시 CHIPS보다 먼저 선언한다 — TDZ 주의)
+const FOCUS_IDS = ['focuslaunch', 'grow', 'parking', 'follow', 'catch', 'order', 'memory', 'still', 'together', 'ambient', 'wave']
+const ANGER_IDS = ['smash', 'cooldown', 'nameanger']
+const SLEEP_IDS = ['starcount', 'winddown', 'bodyscan']
+
 // ── 상태 칩 (6~8개, 문구 확정 = 미결 §7 — DRAFT) ──
 // signal은 recommend.js의 StateSignal 계약을 따른다. reason은 경로 C의
 // 상태 기반 연결문(대화가 없으니 verbatim 인용 대신 칩 기반 문구).
@@ -40,8 +47,13 @@ export const CHIPS = [
   },
   {
     // 집중 코너 직접 연결 — 추천 엔진(registry 스코어) 대신 focus 섹션에서 고른다
-    key: 'unfocused', label: '집중이 안 돼요', focus: true,
+    key: 'unfocused', label: '집중이 안 돼요', directIds: FOCUS_IDS,
     reason: '집중이 잘 안 된다고 하셔서, 시동 걸거나 붙잡아 줄 걸 골랐어요.',
+  },
+  {
+    // 화 코너 직접 연결 — 안전하게 내보내고 가라앉히는 3종
+    key: 'angry', label: '화가 나요', directIds: ANGER_IDS,
+    reason: '화가 난다고 하셔서, 안전하게 풀고 가라앉힐 걸 골랐어요.',
   },
   {
     key: 'hollow', label: '좀 허전해요',
@@ -73,12 +85,13 @@ export const CHIPS = [
     signal: { dominantNeed: 'soothe', acuteDistress: true, themes: ['breath', 'grounding', 'stabilize'], crisisLevel: 'none' },
     reason: '마음이 곤두서 있다고 하셔서, 가라앉힐 만한 걸 골랐어요.',
   },
+  {
+    // 수면 코너 직접 연결 — 밤에 스르르 가라앉히는 3종
+    key: 'sleepless', label: '잠이 안 와요', directIds: SLEEP_IDS,
+    reason: '잠이 잘 안 온다고 하셔서, 스르르 잠으로 데려갈 걸 골랐어요.',
+  },
   // 마지막 칩 [괜찮아요, 둘러볼래요]는 추천이 아니라 브라우즈 출구 — UI에서 처리
 ]
-
-// ── 집중 코너 직접 연결용 id (sections.js 'focus' 섹션과 동일) ──
-// 이 모듈들은 registry 임상 스코어 대상이 아니라 엔진을 거치지 않고 여기서 고른다.
-const FOCUS_IDS = ['focuslaunch', 'grow', 'parking', 'follow', 'catch', 'order', 'memory', 'still', 'together', 'ambient', 'wave']
 
 // ── ② 쿨다운 — 도구형 재추천 피로 방지 (기간 N=3일은 DRAFT, §7 미결) ──
 // 연습형(호흡·bodyrelease 등)은 반복이 정상이라 쿨다운 없음.
@@ -105,11 +118,11 @@ export function computeCooldownExcludes(careLog, { now = new Date(), days = COOL
 export function recommendForChip(chipKey, opts = {}) {
   const chip = CHIPS.find((c) => c.key === chipKey)
   if (!chip) return { blocked: false, candidates: [] }
-  // 집중 칩 — 엔진 미경유. focus 섹션에서 2개를 살짝 섞어 제시(매번 같지 않게).
-  if (chip.focus) {
+  // 코너 직결 칩(집중·화·수면 등) — 엔진 미경유. 해당 섹션에서 2개를 살짝 섞어 제시(매번 같지 않게).
+  if (chip.directIds) {
     const excl = new Set(computeCooldownExcludes(opts.careLog || [], { now: opts.now }))
-    const pool = FOCUS_IDS.filter((id) => !excl.has(id))
-    const src = pool.length >= 2 ? pool : FOCUS_IDS
+    const pool = chip.directIds.filter((id) => !excl.has(id))
+    const src = pool.length >= 2 ? pool : chip.directIds
     const picks = [...src].sort(() => Math.random() - 0.5).slice(0, 2)
     return { blocked: false, candidates: picks.map((id) => ({ id })), reason: chip.reason }
   }

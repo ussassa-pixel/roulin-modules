@@ -36,6 +36,27 @@ export const SECTIONS = [
     color: { base: '#f4a0be', edge: '#e0518a' },
     ids: ['focuslaunch', 'grow', 'parking', 'follow', 'catch', 'order', 'memory', 'still', 'together', 'ambient', 'wave'],
   },
+  {
+    key: 'sleep',
+    title: '잠이 안 올 때',
+    desc: '밤인데 잠이 오지 않을 때. 부드럽게 어둠으로, 스르르 가라앉아요.',
+    color: { base: '#8891e0', edge: '#4a53b0' },
+    ids: ['starcount', 'winddown', 'bodyscan'],
+  },
+  {
+    key: 'anger',
+    title: '화가 날 때',
+    desc: '화가 치밀어 오를 때. 안전하게 내보내고 천천히 가라앉혀요.',
+    color: { base: '#f0a07e', edge: '#d85a34' },
+    ids: ['smash', 'cooldown', 'nameanger'],
+  },
+  {
+    key: 'fun',
+    title: '그냥 재밌는 것',
+    desc: '별 이유 없이 기분을 바꾸고 싶을 때. 소소하고 엉뚱한 재미 한 스푼.',
+    color: { base: '#3fd0d8', edge: '#0e9aa4' },
+    ids: ['tinymission', 'whimsy', 'squishtoy'],
+  },
 ]
 
 const ID_TO_SECTION = new Map(SECTIONS.flatMap((s) => s.ids.map((id) => [id, s])))

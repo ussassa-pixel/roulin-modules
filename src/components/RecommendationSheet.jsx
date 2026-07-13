@@ -1,6 +1,15 @@
 import { useMemo } from 'react'
 import { getRecommendations } from '../modules/registry'
 
+function HomeIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M3 11l9-8 9 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 10v10h14V10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export default function RecommendationSheet({ completedModuleId, allModules, onPick, onShowAll }) {
   const recs = useMemo(
     () => getRecommendations(completedModuleId, allModules),
@@ -41,9 +50,10 @@ export default function RecommendationSheet({ completedModuleId, allModules, onP
       <div className="max-w-md mx-auto w-full px-6 py-10 text-center">
         <button
           onClick={onShowAll}
-          className="text-[14px] text-r-gray hover:text-navy tracking-wide transition py-2 border-b border-line"
+          className="inline-flex items-center gap-1.5 px-6 py-3 rounded-full bg-white text-navy border border-line text-[14px] hover:bg-white/60 transition"
+          style={{ fontWeight: 500 }}
         >
-          목록 전체 보기
+          <HomeIcon /> 처음으로 · 전체 목록
         </button>
       </div>
     </div>

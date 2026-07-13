@@ -175,6 +175,17 @@ export default function App() {
     setActiveModule(null)
   }
 
+  // "홈" — 추천 시트를 거치지 않고 곧장 상위 메뉴(런처)로 복귀
+  const goHome = () => {
+    if (activeModule) {
+      const m = MODULES.find((x) => x.id === activeModule)
+      if (m) logCare({ id: m.id, title: m.title, tag: m.tag })
+    }
+    setActiveModule(null)
+    setPendingRec(null)
+    setCheckinOpen(false)
+  }
+
   return (
     <SpeechProvider>
       {activeModule === 'present'    && <PresentMoment onExit={exit} />}
@@ -238,23 +249,12 @@ export default function App() {
       {activeModule === 'clean'        && <Clean onExit={exit} />}
       {activeModule === 'earclean'     && <EarClean onExit={exit} />}
 
-      {/* "지금 어때요?" 어느 화면에서든 홈(런처)으로 */}
-      {activeModule === null && checkinOpen && (
+      {/* 런처가 아닌 모든 화면(모듈·지금어때요·추천 시트)에서 곧장 상위 메뉴로 */}
+      {!(activeModule === null && !checkinOpen && pendingRec === null) && (
         <button
-          onClick={() => setCheckinOpen(false)}
+          onClick={goHome}
           aria-label="홈으로"
-          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 pl-2.5 pr-3.5 py-1.5 rounded-full bg-white/70 backdrop-blur border border-[#E0DCCD] text-navy/75 text-[12px] shadow-sm hover:bg-white transition"
-        >
-          <HomeIcon /> 홈
-        </button>
-      )}
-
-      {/* 어느 모듈 화면에서든 홈(런처)으로 */}
-      {activeModule !== null && (
-        <button
-          onClick={exit}
-          aria-label="홈으로"
-          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 pl-2.5 pr-3.5 py-1.5 rounded-full bg-white/70 backdrop-blur border border-[#E0DCCD] text-navy/75 text-[12px] shadow-sm hover:bg-white transition"
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 pl-2.5 pr-3.5 py-1.5 rounded-full bg-white/80 backdrop-blur border border-[#E0DCCD] text-navy/80 text-[12px] shadow-sm hover:bg-white transition"
         >
           <HomeIcon /> 홈
         </button>

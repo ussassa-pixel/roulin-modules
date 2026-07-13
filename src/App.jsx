@@ -66,6 +66,7 @@ import Whimsy from './modules/Whimsy'
 import SquishToy from './modules/SquishToy'
 import PlateSmash from './modules/PlateSmash'
 import Clean from './modules/Clean'
+import EarClean from './modules/EarClean'
 import TtsAdmin from './admin/TtsAdmin'
 
 // 팀 내부 검수 페이지 (?admin=tts) — 유저 UI에는 진입점 없음
@@ -152,6 +153,7 @@ const MODULES = [
   { id: 'whimsy',       title: '오늘의 엉뚱 질문', tag: '재미', desc: '잠깐 딴 세상이 필요할 때. 정답 없는 공상 질문 하나를 엽니다.' },
   { id: 'squishtoy',    title: '말랑 토이',       tag: '재미', desc: '만지작거리고 싶을 때. 누르면 말랑 통 튀어오르는 감각 장난감.' },
   { id: 'clean',        title: '말끔 클리닝',     tag: '재미', desc: '심심할 때. 오돌토돌·피지·털을 톡톡 정리하는 심심풀이.' },
+  { id: 'earclean',     title: '귀 청소',         tag: '재미', desc: '심심할 때. 내시경으로 도구를 바꿔 귀지를 하나씩 파냅니다.' },
 ]
 
 export default function App() {
@@ -234,6 +236,7 @@ export default function App() {
       {activeModule === 'squishtoy'    && <SquishToy onExit={exit} />}
       {activeModule === 'plates'       && <PlateSmash onExit={exit} />}
       {activeModule === 'clean'        && <Clean onExit={exit} />}
+      {activeModule === 'earclean'     && <EarClean onExit={exit} />}
 
       {/* "지금 어때요?" 어느 화면에서든 홈(런처)으로 */}
       {activeModule === null && checkinOpen && (

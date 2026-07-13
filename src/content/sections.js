@@ -55,7 +55,7 @@ export const SECTIONS = [
     title: '그냥 재밌는 것',
     desc: '별 이유 없이 기분을 바꾸고 싶을 때. 소소하고 엉뚱한 재미 한 스푼.',
     color: { base: '#3fd0d8', edge: '#0e9aa4' },
-    ids: ['tinymission', 'whimsy', 'squishtoy', 'clean'],
+    ids: ['tinymission', 'whimsy', 'squishtoy', 'clean', 'earclean'],
   },
 ]
 

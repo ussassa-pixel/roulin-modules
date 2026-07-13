@@ -217,16 +217,17 @@ function EarView({ smalls, depth = 0, onTapSmall, onPullPlug, plugOut = false, p
         <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 62% 60%, rgba(190,70,60,0.28), transparent 42%), radial-gradient(circle at 34% 40%, rgba(180,60,55,0.2), transparent 38%)' }} />
         {/* 주름 링 */}
         <div className="absolute inset-0" style={{ background: 'repeating-radial-gradient(circle at 50% 46%, rgba(90,40,32,0.16) 0 5px, transparent 5px 12px)', opacity: 0.7 }} />
-        {/* 촉촉한 반사(내시경 조명) */}
-        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 30% 22% at 40% 34%, rgba(255,244,232,0.5), transparent 60%)' }} />
+        {/* 촉촉한 반사(내시경 조명) — 강조: 넓은 젖은 광택 + 선명한 글레어 */}
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 34% 26% at 42% 36%, rgba(255,248,238,0.62), transparent 58%)' }} />
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(circle 7% at 40% 33%, rgba(255,255,255,0.85), transparent 60%)' }} />
       </div>
       {/* 내시경 비네트 + 렌즈 */}
       <div className="absolute inset-0 pointer-events-none" style={{ boxShadow: 'inset 0 0 50px 16px rgba(0,0,0,0.6)', borderRadius: '50%' }} />
 
       <svg width={D} height={D} viewBox="0 0 300 300" style={{ position: 'absolute', inset: 0 }}>
         <defs>
-          <radialGradient id="ec-wax" cx="0.4" cy="0.32" r="0.8"><stop offset="0" stopColor="#f0c268" /><stop offset="0.45" stopColor="#c08a34" /><stop offset="0.8" stopColor="#8a5c22" /><stop offset="1" stopColor="#5c3c15" /></radialGradient>
-          <radialGradient id="ec-plug" cx="0.42" cy="0.3" r="0.85"><stop offset="0" stopColor="#e3ad50" /><stop offset="0.4" stopColor="#b57e2f" /><stop offset="0.75" stopColor="#835426" /><stop offset="1" stopColor="#4a2f12" /></radialGradient>
+          <radialGradient id="ec-wax" cx="0.4" cy="0.3" r="0.85"><stop offset="0" stopColor="#b98a3e" /><stop offset="0.4" stopColor="#7d5222" /><stop offset="0.75" stopColor="#4e3416" /><stop offset="1" stopColor="#2a1c0c" /></radialGradient>
+          <radialGradient id="ec-plug" cx="0.42" cy="0.28" r="0.88"><stop offset="0" stopColor="#a9772f" /><stop offset="0.38" stopColor="#6f4a20" /><stop offset="0.72" stopColor="#432c12" /><stop offset="1" stopColor="#1f1408" /></radialGradient>
           <filter id="ec-goo"><feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="2" seed="7" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="6" /></filter>
         </defs>
 
@@ -239,10 +240,13 @@ function EarView({ smalls, depth = 0, onTapSmall, onPullPlug, plugOut = false, p
             <g filter="url(#ec-goo)">
               <path d="M-28 -6 Q -30 -25 -8 -27 Q 7 -31 21 -22 Q 33 -13 28 5 Q 31 23 8 27 Q -13 31 -25 16 Q -33 6 -28 -6 Z" fill="url(#ec-plug)" stroke="rgba(56,36,14,0.6)" strokeWidth="1.5" />
             </g>
-            <path d="M-16 -11 Q 0 -17 16 -9" stroke="rgba(66,42,16,0.5)" strokeWidth="2" fill="none" />
-            <path d="M-18 6 Q 0 13 18 4" stroke="rgba(66,42,16,0.4)" strokeWidth="2" fill="none" />
-            <ellipse cx="-9" cy="-10" rx="8" ry="5" fill="rgba(255,238,190,0.45)" />
-            <ellipse cx="7" cy="8" rx="4" ry="2.6" fill="rgba(255,238,190,0.3)" />
+            <path d="M-16 -11 Q 0 -17 16 -9" stroke="rgba(40,26,10,0.55)" strokeWidth="2" fill="none" />
+            <path d="M-18 6 Q 0 13 18 4" stroke="rgba(40,26,10,0.45)" strokeWidth="2" fill="none" />
+            {/* 젖은 조명 반사 — 넓은 광택 + 선명한 핫스팟 */}
+            <ellipse cx="-9" cy="-11" rx="11" ry="6.5" fill="rgba(255,246,215,0.5)" />
+            <ellipse cx="-11" cy="-13" rx="4" ry="3" fill="rgba(255,255,255,0.95)" />
+            <ellipse cx="9" cy="9" rx="5.5" ry="3" fill="rgba(255,244,205,0.34)" />
+            <circle cx="8" cy="8" r="1.6" fill="rgba(255,255,255,0.8)" />
             {plugReady && ps.near && <ellipse cx="0" cy="0" rx="34" ry="30" fill="none" stroke="rgba(95,224,212,0.85)" strokeWidth="2" strokeDasharray="4 5" />}
           </g>
         )}
@@ -275,8 +279,9 @@ function EarView({ smalls, depth = 0, onTapSmall, onPullPlug, plugOut = false, p
                   </g>
                 )}
               </g>
-              {/* 젖은 하이라이트 */}
-              <ellipse cx={-p.size * 0.18} cy={-p.size * 0.2} rx={p.size * 0.16} ry={p.size * 0.1} fill="rgba(255,240,200,0.5)" />
+              {/* 젖은 조명 반사 — 넓은 광택 + 선명한 핫스팟 */}
+              <ellipse cx={-p.size * 0.16} cy={-p.size * 0.2} rx={p.size * 0.22} ry={p.size * 0.13} fill="rgba(255,246,215,0.55)" />
+              <circle cx={-p.size * 0.2} cy={-p.size * 0.24} r={p.size * 0.08} fill="rgba(255,255,255,0.95)" />
             </g>
           )
         })}

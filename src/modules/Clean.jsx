@@ -146,8 +146,13 @@ export default function Clean({ onExit }) {
             style={{ width: 320, height: 380, borderRadius: 34, background: `radial-gradient(circle at 40% 30%, #f7dcc7 0%, ${skin} 58%, #cf9270 100%)`, boxShadow: 'inset 0 4px 22px rgba(255,255,255,0.35), inset 0 -10px 26px rgba(150,90,60,0.28), 0 12px 36px rgba(0,0,0,0.42)', touchAction: 'none', overflow: 'hidden' }}
             onPointerUp={endHold} onPointerLeave={endHold} onPointerCancel={endHold}
           >
-            {/* 모공 텍스처 */}
-            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 25% 55%, rgba(120,60,40,0.10) 0 1.2px, transparent 1.6px), radial-gradient(circle at 68% 32%, rgba(120,60,40,0.08) 0 1.2px, transparent 1.6px), radial-gradient(circle at 45% 75%, rgba(120,60,40,0.07) 0 1px, transparent 1.4px)', backgroundSize: '15px 15px, 19px 21px, 13px 14px', opacity: 0.7 }} />
+            {/* 실사 피부 노이즈(모공/결) */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ mixBlendMode: 'soft-light', opacity: 0.55 }} aria-hidden="true">
+              <filter id="cl-skin"><feTurbulence type="fractalNoise" baseFrequency="0.86" numOctaves="3" stitchTiles="stitch" /><feColorMatrix type="saturate" values="0" /></filter>
+              <rect width="100%" height="100%" filter="url(#cl-skin)" />
+            </svg>
+            {/* 모공 점 텍스처 */}
+            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 25% 55%, rgba(120,60,40,0.10) 0 1.2px, transparent 1.6px), radial-gradient(circle at 68% 32%, rgba(120,60,40,0.08) 0 1.2px, transparent 1.6px), radial-gradient(circle at 45% 75%, rgba(120,60,40,0.07) 0 1px, transparent 1.4px)', backgroundSize: '15px 15px, 19px 21px, 13px 14px', opacity: 0.6 }} />
             {/* 은은한 홍조 */}
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 60% 65%, rgba(210,110,90,0.18), transparent 45%)' }} />
 
@@ -171,7 +176,14 @@ export default function Clean({ onExit }) {
             {fx.map((f) => (
               <div key={f.id} style={{ position: 'absolute', left: `${f.x}%`, top: `${f.y}%`, transform: 'translate(-50%,-50%)', pointerEvents: 'none' }}>
                 <span style={{ position: 'absolute', left: -14, top: -14, width: 28, height: 28, borderRadius: '50%', background: 'radial-gradient(circle, rgba(200,110,90,0.5), transparent 70%)', animation: 'cl-mark .6s ease-out both' }} />
-                {f.type === 'pimple' && <span style={{ position: 'absolute', left: -7, top: -7, width: 14, height: 14, borderRadius: '50%', background: 'radial-gradient(circle at 38% 34%, #fff7d8, #e8cf74 70%, #d8b84e)', boxShadow: '0 0 4px rgba(180,150,60,0.5)', animation: 'cl-core .55s ease-out both' }} />}
+                {f.type === 'pimple' && (
+                  <>
+                    {/* 튀어나온 고름 덩어리 */}
+                    <span style={{ position: 'absolute', left: -5, top: -22, width: 10, height: 24, borderRadius: '5px', background: 'linear-gradient(to top, #d9c274 0%, #f3e6a2 45%, #fbf4d4 100%)', boxShadow: '0 0 4px rgba(180,150,70,0.5)', transformOrigin: 'bottom', animation: 'cl-core .55s ease-out both' }} />
+                    {/* 짜낸 자리(붉고 젖은 자국) */}
+                    <span style={{ position: 'absolute', left: -6, top: -6, width: 12, height: 12, borderRadius: '50%', background: 'radial-gradient(circle at 40% 36%, rgba(230,150,120,0.9), rgba(200,90,70,0.7) 70%)', boxShadow: 'inset 0 0 3px rgba(150,50,40,0.6)', animation: 'cl-mark .6s ease-out both' }} />
+                  </>
+                )}
                 {f.type === 'sebum' && <span style={{ position: 'absolute', left: -3.5, top: -40, width: 7, height: 40, borderRadius: 4, transformOrigin: 'bottom', background: 'linear-gradient(to top, #6b5636 0%, #d8c24a 30%, #efe08a 80%, #2a2018 100%)', boxShadow: '0 0 3px rgba(0,0,0,0.3)', animation: 'cl-plug .6s ease-out both' }} />}
                 {f.type === 'hair' && <span style={{ position: 'absolute', left: -2, top: -30, width: 4, height: 34, '--tx': `${(Math.random() * 34 - 17).toFixed(0)}px`, '--r': `${(Math.random() * 300 - 150).toFixed(0)}deg`, '--r0': '0deg', animation: 'cl-hairout .6s ease-out both' }}>
                   <Hair s={1.2} withRoot />
@@ -198,19 +210,8 @@ export default function Clean({ onExit }) {
 
 // ── 개별 블레미시 (p: 추출 진행 0~1) ──
 function Spot({ type, s = 1, rot = 0, p = 0, active = false }) {
-  if (type === 'pimple') {
-    const coreH = 3 + p * 13 * s
-    return (
-      <span style={{ display: 'block', position: 'relative', width: 26 * s, height: 26 * s }}>
-        {/* 염증 링 */}
-        <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: `radial-gradient(circle at 40% 36%, #f0a892 0%, #e08066 55%, #cc6349 100%)`, boxShadow: `inset -2px -3px 5px rgba(150,60,45,0.5), inset 2px 2px 4px rgba(255,220,200,0.5), 0 1px 3px rgba(0,0,0,0.25)`, transform: `scale(${1 - p * 0.14})` }} />
-        {/* 속 덩어리(화이트헤드) — 누를수록 솟음 */}
-        <span style={{ position: 'absolute', left: '50%', top: '50%', width: 8 * s, height: coreH, marginLeft: -4 * s, transform: `translate(-50%, calc(-50% - ${p * 5}px))`, borderRadius: 5 * s, background: 'radial-gradient(circle at 40% 30%, #fff7dc 0%, #f0dc94 55%, #dcc260 100%)', boxShadow: '0 0 3px rgba(180,150,70,0.5)', opacity: p > 0.05 ? 1 : 0 }} />
-        {/* 유광 하이라이트 */}
-        <span style={{ position: 'absolute', left: '34%', top: '30%', width: 6 * s, height: 4 * s, borderRadius: '50%', background: 'rgba(255,255,255,0.7)', filter: 'blur(0.5px)' }} />
-      </span>
-    )
-  }
+  if (type === 'pimple') return <Pimple s={s} p={p} />
+
   if (type === 'sebum') {
     const plugH = p * 30 * s
     return (
@@ -236,6 +237,44 @@ function Spot({ type, s = 1, rot = 0, p = 0, active = false }) {
         <Hair s={s} withRoot={p > 0.35} />
       </span>
     </span>
+  )
+}
+
+// 여드름 — 짤수록(p) 압박 자국·화이트헤드 부풀기·고름 가닥 밀려나옴
+function Pimple({ s = 1, p = 0 }) {
+  const w = 44 * s, h = 60 * s
+  const strandH = p * 22        // 밀려나온 고름 길이
+  const headR = 3 + p * 3.4     // 화이트헤드 크기
+  const uid = 'pm'              // 그라데이션 id는 공유(정적 색이라 충돌 없음)
+  return (
+    <svg width={w} height={h} viewBox="0 0 44 60" fill="none" aria-hidden="true" style={{ display: 'block', overflow: 'visible' }}>
+      <defs>
+        <radialGradient id={`${uid}-halo`} cx="0.5" cy="0.5" r="0.5"><stop offset="0" stopColor="#d75a3c" stopOpacity="0.55" /><stop offset="1" stopColor="#d75a3c" stopOpacity="0" /></radialGradient>
+        <radialGradient id={`${uid}-dome`} cx="0.4" cy="0.32" r="0.72"><stop offset="0" stopColor="#f6cdb2" /><stop offset="0.55" stopColor="#e59c7d" /><stop offset="1" stopColor="#cc6f52" /></radialGradient>
+        <radialGradient id={`${uid}-head`} cx="0.42" cy="0.35" r="0.7"><stop offset="0" stopColor="#fffae8" /><stop offset="0.6" stopColor="#f5e6a4" /><stop offset="1" stopColor="#e6cf72" /></radialGradient>
+        <linearGradient id={`${uid}-pus`} x1="0" y1="1" x2="0" y2="0"><stop offset="0" stopColor="#d9c274" /><stop offset="0.45" stopColor="#f3e6a2" /><stop offset="1" stopColor="#fbf4d4" /></linearGradient>
+        <filter id={`${uid}-soft`} x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="0.7" /></filter>
+      </defs>
+      {/* 염증 후광 — 짤수록 붉어짐 */}
+      <ellipse cx="22" cy="42" rx={17} ry={16} fill={`url(#${uid}-halo)`} opacity={0.5 + p * 0.45} />
+      {/* 부풀어 오른 피부 돔 */}
+      <ellipse cx="22" cy="42" rx={13} ry={12.5} fill={`url(#${uid}-dome)`} />
+      {/* 압박 자국(하얗게 질림) — 좌우 */}
+      {p > 0.05 && (
+        <>
+          <ellipse cx="9" cy="42" rx="4.2" ry="9" fill="#f5ddca" opacity={p * 0.75} filter={`url(#${uid}-soft)`} />
+          <ellipse cx="35" cy="42" rx="4.2" ry="9" fill="#f5ddca" opacity={p * 0.75} filter={`url(#${uid}-soft)`} />
+        </>
+      )}
+      {/* 밀려나오는 고름 가닥 */}
+      {p > 0.12 && (
+        <path d={`M22 40 q ${2.5} ${-strandH * 0.5} 0 ${-strandH}`} stroke={`url(#${uid}-pus)`} strokeWidth={5.4 * s} strokeLinecap="round" fill="none" />
+      )}
+      {/* 화이트헤드(모공 입구) */}
+      <circle cx="22" cy="40" r={headR} fill={`url(#${uid}-head)`} />
+      {/* 젖은 유광 하이라이트 */}
+      <ellipse cx="16" cy="35" rx="3.4" ry="2.2" fill="#ffffff" opacity="0.6" filter={`url(#${uid}-soft)`} />
+    </svg>
   )
 }
 

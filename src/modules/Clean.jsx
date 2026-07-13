@@ -178,8 +178,8 @@ export default function Clean({ onExit }) {
                 <span style={{ position: 'absolute', left: -14, top: -14, width: 28, height: 28, borderRadius: '50%', background: 'radial-gradient(circle, rgba(200,110,90,0.5), transparent 70%)', animation: 'cl-mark .6s ease-out both' }} />
                 {f.type === 'pimple' && (
                   <>
-                    {/* 튀어나온 고름 덩어리 */}
-                    <span style={{ position: 'absolute', left: -5, top: -22, width: 10, height: 24, borderRadius: '5px', background: 'linear-gradient(to top, #d9c274 0%, #f3e6a2 45%, #fbf4d4 100%)', boxShadow: '0 0 4px rgba(180,150,70,0.5)', transformOrigin: 'bottom', animation: 'cl-core .55s ease-out both' }} />
+                    {/* 튀어나온 고름 덩어리 — 되직·노랑·길게 */}
+                    <span style={{ position: 'absolute', left: -6, top: -34, width: 13, height: 38, borderRadius: '7px', background: 'linear-gradient(to top, #a8811a 0%, #d8b52c 40%, #f0d442 80%, #f7e468 100%)', boxShadow: '0 0 5px rgba(170,130,30,0.6), inset -2px 0 3px rgba(120,90,20,0.4), inset 2px 0 3px rgba(255,240,150,0.5)', transformOrigin: 'bottom', animation: 'cl-core .55s ease-out both' }} />
                     {/* 짜낸 자리(붉고 젖은 자국) */}
                     <span style={{ position: 'absolute', left: -6, top: -6, width: 12, height: 12, borderRadius: '50%', background: 'radial-gradient(circle at 40% 36%, rgba(230,150,120,0.9), rgba(200,90,70,0.7) 70%)', boxShadow: 'inset 0 0 3px rgba(150,50,40,0.6)', animation: 'cl-mark .6s ease-out both' }} />
                   </>
@@ -242,17 +242,17 @@ function Spot({ type, s = 1, rot = 0, p = 0, active = false }) {
 
 // 여드름 — 짤수록(p) 압박 자국·화이트헤드 부풀기·고름 가닥 밀려나옴
 function Pimple({ s = 1, p = 0 }) {
-  const w = 44 * s, h = 60 * s
-  const strandH = p * 22        // 밀려나온 고름 길이
-  const headR = 3 + p * 3.4     // 화이트헤드 크기
+  const w = 44 * s, h = 74 * s
+  const strandH = p * 38        // 밀려나온 고름 길이(더 길게)
+  const headR = 3 + p * 4.2     // 화이트헤드 크기
   const uid = 'pm'              // 그라데이션 id는 공유(정적 색이라 충돌 없음)
   return (
-    <svg width={w} height={h} viewBox="0 0 44 60" fill="none" aria-hidden="true" style={{ display: 'block', overflow: 'visible' }}>
+    <svg width={w} height={h} viewBox="0 0 44 74" fill="none" aria-hidden="true" style={{ display: 'block', overflow: 'visible' }}>
       <defs>
         <radialGradient id={`${uid}-halo`} cx="0.5" cy="0.5" r="0.5"><stop offset="0" stopColor="#d75a3c" stopOpacity="0.55" /><stop offset="1" stopColor="#d75a3c" stopOpacity="0" /></radialGradient>
         <radialGradient id={`${uid}-dome`} cx="0.4" cy="0.32" r="0.72"><stop offset="0" stopColor="#f6cdb2" /><stop offset="0.55" stopColor="#e59c7d" /><stop offset="1" stopColor="#cc6f52" /></radialGradient>
         <radialGradient id={`${uid}-head`} cx="0.42" cy="0.35" r="0.7"><stop offset="0" stopColor="#fffae8" /><stop offset="0.6" stopColor="#f5e6a4" /><stop offset="1" stopColor="#e6cf72" /></radialGradient>
-        <linearGradient id={`${uid}-pus`} x1="0" y1="1" x2="0" y2="0"><stop offset="0" stopColor="#d9c274" /><stop offset="0.45" stopColor="#f3e6a2" /><stop offset="1" stopColor="#fbf4d4" /></linearGradient>
+        <linearGradient id={`${uid}-pus`} x1="0" y1="1" x2="0" y2="0"><stop offset="0" stopColor="#a8811a" /><stop offset="0.4" stopColor="#d8b52c" /><stop offset="0.8" stopColor="#f0d442" /><stop offset="1" stopColor="#f7e468" /></linearGradient>
         <filter id={`${uid}-soft`} x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="0.7" /></filter>
       </defs>
       {/* 염증 후광 — 짤수록 붉어짐 */}
@@ -266,9 +266,14 @@ function Pimple({ s = 1, p = 0 }) {
           <ellipse cx="35" cy="42" rx="4.2" ry="9" fill="#f5ddca" opacity={p * 0.75} filter={`url(#${uid}-soft)`} />
         </>
       )}
-      {/* 밀려나오는 고름 가닥 */}
+      {/* 밀려나오는 고름 가닥 — 더 되직하고 길게 */}
       {p > 0.12 && (
-        <path d={`M22 40 q ${2.5} ${-strandH * 0.5} 0 ${-strandH}`} stroke={`url(#${uid}-pus)`} strokeWidth={5.4 * s} strokeLinecap="round" fill="none" />
+        <>
+          <path d={`M22 40 q ${2.8} ${-strandH * 0.5} 0 ${-strandH}`} stroke={`url(#${uid}-pus)`} strokeWidth={7.4 * s} strokeLinecap="round" fill="none" />
+          {/* 되직한 방울 tip */}
+          <circle cx="22" cy={40 - strandH} r={4.4 * s} fill={`url(#${uid}-pus)`} />
+          <ellipse cx={20.3} cy={40 - strandH - 1.4} rx="1.5" ry="1" fill="#fffbe0" opacity="0.6" />
+        </>
       )}
       {/* 화이트헤드(모공 입구) */}
       <circle cx="22" cy="40" r={headR} fill={`url(#${uid}-head)`} />

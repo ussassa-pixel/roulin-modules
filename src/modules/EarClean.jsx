@@ -226,8 +226,8 @@ function EarView({ smalls, depth = 0, onTapSmall, onPullPlug, plugOut = false, p
 
       <svg width={D} height={D} viewBox="0 0 300 300" style={{ position: 'absolute', inset: 0 }}>
         <defs>
-          <radialGradient id="ec-wax" cx="0.4" cy="0.3" r="0.85"><stop offset="0" stopColor="#b98a3e" /><stop offset="0.4" stopColor="#7d5222" /><stop offset="0.75" stopColor="#4e3416" /><stop offset="1" stopColor="#2a1c0c" /></radialGradient>
-          <radialGradient id="ec-plug" cx="0.42" cy="0.28" r="0.88"><stop offset="0" stopColor="#a9772f" /><stop offset="0.38" stopColor="#6f4a20" /><stop offset="0.72" stopColor="#432c12" /><stop offset="1" stopColor="#1f1408" /></radialGradient>
+          <radialGradient id="ec-wax" cx="0.4" cy="0.3" r="0.85"><stop offset="0" stopColor="#e0ad55" /><stop offset="0.42" stopColor="#ac7830" /><stop offset="0.78" stopColor="#7a5222" /><stop offset="1" stopColor="#4e3416" /></radialGradient>
+          <radialGradient id="ec-plug" cx="0.42" cy="0.28" r="0.88"><stop offset="0" stopColor="#d69f47" /><stop offset="0.4" stopColor="#a06e2b" /><stop offset="0.74" stopColor="#6b471f" /><stop offset="1" stopColor="#3c2712" /></radialGradient>
           <filter id="ec-goo"><feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="2" seed="7" result="n" /><feDisplacementMap in="SourceGraphic" in2="n" scale="6" /></filter>
         </defs>
 
